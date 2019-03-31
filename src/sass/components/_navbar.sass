@@ -1,0 +1,189 @@
+
+nav.navbar 
+  padding: 0 20px !important
+  
+  button.navbar-toggler
+    span.navbar-toggler-icon
+      position: relative
+      background: #FFF
+      width: 20px
+      height: 2px
+      transform: rotate(45deg)
+      +transition(all .3s ease)
+      &:before,
+      &:after
+        content: ''
+        position: absolute
+        width: 20px
+        height: 2px
+        background: #FFF
+        display: block
+        margin-top: 0
+        transform: rotate(0deg)
+        +transition(all .3s ease)
+      &:after
+        transform: rotate(90deg)
+
+    &.collapsed
+      span.navbar-toggler-icon
+        transform: rotate(0deg)
+        &:before
+          margin-top: -8px
+        &:after
+          margin-top: 8px
+          transform: rotate(0deg)
+        
+
+  .navbar-brand 
+    position: relative
+    font-size: 2rem
+    color: #FFF
+    padding: 0
+    margin: 0 .5rem 0 0
+    width: 230px
+    height: 64px
+    display: block
+    overflow: hidden
+    text-indent: -9999px
+    background: url(/assets/common/logo.png) no-repeat center
+
+    &:after 
+      content: ""
+      position: absolute
+      right: 0
+      top: 0
+      bottom: 0
+      display: block
+      margin: auto
+      width: 1px
+      height: 25px
+      background: #30936F
+      border-right: 1px solid #1E5C45
+    
+  .navbar-nav .btn
+    line-height: 40px !important
+
+  form.search 
+    position: relative
+    margin-right: 1rem
+    input 
+      background: transparent
+      border: 1px solid #ffffff
+      border-radius: 30px
+
+      &:focus 
+        background: transparent
+      
+
+      &::placeholder 
+        color: #fff
+        opacity: .5
+      
+    .btn 
+      border: 0
+      position: absolute
+      right: 0
+      top: 0
+      bottom: 0
+      opacity: .5
+      margin: auto 0
+
+      &:hover,
+      &:focus 
+        opacity: 1
+        background: none
+      
+    
+  
+
+  .navbar-nav 
+    .btn 
+      line-height: 2
+      padding-left: 1.35rem
+      padding-right: 1.35rem
+    
+    a.nav-link 
+      color: #FFF
+      font-size: 1rem
+      padding-left: 1rem
+      padding-right: 1rem
+      text-align: center
+
+    
+  
+  .divider 
+    position: relative
+    display: inline-block
+    &:after 
+      content: ""
+      position: absolute
+      right: 0
+      top: 0
+      bottom: 0
+      display: block
+      margin: auto
+      width: 1px
+      height: 25px
+      background: #30936F
+      box-shadow: 1px 0 0 0 #1E5C45
+  
+  .subnav .divider:after 
+    background: #9ADF36
+    box-shadow: 1px 0 0 0 #58811D
+    
+
+  ul.navbar-nav 
+    margin: 0
+    li.nav-item > a.nav-link,
+    li.nav-item > a.nav-link:link 
+      position: relative
+      color: #FFF
+      opacity: .5
+      font-size: 1rem
+      padding-left: 1rem
+      padding-right: 1rem
+      text-decoration: none
+        
+      &.active 
+        opacity: 1
+        &:after 
+          content: ""
+          position: absolute
+          width: 80px
+          height: 5px
+          left: 0
+          right: 0
+          margin: 5px auto 0
+          bottom: 0
+          background: #8AC731
+  
+  .navbar-nav.main-nav 
+    flex: 1
+  
+
+  @media screen and (max-width: 768px)
+    .navbar-collapse.collapse
+      display: none
+
+      > .navbar-nav
+        width: 100%
+        .nav-item
+          margin: 0 !important
+          padding: 0 0 15px
+
+          .dropdown-menu
+            background: none
+            border: 0
+            a.dropdown-item
+              color: #FFF
+              &:hover,
+              &:focus
+                background: rgba(0,0,0,.3)
+        .divider
+          display: none
+        .btn
+          width: 100%
+
+      &.show
+        display: flex
+        width: 100%

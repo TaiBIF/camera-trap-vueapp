@@ -1,0 +1,25 @@
+.mx-datepicker
+  .mx-input-wrapper
+    .mx-input
+      height: 38px
+    .mx-input-append
+      display: none
+
+.mx-calendar
+  .mx-calendar-content .cell
+    &.today
+      color: $gray
+    
+    &.disabled
+      background: none
+
+    &.actived,
+    &.actived:hover,
+    &.actived:focus
+      color: #FFF
+      background: $light-green
+      +border-radius(50%)
+
+    &:not(.disabled):hover
+      background: $bg-gray
+      +border-radius(50%)
