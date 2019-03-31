@@ -9,13 +9,33 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
       component: () => import('@/pages/Home.vue'),
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/pages/About.vue'),
+      path: '/project',
+      component: () => import('@/pages/Project/index.vue'),
+      children: [
+        {
+          path: 'overview',
+          component: () => import('@/pages/Project/Overview.vue'),
+        },
+      ],
+    },
+    {
+      path: '/upload-history',
+      component: () => import('@/pages/UploadHistory/index.vue'),
+    },
+    {
+      path: '/download',
+      component: () => import('@/pages/Download/index.vue'),
+    },
+    {
+      path: '/setting',
+      component: () => import('@/pages/Setting/index.vue'),
+    },
+    {
+      path: '/help',
+      component: () => import('@/pages/Help/index.vue'),
     },
   ],
 });
