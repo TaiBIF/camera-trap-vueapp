@@ -99,15 +99,15 @@ export default new Router({
       component: () => import('@/pages/Download/index.vue'),
       children: [
         {
-          path: '/search',
+          path: 'search',
           component: () => import('@/pages/Download/Search.vue'),
         },
         {
-          path: '/result',
+          path: 'result',
           component: () => import('@/pages/Download/Result.vue'),
         },
         {
-          path: '/calculate',
+          path: 'calculate',
           component: () => import('@/pages/Download/Calculate.vue'),
         },
       ],

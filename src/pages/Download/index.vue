@@ -1,3 +1,3 @@
 <template>
-  <h1>下載</h1>
+  <router-view />
 </template>
