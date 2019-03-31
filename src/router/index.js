@@ -119,6 +119,20 @@ export default new Router({
     {
       path: '/help',
       component: () => import('@/pages/Help/index.vue'),
+      children: [
+        {
+          path: '/faq',
+          component: () => import('@/pages/Help/Faq.vue'),
+        },
+        {
+          path: '/contact-us',
+          component: () => import('@/pages/Help/ContactUs.vue'),
+        },
+        {
+          path: '/privacy',
+          component: () => import('@/pages/Help/Privacy.vue'),
+        },
+      ],
     },
   ],
 });
