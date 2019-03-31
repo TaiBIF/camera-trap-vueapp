@@ -12,5 +12,8 @@
   "vetur.format.scriptInitialIndent": true,
   "vetur.format.styleInitialIndent": false,
   "vetur.format.defaultFormatter.html": "none",
-  "vetur.format.defaultFormatter.js": "none"
+  "vetur.format.defaultFormatter.js": "none",
+  "path-intellisense.mappings": {
+    "@/": "${workspaceRoot}/src/"
+  }
 }
