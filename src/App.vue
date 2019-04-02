@@ -1,14 +1,12 @@
 <template>
   <div id="app">
-    <header id="nav">
-      <nav-header />
-    </header>
+    <nav-header :is-login="true" />
     <router-view />
   </div>
 </template>
 
 <script>
-import NavHeader from '@/components/NavHeader.vue';
+import NavHeader from '@/components/NavHeader/NavHeader.vue';
 
 export default {
   components: {
@@ -18,7 +16,7 @@ export default {
 </script>
 
 <style lang="scss">
-#nav {
-  background-color: #c1ffc1;
+#app {
+  padding-top: 64px;
 }
 </style>
