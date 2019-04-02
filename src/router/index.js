@@ -115,15 +115,15 @@ export default new Router({
       component: () => import('@/pages/Help/index.vue'),
       children: [
         {
-          path: '/faq',
+          path: 'faq',
           component: () => import('@/pages/Help/Faq.vue'),
         },
         {
-          path: '/contact-us',
+          path: 'contact-us',
           component: () => import('@/pages/Help/ContactUs.vue'),
         },
         {
-          path: '/privacy',
+          path: 'privacy',
           component: () => import('@/pages/Help/Privacy.vue'),
         },
       ],
