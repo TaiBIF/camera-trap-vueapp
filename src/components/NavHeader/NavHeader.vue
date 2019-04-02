@@ -1,7 +1,9 @@
 <template>
   <header>
     <nav class="navbar navbar-expand-lg">
-      <a href="/" role="button" class="navbar-brand">Camara Capture</a>
+      <router-link to="/" role="button" class="navbar-brand"
+        >Camara Capture</router-link
+      >
       <button
         v-if="!isLogin"
         class="navbar-toggler collapsed"
@@ -30,9 +32,15 @@
               >幫助</a
             >
             <div class="dropdown-menu dropdown-menu-right">
-              <a href="/help/faq" class="dropdown-item">常見問題</a>
-              <a href="/help/contact-us" class="dropdown-item">聯絡我們</a>
-              <a href="/help/privacy" class="dropdown-item">隱私權政策</a>
+              <router-link to="/help/faq" class="dropdown-item"
+                >常見問題</router-link
+              >
+              <router-link to="/help/contact-us" class="dropdown-item"
+                >聯絡我們</router-link
+              >
+              <router-link to="/help/privacy" class="dropdown-item"
+                >隱私權政策</router-link
+              >
             </div>
           </div>
           <div class="divider"></div>
@@ -44,34 +52,34 @@
       <div class="collapse navbar-collapse" v-if="isLogin">
         <ul class="navbar-nav main-nav">
           <li class="nav-item">
-            <a
+            <router-link
               class="nav-link"
               :class="isIndex ? 'active' : ''"
               role="button"
-              href="/project/overview"
+              to="/project/overview"
               >計畫總覽
               <span class="sr-only" v-if="isIndex">(current)</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a
+            <router-link
               class="nav-link"
               :class="isSearch ? 'active' : ''"
               role="button"
-              href="/download/search"
+              to="/download/search"
               >篩選及下載
               <span class="sr-only" v-if="isSearch">(current)</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a
+            <router-link
               class="nav-link"
               :class="isHistory ? 'active' : ''"
               role="button"
-              href="/upload-history"
+              to="/upload-history"
               >上傳紀錄
               <span class="sr-only" v-if="isHistory">(current)</span>
-            </a>
+            </router-link>
           </li>
           <li class="nav-item dropdown">
             <a
@@ -83,9 +91,15 @@
               >幫助</a
             >
             <div class="dropdown-menu dropdown-menu-right">
-              <a href="/help/faq" class="dropdown-item">常見問題</a>
-              <a href="/help/contact-us" class="dropdown-item">聯絡我們</a>
-              <a href="/help/privacy" class="dropdown-item">隱私權政策</a>
+              <router-link to="/help/faq" class="dropdown-item"
+                >常見問題</router-link
+              >
+              <router-link to="/help/contact-us" class="dropdown-item"
+                >聯絡我們</router-link
+              >
+              <router-link to="/help/privacy" class="dropdown-item"
+                >隱私權政策</router-link
+              >
             </div>
           </li>
           <li class="divider"></li>
@@ -180,7 +194,9 @@
               class="dropdown-menu dropdown-menu-right"
               aria-labelledby="navbarDropdownMenuLink"
             >
-              <a class="dropdown-item" href="/setting">設定</a>
+              <router-link class="dropdown-item" to="/setting"
+                >設定</router-link
+              >
               <a class="dropdown-item" href="#" @click="doSignOut()">登出</a>
             </div>
           </div>
