@@ -62,12 +62,6 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/License.vue'),
                 },
-                {
-                  path: 'license',
-                  name: 'projectLicense',
-                  component: () =>
-                    import('@/pages/Project/EditProject/License.vue'),
-                },
               ],
             },
             {
