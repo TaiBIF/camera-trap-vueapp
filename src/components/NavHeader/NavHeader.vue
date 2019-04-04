@@ -1,6 +1,6 @@
 <template>
   <header>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-sm">
       <router-link to="/" role="button" class="navbar-brand"
         >Camara Capture</router-link
       >
@@ -54,31 +54,31 @@
           <li class="nav-item">
             <router-link
               class="nav-link"
-              :class="isIndex ? 'active' : ''"
+              :class="isProjectPath ? 'active' : ''"
               role="button"
               to="/project/overview"
               >計畫總覽
-              <span class="sr-only" v-if="isIndex">(current)</span>
+              <span class="sr-only" v-if="isProjectPath">(current)</span>
             </router-link>
           </li>
           <li class="nav-item">
             <router-link
               class="nav-link"
-              :class="isSearch ? 'active' : ''"
+              :class="isDownloadPath ? 'active' : ''"
               role="button"
               to="/download/search"
               >篩選及下載
-              <span class="sr-only" v-if="isSearch">(current)</span>
+              <span class="sr-only" v-if="isDownloadPath">(current)</span>
             </router-link>
           </li>
           <li class="nav-item">
             <router-link
               class="nav-link"
-              :class="isHistory ? 'active' : ''"
+              :class="isHistoryPath ? 'active' : ''"
               role="button"
               to="/upload-history"
               >上傳紀錄
-              <span class="sr-only" v-if="isHistory">(current)</span>
+              <span class="sr-only" v-if="isHistoryPath">(current)</span>
             </router-link>
           </li>
           <li class="nav-item dropdown">
@@ -240,14 +240,14 @@ export default {
   computed: {
     ...account.mapGetters(['userName']),
     // ...message.mapGetters(['notifications']),
-    isIndex: function() {
-      return this.pathname === 'overview';
+    isProjectPath: function() {
+      return this.$route && /^\/project/.test(this.$route.path);
     },
-    isSearch: function() {
-      return this.pathname === 'Search';
+    isDownloadPath: function() {
+      return this.$route && /^\/download/.test(this.$route.path);
     },
-    isHistory: function() {
-      return this.pathname === 'History';
+    isHistoryPath: function() {
+      return this.$route && /^\/upload-history/.test(this.$route.path);
     },
     haveNotification: function() {
       /*
@@ -268,22 +268,10 @@ export default {
   methods: {
     ...account.mapActions(['doLogout']),
     // ...message.mapActions(['loadNotifications']),
-    // fetchData() {
-    //   this.loadProfile();
-    //   this.loadNotifications();
-    // },
     formattedDateTime: function(timestamp) {
       return moment(timestamp * 1000).format('YYYY-MM-DD hh:mm:ss');
     },
   },
-  // watch: {
-  //   $route() {
-  //     this.fetchData();
-  //   },
-  // },
-  // created() {
-  //   this.fetchData();
-  // },
 };
 </script>
 <style lang="scss">
