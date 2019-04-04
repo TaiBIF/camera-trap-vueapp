@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade page-login" :class="{ in: open }">
+  <div class="modal fade page-login" :class="{ in: open, loading: isLoading }">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -42,9 +42,7 @@
 </template>
 
 <script>
-// import { createNamespacedHelpers } from 'vuex';
-
-// const auth = createNamespacedHelpers('auth');
+import { login } from '@/service';
 
 export default {
   name: 'LoginModal',
@@ -54,9 +52,26 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
   methods: {
-    // ...auth.mapActions(['doLogin']),
-    doLogin() {},
+    doLogin() {
+      this.isLoading = true;
+      login()
+        .then(({ oauthUrl }) => {
+          this.isLoading = false;
+          if (oauthUrl) {
+            window.location = oauthUrl;
+          }
+        })
+        .catch(err => {
+          this.loading = false;
+          console.error('login fail: ', err);
+        });
+    },
   },
 };
 </script>

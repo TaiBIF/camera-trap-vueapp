@@ -1,12 +1,31 @@
 // 帳號資訊
+import { getMe, logout } from '@/service';
 
-const state = {};
+const state = {
+  profile: {},
+};
 
-const getters = {};
+const getters = {
+  isLogin: state => state.profile && !!state.profile.id,
+  userName: state => (state.profile && state.profile.name) || '',
+};
 
-const mutations = {};
+const mutations = {
+  setProfile(state, payload) {
+    state.profile = payload;
+  },
+};
 
-const actions = {};
+const actions = {
+  async loadProfile({ commit }) {
+    const data = await getMe();
+    commit('setProfile', data);
+  },
+  async doLogout({ commit }) {
+    await logout();
+    commit('setProfile', {});
+  },
+};
 
 export default {
   namespaced: true,

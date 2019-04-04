@@ -1,16 +1,28 @@
 <template>
   <div id="app">
-    <nav-header :is-login="true" />
+    <nav-header :is-login="isLogin" />
     <router-view />
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import NavHeader from '@/components/NavHeader/NavHeader.vue';
+
+const account = createNamespacedHelpers('account');
 
 export default {
   components: {
     NavHeader,
+  },
+  methods: {
+    ...account.mapActions(['loadProfile']),
+  },
+  computed: {
+    ...account.mapGetters(['isLogin']),
+  },
+  created() {
+    this.loadProfile();
   },
 };
 </script>

@@ -188,7 +188,7 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              {{ loginUser.name }}
+              {{ userName }}
             </a>
             <div
               class="dropdown-menu dropdown-menu-right"
@@ -197,7 +197,7 @@
               <router-link class="dropdown-item" to="/setting"
                 >設定</router-link
               >
-              <a class="dropdown-item" href="#" @click="doSignOut()">登出</a>
+              <a class="dropdown-item" href="#" @click="doLogout()">登出</a>
             </div>
           </div>
         </div>
@@ -208,12 +208,13 @@
 </template>
 
 <script>
-// import { createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers } from 'vuex';
+
 import moment from 'moment';
 
 import LoginModal from '@/components/Modal/LoginModal';
 
-// const auth = createNamespacedHelpers('auth');
+const account = createNamespacedHelpers('account');
 // const message = createNamespacedHelpers('message');
 
 export default {
@@ -234,13 +235,10 @@ export default {
           collection: 'test',
         },
       ],
-      loginUser: {
-        name: 'test',
-      },
     };
   },
   computed: {
-    // ...auth.mapGetters(['loginUser']),
+    ...account.mapGetters(['userName']),
     // ...message.mapGetters(['notifications']),
     isIndex: function() {
       return this.pathname === 'overview';
@@ -268,7 +266,7 @@ export default {
     },
   },
   methods: {
-    // ...auth.mapActions(['loadProfile', 'doSignOut']),
+    ...account.mapActions(['doLogout']),
     // ...message.mapActions(['loadNotifications']),
     // fetchData() {
     //   this.loadProfile();
