@@ -17,7 +17,6 @@ export default {
 };
 
 /*
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-project-areas
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projects
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projects
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectid
