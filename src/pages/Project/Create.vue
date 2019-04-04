@@ -25,14 +25,8 @@ export default {
       },
     };
   },
-  mounted() {
-    this.getProjectAreas();
-  },
   computed: {
     ...config.mapGetters(['projectAreas']),
-  },
-  methods: {
-    ...config.mapActions(['getProjectAreas']),
   },
 };
 </script>
