@@ -1,5 +1,5 @@
 // 帳號資訊
-import { getMe, logout } from '@/service';
+import { getMe, logout, putMe } from '@/service';
 
 const state = {
   profile: {},
@@ -8,6 +8,7 @@ const state = {
 const getters = {
   isLogin: state => state.profile && !!state.profile.id,
   userName: state => (state.profile && state.profile.name) || '',
+  userEmail: state => (state.profile && state.profile.email) || '',
 };
 
 const mutations = {
@@ -24,6 +25,10 @@ const actions = {
   async doLogout({ commit }) {
     await logout();
     commit('setProfile', {});
+  },
+  async updateProfile({ commit }, { name, email }) {
+    const data = await putMe({ name, email });
+    commit('setProfile', data);
   },
 };
 
