@@ -27,4 +27,17 @@ const getMe = async () => {
   return res;
 };
 
-export { login, logout, getMe };
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-me
+const putMe = async ({ name, email }) => {
+  const res = await fetchWrap({
+    url: '/api/v1/me',
+    method: 'PUT',
+    body: {
+      name,
+      email,
+    },
+  });
+  return res;
+};
+
+export { login, logout, getMe, putMe };
