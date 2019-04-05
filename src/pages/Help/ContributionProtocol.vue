@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import ProseContent from '@/prose/privacy-policy.md';
+import ProseContent from '@/prose/contribution-protocol.md';
 
 export default {
-  name: 'Privacy',
+  name: 'ContributionProtocol',
   components: {
     'prose-content': ProseContent,
   },
@@ -30,8 +30,8 @@ export default {
     return {
       loading: false,
       prose: {
-        path: 'privacy-policy',
-        title: 'Camera Trap 自動相機資料平台隱私政策',
+        path: 'contribution-protocol',
+        title: 'Camera Trap 自動相機資料平台貢獻協議',
         description: '',
         date: '2018-11-01',
       },

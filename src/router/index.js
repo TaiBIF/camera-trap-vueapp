@@ -126,6 +126,10 @@ export default new Router({
           path: 'privacy',
           component: () => import('@/pages/Help/Privacy.vue'),
         },
+        {
+          path: 'contribution-protocol',
+          component: () => import('@/pages/Help/ContributionProtocol.vue'),
+        },
       ],
     },
   ],
