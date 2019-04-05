@@ -3,7 +3,7 @@ import fetchWrap from '@/utils/fetch';
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-config
 const login = async () => {
   const res = await fetchWrap({
-    url: '/config',
+    url: '/api/v1/config',
     method: 'GET',
   });
   return res;
@@ -12,7 +12,7 @@ const login = async () => {
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-logout
 const logout = async () => {
   const res = await fetchWrap({
-    url: '/logout',
+    url: '/api/v1/logout',
     method: 'POST',
   });
   return res;
@@ -21,7 +21,7 @@ const logout = async () => {
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-me
 const getMe = async () => {
   const res = await fetchWrap({
-    url: '/me',
+    url: '/api/v1/me',
     method: 'GET',
   });
   return res;
@@ -30,7 +30,7 @@ const getMe = async () => {
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-me
 const putMe = async ({ name, email }) => {
   const res = await fetchWrap({
-    url: '/me',
+    url: '/api/v1/me',
     method: 'PUT',
     body: {
       name,
