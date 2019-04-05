@@ -2,7 +2,7 @@ import idx from 'idx';
 import produce from 'immer';
 
 import { getLanguage } from '@/utils/i18n';
-import { getProjectDetail, getProjects } from '@/service';
+import { getProjectDetail, getProjects, postProject } from '@/service';
 
 // 計畫資料
 
@@ -40,6 +40,10 @@ const actions = {
     const data = await getProjectDetail(id);
     commit('setProjectDetail', data);
   },
+  async postProject({ commit }, id) {
+    const data = await postProject(id);
+    commit('setProjectDetail', data);
+  },
 };
 
 export default {
@@ -51,7 +55,6 @@ export default {
 };
 
 /*
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projects
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectid
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidspecies
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidspecies

@@ -18,4 +18,14 @@ const getProjectDetail = async id => {
   return res;
 };
 
-export { getProjects, getProjectDetail };
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projects
+const postProject = async body => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects`,
+    method: 'POST',
+    body,
+  });
+  return res;
+};
+
+export { getProjects, getProjectDetail, postProject };
