@@ -11,7 +11,9 @@ const fetchWrap = async ({ url, method, body }) => {
   });
   const contentType = res.headers.get('content-type');
   const data =
-    contentType.indexOf('application/json') !== -1 ? await res.json() : res;
+    contentType && contentType.indexOf('application/json') !== -1
+      ? await res.json()
+      : res;
   return data;
 };
 
