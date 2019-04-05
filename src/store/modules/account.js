@@ -39,10 +39,3 @@ export default {
   mutations,
   actions,
 };
-
-/*
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-me
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-me
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-logout
-
-*/
