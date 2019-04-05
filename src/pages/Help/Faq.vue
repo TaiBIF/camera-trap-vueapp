@@ -39,7 +39,7 @@
           <div class="mb-2">
             <small class="text-gray">仍需要協助嗎？</small>
           </div>
-          <router-link to="/contact" class="btn btn-default">
+          <router-link to="/help/contact-us" class="btn btn-default">
             聯絡我們
           </router-link>
         </div>
