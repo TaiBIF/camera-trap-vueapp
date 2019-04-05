@@ -17,4 +17,15 @@ const fetchWrap = async ({ url, method, body }) => {
   return data;
 };
 
+const fetchUpload = async ({ url, body }) => {
+  const res = await fetch(`${process.env.VUE_APP_API_URL}${url}`, {
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+    body,
+  });
+  return await res.json();
+};
+
 export default fetchWrap;
+export { fetchUpload };
