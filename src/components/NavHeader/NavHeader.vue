@@ -219,12 +219,6 @@ const account = createNamespacedHelpers('account');
 
 export default {
   name: 'NavHeader',
-  props: {
-    isLogin: {
-      type: Boolean,
-      default: false,
-    },
-  },
   components: { LoginModal },
   data() {
     return {
@@ -238,7 +232,7 @@ export default {
     };
   },
   computed: {
-    ...account.mapGetters(['userName']),
+    ...account.mapGetters(['userName', 'isLogin']),
     // ...message.mapGetters(['notifications']),
     isProjectPath: function() {
       return this.$route && /^\/project/.test(this.$route.path);
@@ -270,6 +264,15 @@ export default {
     // ...message.mapActions(['loadNotifications']),
     formattedDateTime: function(timestamp) {
       return moment(timestamp * 1000).format('YYYY-MM-DD hh:mm:ss');
+    },
+  },
+  watch: {
+    isLogin: function(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        this.$router.push({
+          path: '/',
+        });
+      }
     },
   },
 };
