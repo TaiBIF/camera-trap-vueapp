@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav-header :is-login="isLogin" />
+    <nav-header />
     <router-view />
   </div>
 </template>
@@ -17,9 +17,6 @@ export default {
   },
   methods: {
     ...account.mapActions(['loadProfile']),
-  },
-  computed: {
-    ...account.mapGetters(['isLogin']),
   },
   created() {
     this.loadProfile();
