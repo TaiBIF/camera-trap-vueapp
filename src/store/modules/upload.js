@@ -18,5 +18,5 @@ export default {
 
 /*
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-meupload-sessions
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-files
+
 */
