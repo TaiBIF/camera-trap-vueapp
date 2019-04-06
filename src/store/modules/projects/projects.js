@@ -1,13 +1,15 @@
 import idx from 'idx';
 import produce from 'immer';
 
-import { getLanguage } from '@/utils/i18n';
 import {
+  deleteProjectMember,
   getProjectDetail,
   getProjects,
   postProject,
+  postProjectMember,
   putProject,
 } from '@/service';
+import { getLanguage } from '@/utils/i18n';
 
 // 計畫資料
 
@@ -35,6 +37,9 @@ const mutations = {
   },
   setProjectDetail(state, data) {
     state.projectDetail = data;
+  },
+  updateProjectMember(state, members) {
+    state.projectDetail.members = members;
   },
 };
 
@@ -67,6 +72,25 @@ const actions = {
     );
     commit('setProjectDetail', data);
   },
+  async postProjectMember({ commit }, { id, body }) {
+    const data = await postProjectMember(id, body);
+    if (!data.message) {
+      commit('updateProjectMember', data);
+    } else {
+      return data;
+    }
+  },
+  async deleteProjectMember({ state, commit }, { id, userId }) {
+    const data = await deleteProjectMember(id, userId);
+    if (data.status === 204) {
+      commit(
+        'updateProjectMember',
+        state.projectDetail.members.filter(v => v.user.id !== userId),
+      );
+    } else {
+      return data;
+    }
+  },
 };
 
 export default {
@@ -83,7 +107,5 @@ https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsproje
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidspecies
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspeciesspeciesid
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidspeciesspeciesid
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidmembers
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidmembersuserid
 
 */
