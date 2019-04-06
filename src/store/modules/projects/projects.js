@@ -106,6 +106,5 @@ https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsproje
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspecies
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidspecies
 https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspeciesspeciesid
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidspeciesspeciesid
 
 */
