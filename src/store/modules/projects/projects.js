@@ -19,6 +19,8 @@ const getters = {
         draft.dataFields.forEach(
           v => (v.description = v.description[getLanguage()]),
         );
+      draft.areas &&
+        draft.areas.forEach(v => (v.title = v.title[getLanguage()]));
     }),
 };
 
