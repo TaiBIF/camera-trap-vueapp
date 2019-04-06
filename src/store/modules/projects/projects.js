@@ -40,8 +40,8 @@ const actions = {
     const data = await getProjectDetail(id);
     commit('setProjectDetail', data);
   },
-  async postProject({ commit }, id) {
-    const data = await postProject(id);
+  async postProject({ commit }, body) {
+    const data = await postProject(body);
     commit('setProjectDetail', data);
   },
 };
