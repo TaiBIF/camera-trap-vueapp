@@ -18,16 +18,16 @@
 </template>
 
 <script>
-import markdown from '@/prose/privacy-policy.md';
+import markdown from '@/prose/contribution-protocol.md';
 
 export default {
-  name: 'Privacy',
+  name: 'ContributionProtocol',
   components: {
     MarkDown: markdown,
   },
   data() {
     return {
-      title: 'Camera Trap 自動相機資料平台隱私政策',
+      title: 'Camera Trap 自動相機資料平台貢獻協議',
       description: '',
       date: '2018-11-01',
     };
