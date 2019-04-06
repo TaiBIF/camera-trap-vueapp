@@ -4,10 +4,12 @@ import produce from 'immer';
 import {
   deleteProjectMember,
   getProjectDetail,
+  getProjectSpecies,
   getProjects,
   postProject,
   postProjectMember,
   putProject,
+  putProjectSpecies,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
 
@@ -16,6 +18,7 @@ import { getLanguage } from '@/utils/i18n';
 const state = {
   projects: [],
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
+  projectSpecies: [], // 計畫物種列表
 };
 
 const getters = {
@@ -29,6 +32,16 @@ const getters = {
       draft.areas &&
         draft.areas.forEach(v => (v.title = v.title[getLanguage()]));
     }),
+  projectSpecies: state => {
+    return state.projectSpecies
+      .map(v => ({
+        id: v.id,
+        index: v.index,
+        code: v.code,
+        title: v.title[getLanguage()],
+      }))
+      .sort((a, b) => a.index - b.index);
+  },
 };
 
 const mutations = {
@@ -40,6 +53,9 @@ const mutations = {
   },
   updateProjectMember(state, members) {
     state.projectDetail.members = members;
+  },
+  setProjectSpecies(state, data) {
+    state.projectSpecies = data;
   },
 };
 
@@ -91,6 +107,23 @@ const actions = {
       return data;
     }
   },
+  async getProjectSpecies({ commit }, id) {
+    const data = await getProjectSpecies(id);
+    commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
+  async putProjectSpecies({ commit }, { id, species }) {
+    const body = species.map(v =>
+      v.id
+        ? { id: v.id }
+        : {
+            title: {
+              [getLanguage()]: v.title,
+            },
+          },
+    );
+    const data = await putProjectSpecies(id, body);
+    commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
 };
 
 export default {
@@ -100,11 +133,3 @@ export default {
   mutations,
   actions,
 };
-
-/*
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidspecies
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspecies
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidspecies
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspeciesspeciesid
-
-*/

@@ -57,6 +57,25 @@ const deleteProjectMember = async (projectId, userId) => {
   return res;
 };
 
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidspecies
+const getProjectSpecies = async id => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/species`,
+    method: 'GET',
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspecies
+const putProjectSpecies = async (id, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/species`,
+    method: 'PUT',
+    body,
+  });
+  return res;
+};
+
 export {
   getProjects,
   getProjectDetail,
@@ -64,4 +83,6 @@ export {
   putProject,
   postProjectMember,
   deleteProjectMember,
+  getProjectSpecies,
+  putProjectSpecies,
 };
