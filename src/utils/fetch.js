@@ -1,3 +1,5 @@
+import idx from 'idx';
+
 const fetchWrap = async ({ url, method, body }) => {
   const res = await fetch(`${process.env.VUE_APP_API_URL}${url}`, {
     method,
@@ -14,6 +16,14 @@ const fetchWrap = async ({ url, method, body }) => {
     contentType && contentType.indexOf('application/json') !== -1
       ? await res.json()
       : res;
+
+  if (!res.ok) {
+    throw {
+      status: res.status,
+      statusText: res.statusText,
+      message: idx(data, _ => _.message),
+    };
+  }
   return data;
 };
 

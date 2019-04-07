@@ -90,22 +90,14 @@ const actions = {
   },
   async postProjectMember({ commit }, { id, body }) {
     const data = await postProjectMember(id, body);
-    if (!data.message) {
-      commit('updateProjectMember', data);
-    } else {
-      return data;
-    }
+    commit('updateProjectMember', data);
   },
   async deleteProjectMember({ state, commit }, { id, userId }) {
-    const data = await deleteProjectMember(id, userId);
-    if (data.status === 204) {
-      commit(
-        'updateProjectMember',
-        state.projectDetail.members.filter(v => v.user.id !== userId),
-      );
-    } else {
-      return data;
-    }
+    await deleteProjectMember(id, userId);
+    commit(
+      'updateProjectMember',
+      state.projectDetail.members.filter(v => v.user.id !== userId),
+    );
   },
   async getProjectSpecies({ commit }, id) {
     const data = await getProjectSpecies(id);

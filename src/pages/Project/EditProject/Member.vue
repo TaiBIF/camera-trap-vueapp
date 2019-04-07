@@ -71,17 +71,24 @@ export default {
   },
   methods: {
     ...projects.mapActions(['postProjectMember', 'deleteProjectMember']),
-    postMember() {
-      this.postProjectMember({ id: this.projectId, body: this.newMember }).then(
-        v => {
-          this.errorMessage = idx(v, _ => _.message);
-        },
-      );
+    async postMember() {
+      try {
+        await this.postProjectMember({
+          id: this.projectId,
+          body: this.newMember,
+        });
+        this.errorMessage = '';
+      } catch (e) {
+        this.errorMessage = JSON.stringify(e);
+      }
     },
-    deleteMember(userId) {
-      this.deleteProjectMember({ id: this.projectId, userId }).then(v => {
-        this.errorMessage = idx(v, _ => _.message);
-      });
+    async deleteMember(userId) {
+      try {
+        await this.deleteProjectMember({ id: this.projectId, userId });
+        this.errorMessage = '';
+      } catch (e) {
+        this.errorMessage = JSON.stringify(e);
+      }
     },
   },
 };
