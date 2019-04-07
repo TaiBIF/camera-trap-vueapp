@@ -38,7 +38,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import idx from 'idx';
 
 import memberRole from '@/constant/memberRole.js';
 

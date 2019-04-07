@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import account from '@/store/modules/account';
 import config from '@/store/modules/config';
+import dataFields from '@/store/modules/dataFields';
 import notifications from '@/store/modules/notifications';
 import upload from '@/store/modules/upload';
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     config,
     notifications,
     upload,
+    dataFields,
     ...projects,
   },
   strict: debug,

@@ -5,3 +5,4 @@ export * from './modules/notifications';
 export * from './modules/projects';
 export * from './modules/site';
 export * from './modules/upload';
+export * from './modules/dataFields';
