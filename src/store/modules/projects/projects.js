@@ -42,6 +42,14 @@ const getters = {
       }))
       .sort((a, b) => a.index - b.index);
   },
+  projectDataFields: state =>
+    state.projectDetail.dataFields
+      ? state.projectDetail.dataFields.map(v => ({
+          ...v,
+          title: v.title[getLanguage()],
+          description: v.description[getLanguage()],
+        }))
+      : [],
 };
 
 const mutations = {
@@ -115,6 +123,15 @@ const actions = {
     );
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
+  async putProjectDataFields({ state, dispatch }, { id, fields }) {
+    dispatch('putProject', {
+      id,
+      body: {
+        ...state.projectDetail,
+        dataFields: fields,
+      },
+    });
   },
 };
 
