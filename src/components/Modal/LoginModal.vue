@@ -31,9 +31,7 @@
           <hr class="mt-5" />
           <div class="text-center">
             當您登入系統，即代表您同意我們的
-            <a href="/article.html#/privacy-policy" class="text-green"
-              >隱私權保護政策</a
-            >
+            <a href="/help/privacy" class="text-green">隱私權保護政策</a>
           </div>
         </div>
       </div>
