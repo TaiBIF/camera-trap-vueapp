@@ -1,5 +1,5 @@
 <template>
-  <dir :style="{ border: '3px green dashed' }">
+  <div :style="{ border: '3px green dashed' }">
     <h1>資料欄位設定</h1>
     <div :style="{ border: '3px red dashed', 'margin-bottom': '1rem' }">
       <label>新增欄位: </label>
@@ -40,7 +40,7 @@
       <p>systemCode: {{ field.systemCode }}</p>
     </div>
     <button @click="sumbitDataFields">儲存</button>
-  </dir>
+  </div>
 </template>
 
 <script>

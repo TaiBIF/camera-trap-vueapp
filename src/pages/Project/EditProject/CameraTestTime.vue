@@ -1,9 +1,9 @@
 <template>
-  <dir :style="{ border: '3px pink dashed' }">
+  <div :style="{ border: '3px pink dashed' }">
     <h1>相機異常檢測</h1>
     <input v-model="dailyTestTime" />
     <button @click="submitTime">儲存</button>
-  </dir>
+  </div>
 </template>
 
 <script>

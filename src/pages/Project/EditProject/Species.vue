@@ -1,5 +1,5 @@
 <template>
-  <dir :style="{ border: '3px green dashed' }">
+  <div :style="{ border: '3px green dashed' }">
     <h1>編輯物種</h1>
     <div :style="{ border: '3px red dashed' }">
       <label>新物種</label>
@@ -17,7 +17,7 @@
       <p>title: {{ sp.title }}</p>
     </div>
     <button @click="sumbitSpecies">儲存</button>
-  </dir>
+  </div>
 </template>
 
 <script>
