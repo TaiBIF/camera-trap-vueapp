@@ -133,6 +133,15 @@ const actions = {
       },
     });
   },
+  async putProjectDailyTestTime({ state, dispatch }, { id, dailyTestTime }) {
+    dispatch('putProject', {
+      id,
+      body: {
+        ...state.projectDetail,
+        dailyTestTime,
+      },
+    });
+  },
 };
 
 export default {
