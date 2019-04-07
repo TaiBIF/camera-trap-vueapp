@@ -28,4 +28,61 @@ const postProject = async body => {
   return res;
 };
 
-export { getProjects, getProjectDetail, postProject };
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectid
+const putProject = async (id, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}`,
+    method: 'PUT',
+    body,
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidmembers
+const postProjectMember = async (id, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/members`,
+    method: 'POST',
+    body,
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidmembersuserid
+const deleteProjectMember = async (projectId, userId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/members/${userId}`,
+    method: 'DELETE',
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidspecies
+const getProjectSpecies = async id => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/species`,
+    method: 'GET',
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspecies
+const putProjectSpecies = async (id, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/species`,
+    method: 'PUT',
+    body,
+  });
+  return res;
+};
+
+export {
+  getProjects,
+  getProjectDetail,
+  postProject,
+  putProject,
+  postProjectMember,
+  deleteProjectMember,
+  getProjectSpecies,
+  putProjectSpecies,
+};

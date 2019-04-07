@@ -1,14 +1,24 @@
 import idx from 'idx';
 import produce from 'immer';
 
+import {
+  deleteProjectMember,
+  getProjectDetail,
+  getProjectSpecies,
+  getProjects,
+  postProject,
+  postProjectMember,
+  putProject,
+  putProjectSpecies,
+} from '@/service';
 import { getLanguage } from '@/utils/i18n';
-import { getProjectDetail, getProjects, postProject } from '@/service';
 
 // 計畫資料
 
 const state = {
   projects: [],
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
+  projectSpecies: [], // 計畫物種列表
 };
 
 const getters = {
@@ -19,7 +29,19 @@ const getters = {
         draft.dataFields.forEach(
           v => (v.description = v.description[getLanguage()]),
         );
+      draft.areas &&
+        draft.areas.forEach(v => (v.title = v.title[getLanguage()]));
     }),
+  projectSpecies: state => {
+    return state.projectSpecies
+      .map(v => ({
+        id: v.id,
+        index: v.index,
+        code: v.code,
+        title: v.title[getLanguage()],
+      }))
+      .sort((a, b) => a.index - b.index);
+  },
 };
 
 const mutations = {
@@ -28,6 +50,12 @@ const mutations = {
   },
   setProjectDetail(state, data) {
     state.projectDetail = data;
+  },
+  updateProjectMember(state, members) {
+    state.projectDetail.members = members;
+  },
+  setProjectSpecies(state, data) {
+    state.projectSpecies = data;
   },
 };
 
@@ -40,9 +68,53 @@ const actions = {
     const data = await getProjectDetail(id);
     commit('setProjectDetail', data);
   },
-  async postProject({ commit }, id) {
-    const data = await postProject(id);
+  async postProject({ commit }, body) {
+    const data = await postProject({
+      ...body,
+      areas: body.areas.map(v => v.id),
+    });
     commit('setProjectDetail', data);
+  },
+  async putProject({ commit }, { id, body }) {
+    const data = await putProject(
+      id,
+      produce(JSON.parse(JSON.stringify(body)), draft => {
+        draft.areas = draft.areas.map(v => v.id);
+        draft.coverImageFile = draft.coverImageFile.id
+          ? draft.coverImageFile.id
+          : draft.coverImageFile;
+        draft.dataFields = draft.dataFields.map(v => v.id);
+      }),
+    );
+    commit('setProjectDetail', data);
+  },
+  async postProjectMember({ commit }, { id, body }) {
+    const data = await postProjectMember(id, body);
+    commit('updateProjectMember', data);
+  },
+  async deleteProjectMember({ state, commit }, { id, userId }) {
+    await deleteProjectMember(id, userId);
+    commit(
+      'updateProjectMember',
+      state.projectDetail.members.filter(v => v.user.id !== userId),
+    );
+  },
+  async getProjectSpecies({ commit }, id) {
+    const data = await getProjectSpecies(id);
+    commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
+  async putProjectSpecies({ commit }, { id, species }) {
+    const body = species.map(v =>
+      v.id
+        ? { id: v.id }
+        : {
+            title: {
+              [getLanguage()]: v.title,
+            },
+          },
+    );
+    const data = await putProjectSpecies(id, body);
+    commit('setProjectSpecies', idx(data, _ => _.items) || []);
   },
 };
 
@@ -53,14 +125,3 @@ export default {
   mutations,
   actions,
 };
-
-/*
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectid
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidspecies
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidspecies
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidspeciesspeciesid
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidspeciesspeciesid
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidmembers
-https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidmembersuserid
-
-*/
