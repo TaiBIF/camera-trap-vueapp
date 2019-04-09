@@ -19,4 +19,28 @@ const postProjectStudyAreas = async (id, body) => {
   return res;
 };
 
-export { getProjectStudyAreas, postProjectStudyAreas };
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidcamera-locations
+const getProjectCameraLocations = async (projectId, StudyAreaId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/study-areas/${StudyAreaId}/camera-locations`,
+    method: 'GET',
+  });
+  return res;
+};
+
+// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidstudy-areasstudyareaidcamera-locations
+const postProjectCameraLocations = async (projectId, StudyAreaId, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/study-areas/${StudyAreaId}/camera-locations`,
+    method: 'POST',
+    body,
+  });
+  return res;
+};
+
+export {
+  getProjectStudyAreas,
+  postProjectStudyAreas,
+  getProjectCameraLocations,
+  postProjectCameraLocations,
+};
