@@ -2,8 +2,7 @@
   <div>
     <h1>計畫樣區 - 編輯</h1>
     <p>projectId: {{ projectId }}</p>
-    <p>siteId: {{ siteId }}</p>
-    <p>subsiteId: {{ subsiteId }}</p>
+    <p>studyAreaId: {{ studyAreaId }}</p>
   </div>
 </template>
 
@@ -13,11 +12,8 @@ export default {
     projectId: function() {
       return this.$route.params.projectId;
     },
-    siteId: function() {
-      return this.$route.params.siteId;
-    },
-    subsiteId: function() {
-      return this.$route.params.subsiteId;
+    studyAreaId: function() {
+      return this.$route.params.studyAreaId;
     },
   },
 };

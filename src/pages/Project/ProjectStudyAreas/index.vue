@@ -2,15 +2,13 @@
   <div>
     <h1>計畫樣區 - 檢視</h1>
     <p>projectId: {{ projectId }}</p>
-    <p>siteId: {{ siteId }}</p>
-    <p>subsiteId: {{ subsiteId }}</p>
+    <p>studyAreaId: {{ studyAreaId }}</p>
     <router-link
       :to="{
-        name: 'projectSiteEdit',
+        name: 'projectStudyAreasEdit',
         params: {
           projectId,
-          siteId,
-          subsiteId,
+          studyAreaId,
         },
       }"
     >
@@ -25,11 +23,8 @@ export default {
     projectId: function() {
       return this.$route.params.projectId;
     },
-    siteId: function() {
-      return this.$route.params.siteId;
-    },
-    subsiteId: function() {
-      return this.$route.params.subsiteId;
+    studyAreaId: function() {
+      return this.$route.params.studyAreaId;
     },
   },
 };

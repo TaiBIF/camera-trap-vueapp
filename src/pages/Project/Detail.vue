@@ -15,11 +15,10 @@
       <li>
         <router-link
           :to="{
-            name: 'projectSiteView',
+            name: 'projectStudyAreasView',
             params: {
               projectId,
-              siteId: 'site_1',
-              subsiteId: 'subsite_1',
+              studyAreaId: '5cacb8d89c37591f7dcb7d',
             },
           }"
           >樣區資訊</router-link

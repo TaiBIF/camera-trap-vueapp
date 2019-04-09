@@ -1,9 +1,9 @@
 import annotations from './annotations';
 import projects from './projects';
-import site from './site';
+import studyAreas from './studyAreas';
 
 export default {
   annotations,
   projects,
-  site,
+  studyAreas,
 };
