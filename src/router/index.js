@@ -45,10 +45,10 @@ export default new Router({
                     import('@/pages/Project/EditProject/Setting.vue'),
                 },
                 {
-                  path: 'camera',
-                  name: 'projectCamera',
+                  path: 'camera-location',
+                  name: 'projectCameraLocation',
                   component: () =>
-                    import('@/pages/Project/EditProject/Camera.vue'),
+                    import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
                 {
                   path: 'member',
