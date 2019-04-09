@@ -56,10 +56,12 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const projects = createNamespacedHelpers('projects');
+const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
   mounted() {
     this.getProjectDetail(this.projectId);
+    this.getProjectStudyAreas(this.projectId);
   },
   computed: {
     ...projects.mapGetters(['projectDetail']),
@@ -69,6 +71,7 @@ export default {
   },
   methods: {
     ...projects.mapActions(['getProjectDetail']),
+    ...studyAreas.mapActions(['getProjectStudyAreas']),
   },
 };
 </script>
