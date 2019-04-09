@@ -52,7 +52,10 @@
         <p>id: {{ currentstudyAreaId }}</p>
         <ul>
           <li :key="loc.id" v-for="loc in cameraLocations">
-            {{ `${loc.name} / ${loc.vegetation} / ${loc.settingTime}` }}
+            <button @click="deleteCameraLocation(loc.id)">X</button>
+            <span @click="currentCameraLocationId = loc.id">
+              {{ `${loc.name} / ${loc.vegetation} / ${loc.settingTime}` }}
+            </span>
           </li>
         </ul>
         <div
@@ -63,6 +66,7 @@
             },
           ]"
         >
+          <h1>新增相機位置</h1>
           <label>相機位置名稱</label>
           <input type="text" v-model="newCameraLocation.name" />
           <br />
@@ -87,6 +91,42 @@
             新增
           </button>
         </div>
+        <div
+          :style="[
+            {
+              margin: '1rem',
+              border: '1px green solid',
+            },
+          ]"
+        >
+          <h1>編輯相機位置</h1>
+          <label>相機位置名稱</label>
+          <input type="text" v-model="editCameraLocation.name" />
+          <br />
+          <label>架設日期</label>
+          <input type="date" v-model="editCameraLocation.settingTime" />
+          <br />
+          <label>緯度 (WGS84) </label>
+          <input type="text" v-model="editCameraLocation.latitude" />
+          <br />
+          <label>經度 (WGS84) </label>
+          <input type="text" v-model="editCameraLocation.longitude" />
+          <br />
+          <label>海拔（公尺） </label>
+          <input type="text" v-model="editCameraLocation.altitude" />
+          <br />
+          <label>植被</label>
+          <input type="text" v-model="editCameraLocation.vegetation" />
+          <br />
+          <label>土地覆蓋類型 </label>
+          <input type="text" v-model="editCameraLocation.landCover" />
+          <button
+            @click="putCameraLocation"
+            :disabled="!currentCameraLocationId"
+          >
+            編輯
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -103,15 +143,25 @@ export default {
     return {
       errorMessage: undefined,
       currentstudyAreaId: '',
+      currentCameraLocationId: '',
       newCameraLocation: {},
+      editCameraLocation: {},
     };
   },
   watch: {
     currentstudyAreaId: function(val) {
+      this.currentCameraLocationId = '';
       this.getProjectCameraLocations({
         projectId: this.projectId,
         studyAreaId: val,
       });
+    },
+    currentCameraLocationId: function(val) {
+      const obj = this.cameraLocations.find(v => v.id === val);
+      Object.assign(this.editCameraLocation, obj);
+      this.editCameraLocation.settingTime = moment(
+        this.editCameraLocation.settingTime,
+      ).format('YYYY-MM-DD');
     },
   },
   computed: {
@@ -126,6 +176,8 @@ export default {
       'postProjectStudyAreas',
       'getProjectCameraLocations',
       'postProjectCameraLocations',
+      'putProjectCameraLocations',
+      'deleteProjectCameraLocations',
     ]),
     async addStudyArea(title, parent) {
       try {
@@ -149,6 +201,36 @@ export default {
               this.newCameraLocation.settingTime,
             ).toISOString(),
           },
+        });
+        this.errorMessage = '';
+      } catch (e) {
+        this.errorMessage = JSON.stringify(e);
+      }
+    },
+    async putCameraLocation() {
+      try {
+        await this.putProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.currentstudyAreaId,
+          cameraLocationId: this.currentCameraLocationId,
+          cameraLocation: {
+            ...this.editCameraLocation,
+            settingTime: moment(
+              this.editCameraLocation.settingTime,
+            ).toISOString(),
+          },
+        });
+        this.errorMessage = '';
+      } catch (e) {
+        this.errorMessage = JSON.stringify(e);
+      }
+    },
+    async deleteCameraLocation(cameraLocationId) {
+      try {
+        await this.deleteProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.currentstudyAreaId,
+          cameraLocationId: cameraLocationId,
         });
         this.errorMessage = '';
       } catch (e) {
