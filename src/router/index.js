@@ -45,10 +45,10 @@ export default new Router({
                     import('@/pages/Project/EditProject/Setting.vue'),
                 },
                 {
-                  path: 'camera',
-                  name: 'projectCamera',
+                  path: 'camera-location',
+                  name: 'projectCameraLocation',
                   component: () =>
-                    import('@/pages/Project/EditProject/Camera.vue'),
+                    import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
                 {
                   path: 'member',
@@ -65,14 +65,16 @@ export default new Router({
               ],
             },
             {
-              path: 'site/:siteId/:subsiteId',
-              name: 'projectSiteView',
-              component: () => import('@/pages/Project/ProjectSite/index.vue'),
+              path: 'study-areas/:studyAreaId',
+              name: 'projectStudyAreasView',
+              component: () =>
+                import('@/pages/Project/ProjectStudyAreas/index.vue'),
             },
             {
-              path: 'site/:siteId/:subsiteId/edit',
-              name: 'projectSiteEdit',
-              component: () => import('@/pages/Project/ProjectSite/Edit.vue'),
+              path: 'study-areas/:studyAreaId/edit',
+              name: 'projectStudyAreasEdit',
+              component: () =>
+                import('@/pages/Project/ProjectStudyAreas/Edit.vue'),
             },
             {
               path: 'upload',

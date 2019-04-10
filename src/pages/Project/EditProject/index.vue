@@ -25,7 +25,7 @@ export default {
       links: [
         { pathName: 'projectBasic', title: '計畫基本資訊' },
         { pathName: 'projectSetting', title: '計畫編輯設定' },
-        { pathName: 'projectCamera', title: '計畫相機位置管理' },
+        { pathName: 'projectCameraLocation', title: '計畫相機位置管理' },
         { pathName: 'projectMember', title: '計畫成員' },
         { pathName: 'projectLicense', title: '計畫創⽤CC授權' },
       ],
