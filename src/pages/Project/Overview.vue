@@ -1,15 +1,97 @@
 <template>
-  <div>
-    <h1>計畫總覽 Overview</h1>
-    <ul>
-      <li><router-link to="create">建立計畫</router-link></li>
-      <br />
-      <li :key="proj.id" v-for="proj in projects">
-        <router-link :to="proj.id">{{
-          `計畫 id: ${proj.id} / 計畫名稱: ${proj.title}`
-        }}</router-link>
-      </li>
-    </ul>
+  <div class="container">
+    <h1 class="heading">計畫總覽</h1>
+    <div v-if="projects.length === 0">
+      <div class="empty-content">
+        <img
+          src="/assets/common/empty-project.png"
+          width="212px"
+          srcset="/assets/common/empty-project@2x.png"
+        />
+        <h1 class="empty">您目前沒有任何計畫</h1>
+        <router-link to="create" class="btn btn-orange">新增計畫</router-link>
+      </div>
+    </div>
+    <div v-else>
+      <!-- Controlbar -->
+      <div class="row">
+        <div class="col-8">
+          <div class="dropdown">
+            <a
+              class="btn btn-link pl-0 dropdown-toggle"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              依 {{ sortedBy }} 排序
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a
+                class="dropdown-item"
+                @click="
+                  sortByField('startTime', -1);
+                  sortedBy = '資料起始時間';
+                "
+                >依資料起始時間排序 (新→舊)</a
+              >
+              <a
+                class="dropdown-item"
+                @click="
+                  sortByField('funder', 1);
+                  sortedBy = '委託單位';
+                "
+                >依委託單位筆畫排序</a
+              >
+              <a
+                class="dropdown-item"
+                @click="
+                  sortByField('title', 1);
+                  sortedBy = '計畫名稱';
+                "
+                >依計畫名稱筆畫排序</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-4 text-right">
+          <router-link to="/project/create" class="btn btn-orange"
+            >新增計畫</router-link
+          >
+        </div>
+      </div>
+      <!-- Cards -->
+      <div class="three cards">
+        <router-link
+          class="card"
+          :to="proj.id"
+          :key="proj.id"
+          v-for="proj in projects"
+        >
+          <div class="image">
+            <img :src="proj.coverImageFile && proj.coverImageFile.url" />
+            <div class="badget" v-if="proj.members">
+              <i class="fa fa-user"></i>{{ proj.members.length }}
+            </div>
+          </div>
+          <div class="content">
+            <h3 class="card-heading">{{ proj.title }}</h3>
+            <div class="row description">
+              <div class="col-6">
+                <small class="text-gray label">資料起始年份</small>
+                <span class="text-green">{{
+                  proj.startTime.split('-')[0]
+                }}</span>
+              </div>
+              <div class="col-6">
+                <small class="text-gray label">委託單位</small>
+                <span class="text-green">{{ proj.funder }}</span>
+              </div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,6 +101,11 @@ import { createNamespacedHelpers } from 'vuex';
 const projects = createNamespacedHelpers('projects');
 
 export default {
+  data() {
+    return {
+      sortedBy: '條件',
+    };
+  },
   mounted() {
     this.getProjects();
   },
@@ -27,6 +114,15 @@ export default {
   },
   methods: {
     ...projects.mapActions(['getProjects']),
+    sortByField(fieldName, dir) {
+      this.projects.sort((prjA, prjB) => {
+        if (dir > 0) {
+          return prjA[fieldName] > prjB[fieldName] ? 1 : -1;
+        } else {
+          return prjA[fieldName] < prjB[fieldName] ? 1 : -1;
+        }
+      });
+    },
   },
 };
 </script>
