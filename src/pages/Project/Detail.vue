@@ -22,7 +22,7 @@
               name: 'projectStudyAreasView',
               params: {
                 projectId,
-                studyAreaId: '5cacb8d89c37591f7dcb7d',
+                studyAreaId: '5cacb8d89c37591f7dcb7d', // TODO: adapt API
               },
             }"
             >樣區資訊</router-link
