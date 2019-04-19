@@ -25,10 +25,11 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import moment from 'moment';
 
 import BasicInfo from '@/components/ProjectEdit/BasicInfo.vue';
 import CcInfo from '@/components/ProjectEdit/CcInfo.vue';
+
+import { getTodayDate, plusNYears } from '@/utils/dateHelper.js';
 
 const config = createNamespacedHelpers('config');
 const projects = createNamespacedHelpers('projects');
@@ -43,13 +44,13 @@ export default {
         funder: undefined,
         code: undefined,
         principalInvestigator: undefined,
-        startTime: this.getTodayDate(),
-        endTime: this.plusNYears(this.getTodayDate(), 1),
+        startTime: getTodayDate(),
+        endTime: plusNYears(getTodayDate(), 1),
         areas: [],
         description: undefined,
         note: undefined,
         coverImageFile: undefined,
-        publishTime: this.plusNYears(this.getTodayDate(), 1),
+        publishTime: plusNYears(getTodayDate(), 1),
         interpretiveDataLicense: 'cc0',
         identificationInformationLicense: 'by',
         videoMaterialLicense: 'cc0',
@@ -65,12 +66,6 @@ export default {
   },
   methods: {
     ...projects.mapActions(['postProject']),
-    plusNYears(dateTimeString, n = 1) {
-      return moment(dateTimeString).add(n, 'years');
-    },
-    getTodayDate() {
-      return moment(Date.now());
-    },
     onChange(v) {
       Object.assign(this.project, v);
     },
