@@ -30,6 +30,7 @@ export default new Router({
             {
               path: 'edit',
               name: 'projectEdit',
+              meta: { fullPage: true },
               component: () => import('@/pages/Project/EditProject/index.vue'),
               children: [
                 {
@@ -67,18 +68,22 @@ export default new Router({
             {
               path: 'study-areas/:studyAreaId',
               name: 'projectStudyAreasView',
+              meta: { fullPage: false },
+
               component: () =>
                 import('@/pages/Project/ProjectStudyAreas/index.vue'),
             },
             {
               path: 'study-areas/:studyAreaId/edit',
               name: 'projectStudyAreasEdit',
+              meta: { fullPage: false },
               component: () =>
                 import('@/pages/Project/ProjectStudyAreas/Edit.vue'),
             },
             {
               path: 'upload',
               name: 'projectUpload',
+              meta: { fullPage: true },
               component: () =>
                 import('@/pages/Project/ProjectUpload/index.vue'),
             },
