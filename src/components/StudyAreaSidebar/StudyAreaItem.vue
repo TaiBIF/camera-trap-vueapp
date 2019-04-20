@@ -4,21 +4,20 @@
     :class="{
       'is-active': isActive,
     }"
-    @click="$emit('select', studyArea)"
+    @click="$emit('select')"
   >
     <span class="icon">
-      <i v-if="!studyArea.children" class="dot"></i>
+      <i
+        v-if="!studyArea.children || studyArea.children.length === 0"
+        class="dot"
+      ></i>
       <i
         v-else
         class="fa"
         :class="isExpand ? 'fa-caret-down' : 'fa-caret-right'"
       ></i
     ></span>
-    <router-link
-      v-if="!studyArea.children || studyArea.children.length === 0"
-      :to="`/project/${projectId}/study-areas/${studyArea.id}`"
-      class="text"
-    >
+    <router-link v-if="link" :to="link" class="text">
       {{ studyArea.title }}
     </router-link>
     <span class="text" v-else> {{ studyArea.title }} </span>
@@ -41,9 +40,9 @@ export default {
       type: Object,
       required: true,
     },
-    projectId: {
+    link: {
       type: String,
-      required: true,
+      default: '',
     },
     isExpand: {
       type: Boolean,

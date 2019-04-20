@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = async ({ config }) => {
   config.module.rules.push({
-    test: /\.sass$/,
+    test: /\.sass$|.scss$/,
     loaders: ['style-loader', 'css-loader', 'sass-loader'],
     include: path.resolve(__dirname, '../'),
   });
