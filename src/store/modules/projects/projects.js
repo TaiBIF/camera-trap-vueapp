@@ -88,7 +88,7 @@ const actions = {
       id,
       produce(JSON.parse(JSON.stringify(body)), draft => {
         draft.areas = draft.areas.map(v => v.id);
-        draft.coverImageFile = draft.coverImageFile.id
+        draft.coverImageFile = idx(draft, _ => _.coverImageFile.id)
           ? draft.coverImageFile.id
           : draft.coverImageFile;
         draft.dataFields = draft.dataFields.map(v => v.id);
