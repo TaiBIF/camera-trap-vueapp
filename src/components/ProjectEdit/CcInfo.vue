@@ -79,6 +79,7 @@
                   id="for-info-1"
                   v-model="project.identificationInformationLicense"
                   value="by"
+                  :checked="project.identificationInformationLicense === 'by'"
                 />
                 <label for="for-info-1">
                   <img
@@ -100,6 +101,7 @@
                   id="for-img-1"
                   v-model="project.videoMaterialLicense"
                   value="cc0"
+                  :checked="project.videoMaterialLicense === 'cc0'"
                 />
                 <label for="for-img-1">
                   <img
@@ -116,6 +118,7 @@
                   id="for-img-2"
                   v-model="project.videoMaterialLicense"
                   value="by"
+                  :checked="project.videoMaterialLicense === 'by'"
                 />
                 <label for="for-img-2">
                   <img
@@ -132,6 +135,7 @@
                   id="for-img-3"
                   v-model="project.videoMaterialLicense"
                   value="by-nc"
+                  :checked="project.videoMaterialLicense === 'by-nc'"
                 />
                 <label for="for-img-3">
                   <img
