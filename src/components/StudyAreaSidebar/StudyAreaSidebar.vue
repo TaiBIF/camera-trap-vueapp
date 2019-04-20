@@ -13,7 +13,9 @@
         :link="generateAreaLink(studyArea)"
         :isExpand="expandId === studyArea.id"
         :isActive="currentStudyAreaId === studyArea.id"
+        :isEditMode="isEditMode"
         @select="toggleExpand(studyArea, true)"
+        @editArea="editArea"
       />
       <ul
         class="tree-menu-child"
@@ -25,19 +27,22 @@
             :studyArea="studyArea"
             :link="generateAreaLink(studyArea)"
             :isActive="currentStudyAreaId === studyArea.id"
+            :isEditMode="isEditMode"
             @select="toggleExpand(studyArea)"
+            @editArea="editArea"
           />
         </li>
       </ul>
       <ul v-show="isEditMode" class="tree-menu-child">
         <li class="tree-menu-item">
-          <div class="tree-menu-link addInput">
-            <label for="addSite" class="icon"><i class="fa fa-plus"></i></label>
+          <div class="tree-menu-link">
+            <label :for="`addArea_${studyArea.id}`" class="icon"
+              ><i class="fa fa-plus"></i
+            ></label>
             <div class="text">
               <input
-                class="addInput"
                 type="text"
-                id="addSite"
+                :id="`addArea_${studyArea.id}`"
                 placeholder="新增子樣區"
                 @keydown="addNewArea"
                 :data-parent-id="studyArea.id"
@@ -48,13 +53,14 @@
       </ul>
     </li>
     <li v-show="isEditMode" class="tree-menu-item">
-      <div class="tree-menu-link addInput">
-        <label for="addSite" class="icon"><i class="fa fa-plus"></i></label>
+      <div class="tree-menu-link">
+        <label for="addParentArea" class="icon"
+          ><i class="fa fa-plus"></i
+        ></label>
         <div class="text">
           <input
-            class="addInput"
             type="text"
-            id="addSite"
+            id="addParentArea"
             placeholder="新增樣區"
             @keydown="addNewArea"
           />
@@ -128,14 +134,18 @@ export default {
         }
       }
     },
+    editArea(name, id) {
+      this.$emit('editArea', name, id);
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-.addInput {
+<style lang="scss">
+.tree-menu-link {
   i {
     color: #8b8b8b;
+    cursor: pointer;
   }
   input {
     border: 0;

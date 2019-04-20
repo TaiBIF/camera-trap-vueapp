@@ -56,12 +56,12 @@ storiesOf('StudyAreaSidebar', module)
         studyAreas: [
           {
             id: 'a',
-            title: '母樣區',
-            children: [{ id: 'a1', title: '子樣區' }],
+            title: '台北',
+            children: [{ id: 'a1', title: '信義區' }],
           },
           {
             id: 'b',
-            title: '樣區 wo children',
+            title: '台中',
             children: [],
           },
         ],
@@ -76,6 +76,9 @@ storiesOf('StudyAreaSidebar', module)
       addArea(name, parentId) {
         action('addArea')(name, parentId);
       },
+      editArea(name, id) {
+        action('editArea')(name, id);
+      },
     },
     template: `
       <div style="width: 300px">
@@ -86,6 +89,7 @@ storiesOf('StudyAreaSidebar', module)
           :isEditMode="true"
           @selectArea="selectStudyArea"
           @addArea="addArea"
+          @editArea="editArea"
         />
       </div>
     `,
