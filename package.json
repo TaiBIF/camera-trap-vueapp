@@ -28,6 +28,7 @@
     "ware-loader": "^0.2.4"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^5.0.10",
     "@storybook/vue": "^5.0.10",
     "@vue/cli-plugin-babel": "^3.5.0",
     "@vue/cli-plugin-eslint": "^3.5.0",
@@ -41,6 +42,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
+    "storybook-vue-router": "^1.0.3",
     "vue-template-compiler": "^2.6.10"
   }
 }
