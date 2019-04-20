@@ -36,30 +36,35 @@ export default new Router({
                 {
                   path: 'basic',
                   name: 'projectBasic',
+                  meta: { fullPage: true },
                   component: () =>
                     import('@/pages/Project/EditProject/Basic.vue'),
                 },
                 {
                   path: 'setting',
                   name: 'projectSetting',
+                  meta: { fullPage: true },
                   component: () =>
                     import('@/pages/Project/EditProject/Setting.vue'),
                 },
                 {
                   path: 'camera-location',
                   name: 'projectCameraLocation',
+                  meta: { fullPage: true },
                   component: () =>
                     import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
                 {
                   path: 'member',
                   name: 'projectMember',
+                  meta: { fullPage: true },
                   component: () =>
                     import('@/pages/Project/EditProject/Member.vue'),
                 },
                 {
                   path: 'license',
                   name: 'projectLicense',
+                  meta: { fullPage: true },
                   component: () =>
                     import('@/pages/Project/EditProject/License.vue'),
                 },
@@ -69,7 +74,6 @@ export default new Router({
               path: 'study-areas/:studyAreaId',
               name: 'projectStudyAreasView',
               meta: { fullPage: false },
-
               component: () =>
                 import('@/pages/Project/ProjectStudyAreas/index.vue'),
             },
