@@ -1,8 +1,12 @@
 <template>
   <div>
-    <h1>計畫管理-創⽤CC授權</h1>
-    <CcInfo :project="temp" :areas="projectAreas" @change="change" />
-    <button @click="submitProject">儲存設定</button>
+    <CcInfo
+      :project="temp"
+      doneBtnText="儲存設定"
+      :areas="projectAreas"
+      @change="change"
+      @done="submitProject"
+    />
   </div>
 </template>
 
@@ -17,15 +21,18 @@ const projects = createNamespacedHelpers('projects');
 export default {
   data: function() {
     return {
-      temp: undefined,
+      temp: {},
     };
   },
+  props: {
+    setLoading: Function,
+  },
   mounted() {
-    this.temp = this.projectDetail;
+    this.temp = Object.assign({}, this.projectDetail);
   },
   watch: {
     projectDetail: function(val) {
-      this.temp = val;
+      this.temp = Object.assign({}, val);
     },
   },
   components: {
@@ -43,8 +50,10 @@ export default {
     change(v) {
       this.temp = v;
     },
-    submitProject() {
-      this.putProject({ id: this.projectId, body: this.temp });
+    async submitProject() {
+      this.setLoading(true);
+      await this.putProject({ id: this.projectId, body: this.temp });
+      this.setLoading(false);
     },
   },
 };
