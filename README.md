@@ -4,6 +4,33 @@ A proper implementation using Vue.js.
 
 ---
 
+### How to start
+
+clone repo
+
+```
+git clone xxx
+```
+
+npm install
+
+```
+install packages
+```
+
+create .env.local file
+
+```
+VUE_APP_BASE_URL=http://localhost:8888
+VUE_APP_API_URL=http://xxx
+```
+
+start local dev server
+
+```
+npm run serve
+```
+
 ### lint 及 autoformat 規則
 
 開發環境為 vscode 基本設定都加入在 `.vscode` 需安裝以下套件
@@ -13,7 +40,9 @@ A proper implementation using Vue.js.
 
 ### Develop
 
-- run `npm run serve`
+- run `npm run serve` to start local dev server
+- run `npm run storybook` to check current components  
+  reference: https://storybook.js.org/docs/guides/guide-vue/
 
 ### Build
 
