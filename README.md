@@ -40,7 +40,9 @@ npm run serve
 
 ### Develop
 
-- run `npm run serve`
+- run `npm run serve` to start local dev server
+- run `npm run storybook` to check current components  
+  reference: https://storybook.js.org/docs/guides/guide-vue/
 
 ### Build
 
