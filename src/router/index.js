@@ -141,6 +141,10 @@ export default new Router({
           path: 'contribution-protocol',
           component: () => import('@/pages/Help/ContributionProtocol.vue'),
         },
+        {
+          path: 'member-description',
+          component: () => import('@/pages/Help/MemberDescription.vue'),
+        },
       ],
     },
   ],

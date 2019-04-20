@@ -9,6 +9,7 @@ import {
   postProject,
   postProjectMember,
   putProject,
+  putProjectMember,
   putProjectSpecies,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
@@ -97,8 +98,18 @@ const actions = {
     commit('setProjectDetail', data);
   },
   async postProjectMember({ commit }, { id, body }) {
-    const data = await postProjectMember(id, body);
+    const data = await postProjectMember(id, {
+      ...body,
+      role: idx(body, _ => _.role.key),
+    });
     commit('updateProjectMember', data);
+  },
+  async putProjectMember({ commit }, { projectId, payload }) {
+    const requests = payload.map(v =>
+      putProjectMember(projectId, v.id, { role: v.role.key }),
+    );
+    const data = await Promise.all(requests);
+    commit('updateProjectMember', data.pop());
   },
   async deleteProjectMember({ state, commit }, { id, userId }) {
     await deleteProjectMember(id, userId);
