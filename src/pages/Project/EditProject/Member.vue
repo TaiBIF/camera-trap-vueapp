@@ -88,13 +88,24 @@
       </button>
     </div>
 
-    <remove-member-dialog
+    <double-check-modal
       v-if="!!removeMemberTarget"
       :open="!!removeMemberTarget"
-      :name="removeMemberTarget.name"
       @close="removeMemberTarget = undefined"
       @submit="deleteMember(removeMemberTarget.id)"
-    />
+    >
+      <img
+        src="/assets/common/error-img.png"
+        width="221"
+        srcset="/assets/common/error-img@2x.png"
+      />
+      <h1 class="text-green">
+        您確定將 {{ removeMemberTarget.name }} 從計畫成員移除嗎 ? ?
+      </h1>
+      <p class="text-gray">
+        移除後，該成員將無法瀏覽或編輯此計畫中的資料，若要回復權限，請再次加入此成員
+      </p></double-check-modal
+    >
   </div>
 </template>
 
@@ -102,7 +113,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import vSelect from 'vue-select';
 
-import RemoveMemberDialog from '@/components/ProjectEdit/RemoveMemberDialog.vue';
+import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
 import memberRole from '@/constant/memberRole.js';
 
 const projects = createNamespacedHelpers('projects');
@@ -121,7 +132,7 @@ export default {
     };
   },
   components: {
-    RemoveMemberDialog,
+    DoubleCheckModal,
     vSelect,
   },
   mounted() {
