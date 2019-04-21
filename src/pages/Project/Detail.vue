@@ -1,6 +1,6 @@
 <template>
   <div class="page-project">
-    <aside v-if="!$route.meta.fullPage">
+    <aside v-if="$route.meta.projectAside">
       <router-link to="/project/overview" class="aside-header">
         <i class="fa fa-chevron-left"></i> 返回計畫總覽
       </router-link>
