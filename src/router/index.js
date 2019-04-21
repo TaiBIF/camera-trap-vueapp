@@ -28,6 +28,13 @@ export default new Router({
           component: () => import('@/pages/Project/Detail.vue'),
           children: [
             {
+              path: '/',
+              name: 'projectInfo',
+              meta: { fullPage: false },
+              component: () =>
+                import('@/pages/Project/ProjectInfo/ProjectInfo.vue'),
+            },
+            {
               path: 'edit',
               name: 'projectEdit',
               meta: { fullPage: true },
