@@ -24,7 +24,7 @@
               <div
                 v-if="field.systemCode === 'species'"
                 class="link text-green underline"
-                @click="speciesOpen = true"
+                @click="showSpeciesEdit = true"
               >
                 <i class="fa fa-pencil-alt"></i> 編輯常見物種排序
               </div>
@@ -92,6 +92,8 @@
       </div>
     </div>
 
+    <Species v-if="showSpeciesEdit" @close="showSpeciesEdit = false" />
+
     <double-check-modal
       v-if="!!removeFieldTarget"
       :open="!!removeFieldTarget"
@@ -125,8 +127,11 @@ import DataFieldEnum from '@/constant/DataFieldEnum.js';
 import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
 import NewFieldForm from '@/components/ProjectEdit/NewFieldForm.vue';
 
+import Species from './Species.vue';
+
 export default {
   components: {
+    Species,
     draggable,
     DoubleCheckModal,
     NewFieldForm,
@@ -134,6 +139,7 @@ export default {
   data: function() {
     return {
       DataFieldEnum,
+      showSpeciesEdit: false,
       showNewFieldForm: false,
       removeFieldTarget: undefined,
     };

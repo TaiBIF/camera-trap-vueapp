@@ -7,7 +7,6 @@
       @change="tempDataFields = $event"
       @request="requestField"
     />
-    <Species v-if="false" />
     <DataFieldsTemplate />
     <CameraTestTime
       v-if="dailyTestTime !== undefined"
@@ -34,7 +33,6 @@ import idx from 'idx';
 import CameraTestTime from './CameraTestTime.vue';
 import DataFields from './DataFields.vue';
 import DataFieldsTemplate from './DataFieldsTemplate.vue';
-import Species from './Species.vue';
 
 const dataFields = createNamespacedHelpers('dataFields');
 const projects = createNamespacedHelpers('projects');
@@ -42,7 +40,6 @@ const projects = createNamespacedHelpers('projects');
 export default {
   components: {
     DataFields,
-    Species,
     DataFieldsTemplate,
     CameraTestTime,
   },
