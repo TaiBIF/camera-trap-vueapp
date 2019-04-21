@@ -13,10 +13,7 @@
               <div class="col-3"></div>
             </div>
             <div class="sortable-body">
-              <draggable
-                :options="{ handle: '.drag-item' }"
-                v-model="tempSpecies"
-              >
+              <draggable handle=".drag-item" v-model="tempSpecies">
                 <transition-group>
                   <div
                     class="row sortable-item"

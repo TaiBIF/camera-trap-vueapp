@@ -32,10 +32,7 @@
             </div>
           </div>
           <!-- 可以拖拉的區塊 -->
-          <draggable
-            :options="{ handle: '.drag-item' }"
-            v-model="draggableFields"
-          >
+          <draggable handle=".drag-item" v-model="draggableFields">
             <transition-group>
               <div
                 class="row column-item"
