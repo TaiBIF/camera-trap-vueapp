@@ -117,6 +117,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { isAllowManageProject } from '@/utils/roles';
 
 const projects = createNamespacedHelpers('projects');
@@ -133,7 +134,7 @@ export default {
     projectTimeRange: function() {
       const { startTime, endTime } = this.projectDetail;
       if (startTime && endTime) {
-        return `${this.formatDateString(startTime)} ~ ${this.formatDateString(
+        return `${dateFormatYYYYMMDD(startTime)} ~ ${dateFormatYYYYMMDD(
           endTime,
         )}`;
       }
@@ -156,12 +157,6 @@ export default {
     },
   },
   methods: {
-    formatDateString(dateString) {
-      if (dateString) {
-        return dateString.replace(/T.*/, '');
-      }
-      return '';
-    },
     downloadExampleCsv() {
       // TODO: apply download csv function after API ready
     },
