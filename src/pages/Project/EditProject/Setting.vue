@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     ...dataFields.mapActions(['getDataFields', 'postDataFields']),
-    ...projects.mapActions(['putProjectDailyTestTime', 'putProjectDataFields']),
+    ...projects.mapActions(['putProject']),
     setData() {
       this.dailyTestTime = idx(this.projectDetail, _ => _.dailyTestTime);
       this.tempDataFields = this.projectDataFields;
@@ -80,15 +80,13 @@ export default {
     },
     async doSubmit() {
       this.setLoading(true);
-      // todo 同時修改多種資料需合併成一次請求
-
-      // await this.putProjectDailyTestTime({
-      //   id: this.projectId,
-      //   dailyTestTime: this.dailyTestTime,
-      // });
-      await this.putProjectDataFields({
+      await this.putProject({
         id: this.projectId,
-        fields: this.tempDataFields,
+        body: {
+          ...this.projectDetail,
+          dailyTestTime: this.dailyTestTime,
+          dataFields: this.tempDataFields,
+        },
       });
       this.setLoading(false);
     },
