@@ -3,17 +3,6 @@
     <div class="panel-heading">
       <h4>欄位設定</h4>
     </div>
-    <div>
-      <label>新增欄位: </label>
-      <br />
-      <button
-        :key="field.id"
-        @click="addField(field.id)"
-        v-for="field in fieldWithoutProject"
-      >
-        {{ field.title }}
-      </button>
-    </div>
     <div class="panel-body">
       <div class="column-editor">
         <div class="row column-header mx-0">
@@ -73,7 +62,7 @@
             </transition-group>
           </draggable>
         </div>
-        <!-- <div class="column-footer" v-if="showAddColumnsBtn">
+        <div class="column-footer">
           <a
             id="new-column"
             class="btn btn-text text-left dropdown-toggle"
@@ -88,18 +77,18 @@
           >
             <div
               class="dropdown-item"
-              v-for="(td, idx) in unUseColumnsField"
-              :key="`item-${idx}`"
-              @click="addColumns(idx)"
+              :key="field.id"
+              @click="addField(field.id)"
+              v-for="field in fieldWithoutProject"
             >
-              <span>{{ td.label }}</span>
+              <span>{{ field.title }}</span>
             </div>
             <hr />
-            <div class="dropdown-item" @click="newColumnOpen = true">
+            <div class="dropdown-item" @click="showNewFieldForm = true">
               申請新增欄位
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
@@ -121,6 +110,11 @@
         欄位刪除後，資料仍會存在，但將不會在「資料編輯」畫面中顯示（若您需加回自行新增之欄位，需再次向系統管理員提出申請）
       </p>
     </double-check-modal>
+    <NewFieldForm
+      v-if="showNewFieldForm"
+      @close="showNewFieldForm = false"
+      @submit="requestField"
+    />
   </div>
 </template>
 
@@ -129,22 +123,18 @@ import draggable from 'vuedraggable';
 
 import DataFieldEnum from '@/constant/DataFieldEnum.js';
 import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
+import NewFieldForm from '@/components/ProjectEdit/NewFieldForm.vue';
 
 export default {
   components: {
     draggable,
     DoubleCheckModal,
+    NewFieldForm,
   },
   data: function() {
     return {
       DataFieldEnum,
       showNewFieldForm: false,
-      newField: {
-        title: '',
-        description: '',
-        note: '',
-        widgetType: 'text', // 寫死，之後需照可選內容設定更多選項
-      },
       removeFieldTarget: undefined,
     };
   },
@@ -183,8 +173,8 @@ export default {
       this.$emit('change', this.tempDataFields.filter(v => v.id !== id));
       this.removeFieldTarget = undefined;
     },
-    requestField() {
-      this.postDataFields(this.newField);
+    requestField(payload) {
+      this.$emit('request', payload);
       this.showNewFieldForm = false;
     },
   },

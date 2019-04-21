@@ -5,6 +5,7 @@
       :dataFields="dataFields"
       :tempDataFields="tempDataFields"
       @change="tempDataFields = $event"
+      @request="requestField"
     />
     <Species v-if="false" />
     <DataFieldsTemplate />
@@ -76,6 +77,9 @@ export default {
     setData() {
       this.dailyTestTime = idx(this.projectDetail, _ => _.dailyTestTime);
       this.tempDataFields = this.projectDataFields;
+    },
+    async requestField(payload) {
+      await this.postDataFields(payload);
     },
     async doSubmit() {
       this.setLoading(true);
