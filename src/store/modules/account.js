@@ -9,6 +9,7 @@ const getters = {
   isLogin: state => state.profile && !!state.profile.id,
   userName: state => (state.profile && state.profile.name) || '',
   userEmail: state => (state.profile && state.profile.email) || '',
+  userId: state => (state.profile && state.profile.id) || '',
 };
 
 const mutations = {
