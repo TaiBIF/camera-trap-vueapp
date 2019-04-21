@@ -11,8 +11,8 @@
           <h1 class="heading mt-0">登入</h1>
           <p>請使用您的 ORCID 帳號登入Camera Trap 監測資料管理平台：</p>
           <div class="mt-5 mb-3">
-            <div class="btn btn-block btn-gray">
-              <span class="text" v-on:click="doLogin">
+            <div class="btn btn-block btn-gray" @click="doLogin">
+              <span class="text">
                 使用 ORCID 帳號登入
               </span>
             </div>

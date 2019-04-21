@@ -107,7 +107,7 @@
             </tr>
             <tr>
               <td>新欄位建立申請</td>
-              <td></td>
+              <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td></td>
               <td></td>
@@ -279,28 +279,28 @@
             </tr>
             <tr>
               <td>相機異常回報</td>
-              <td></td>
+              <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
             </tr>
             <tr>
               <td>快速鍵設定</td>
-              <td></td>
+              <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
             </tr>
             <tr>
               <td>聯絡我們（問題回報）</td>
-              <td></td>
+              <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
             </tr>
             <tr>
               <td>聯絡我們（意見回饋）</td>
-              <td></td>
+              <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>
               <td><i class="icon-check-lg"></i></td>

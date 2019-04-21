@@ -28,43 +28,50 @@ export default new Router({
           component: () => import('@/pages/Project/Detail.vue'),
           children: [
             {
+              path: '/',
+              name: 'projectInfo',
+              meta: { projectAside: true },
+              component: () =>
+                import('@/pages/Project/ProjectInfo/ProjectInfo.vue'),
+            },
+            {
               path: 'edit',
               name: 'projectEdit',
-              meta: { fullPage: true },
+              meta: { projectAside: false },
               component: () => import('@/pages/Project/EditProject/index.vue'),
               children: [
                 {
                   path: 'basic',
                   name: 'projectBasic',
-                  meta: { fullPage: true },
+                  meta: { projectAside: false },
                   component: () =>
                     import('@/pages/Project/EditProject/Basic.vue'),
                 },
                 {
                   path: 'setting',
                   name: 'projectSetting',
-                  meta: { fullPage: true },
+                  meta: { projectAside: false },
                   component: () =>
                     import('@/pages/Project/EditProject/Setting.vue'),
                 },
                 {
                   path: 'camera-location',
                   name: 'projectCameraLocation',
-                  meta: { fullPage: true },
+                  meta: { projectAside: false },
                   component: () =>
                     import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
                 {
                   path: 'member',
                   name: 'projectMember',
-                  meta: { fullPage: true },
+                  meta: { projectAside: false },
                   component: () =>
                     import('@/pages/Project/EditProject/Member.vue'),
                 },
                 {
                   path: 'license',
                   name: 'projectLicense',
-                  meta: { fullPage: true },
+                  meta: { projectAside: false },
                   component: () =>
                     import('@/pages/Project/EditProject/License.vue'),
                 },
@@ -73,21 +80,21 @@ export default new Router({
             {
               path: 'study-areas/:studyAreaId',
               name: 'projectStudyAreasView',
-              meta: { fullPage: false },
+              meta: { projectAside: true },
               component: () =>
                 import('@/pages/Project/ProjectStudyAreas/index.vue'),
             },
             {
               path: 'study-areas/:studyAreaId/edit',
               name: 'projectStudyAreasEdit',
-              meta: { fullPage: false },
+              meta: { projectAside: true },
               component: () =>
                 import('@/pages/Project/ProjectStudyAreas/Edit.vue'),
             },
             {
               path: 'upload',
               name: 'projectUpload',
-              meta: { fullPage: true },
+              meta: { projectAside: false },
               component: () =>
                 import('@/pages/Project/ProjectUpload/index.vue'),
             },

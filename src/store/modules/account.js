@@ -1,5 +1,6 @@
 // 帳號資訊
 import { getMe, logout, putMe } from '@/service';
+import idx from 'idx';
 
 const state = {
   profile: {},
@@ -7,8 +8,11 @@ const state = {
 
 const getters = {
   isLogin: state => state.profile && !!state.profile.id,
-  userName: state => (state.profile && state.profile.name) || '',
-  userEmail: state => (state.profile && state.profile.email) || '',
+  userName: state => idx(state, _ => _.profile.name) || '',
+  userEmail: state => idx(state, _ => _.profile.email) || '',
+  userId: state => idx(state, _ => _.profile.id),
+  isAdministrator: state =>
+    idx(state, _ => _.profile.permission) === 'administrator',
 };
 
 const mutations = {
