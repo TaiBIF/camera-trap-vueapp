@@ -23,29 +23,42 @@
           <div class="col-3"></div>
         </div>
         <div class="column-body">
+          <!-- 不能拖拉的區塊 -->
+          <div
+            class="row column-item"
+            :key="field.id"
+            v-for="field in noDraggableFields"
+          >
+            <div class="col-3">{{ field.title }}</div>
+            <div class="col-3">{{ DataFieldEnum[field.widgetType] }}</div>
+            <div class="text-gray col-3">
+              <div
+                v-if="field.systemCode === 'species'"
+                class="link text-green underline"
+                @click="speciesOpen = true"
+              >
+                <i class="fa fa-pencil-alt"></i> 編輯常見物種排序
+              </div>
+              <span v-else>{{ field.description }}</span>
+            </div>
+          </div>
+          <!-- 可以拖拉的區塊 -->
           <draggable
             :options="{ handle: '.drag-item' }"
-            v-model="tempDataFields"
+            v-model="draggableFields"
           >
             <transition-group>
               <div
-                class="row column-item disabled"
+                class="row column-item"
                 :key="field.id"
-                v-for="field in tempDataFields"
+                v-for="field in draggableFields"
               >
                 <div class="col-3">{{ field.title }}</div>
                 <div class="col-3">{{ DataFieldEnum[field.widgetType] }}</div>
                 <div class="text-gray col-3">
-                  <div
-                    v-if="field.systemCode === 'species'"
-                    class="link text-green underline"
-                    @click="speciesOpen = true"
-                  >
-                    <i class="fa fa-pencil-alt"></i> 編輯常見物種排序
-                  </div>
-                  <span v-else>{{ field.description }}</span>
+                  <span>{{ field.description }}</span>
                 </div>
-                <div class="text-right col-3" v-if="!field.systemCode">
+                <div class="text-right col-3">
                   <a
                     @click="removeFieldTarget = field"
                     class="d-inline-block align-middle ml-2"
@@ -148,6 +161,17 @@ export default {
       const tempDataFieldsIds = this.tempDataFields.map(v => v.id);
 
       return this.dataFields.filter(v => !tempDataFieldsIds.includes(v.id));
+    },
+    noDraggableFields: function() {
+      return this.tempDataFields.filter(v => v.systemCode);
+    },
+    draggableFields: {
+      get() {
+        return this.tempDataFields.filter(v => v.systemCode === undefined);
+      },
+      set(v) {
+        this.$emit('change', [...this.noDraggableFields, ...v]);
+      },
     },
   },
   methods: {
