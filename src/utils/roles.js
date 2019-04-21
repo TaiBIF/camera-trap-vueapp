@@ -1,19 +1,19 @@
-// TODO: adjust base on new API
 /**
  * https://github.com/TaiBIF/camera-trap-api/wiki/role-permission
- * 計畫相關角色 (允許在 3.6.1.1 加入)
- * manager 計畫管理員（初始權限等同研究人員）
- * researcher 研究人員（初始權限等同計畫管理員）
- * ResearchAssistant 研究助理
- * CaseOfficer 林管處承辦人
  *
- * 機能型角色 (不允許在 3.6.1.1 加入，不在選單中列出)
- * SysAdmin 系統管理員
- * ProjectInitiator 可建立新計畫的人, 同計畫管理員
+ * by account
+ * https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-me
+ * administrator (系統管理員)
+ * general-account (一般使用者, 權限依計畫內 role 設定)
+ *
+ * by project
+ * https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#payload-6
+ * manager (計畫管理員)
+ * researcher (計畫研究員)
+ * executor (計畫執行者)
  */
 
-const systemManagerRoles = ['SysAdmin'];
-const projectManagerRoles = ['ProjectInitiator', 'manager', 'researcher'];
+const projectManagerRoles = ['manager'];
 
 /**
  * @param {string} role
@@ -24,9 +24,7 @@ export const isAllowManageProject = role => {
     return false;
   }
 
-  return (
-    systemManagerRoles.includes(role) || projectManagerRoles.includes(role)
-  );
+  return projectManagerRoles.includes(role);
 };
 
 /**
@@ -34,7 +32,7 @@ export const isAllowManageProject = role => {
  * @return {bool}
  */
 export const isAllowAddColumns = role => {
-  if (!role || role === '') {
+  if (!role) {
     return false;
   }
 

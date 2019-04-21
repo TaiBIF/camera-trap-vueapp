@@ -126,7 +126,7 @@ export default {
   name: 'project-info',
   computed: {
     ...projects.mapGetters(['projectDetail']),
-    ...account.mapGetters(['userId']),
+    ...account.mapGetters(['userId', 'isAdministrator']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -144,6 +144,9 @@ export default {
       return areas.map(({ title }) => title).join('、');
     },
     showManageLink() {
+      if (this.isAdministrator) {
+        return true;
+      }
       const members = this.projectDetail.members || [];
       const projectMember = members.find(({ user }) => user.id === this.userId);
       if (!projectMember) {

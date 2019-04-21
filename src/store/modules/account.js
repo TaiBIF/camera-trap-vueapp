@@ -10,6 +10,8 @@ const getters = {
   userName: state => (state.profile && state.profile.name) || '',
   userEmail: state => (state.profile && state.profile.email) || '',
   userId: state => (state.profile && state.profile.id) || '',
+  isAdministrator: state =>
+    state.profile && state.profile.permission === 'administrator',
 };
 
 const mutations = {
