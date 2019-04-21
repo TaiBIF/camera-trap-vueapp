@@ -136,7 +136,7 @@ const actions = {
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
   },
   async putProjectDataFields({ state, dispatch }, { id, fields }) {
-    dispatch('putProject', {
+    return dispatch('putProject', {
       id,
       body: {
         ...state.projectDetail,
@@ -145,7 +145,7 @@ const actions = {
     });
   },
   async putProjectDailyTestTime({ state, dispatch }, { id, dailyTestTime }) {
-    dispatch('putProject', {
+    return dispatch('putProject', {
       id,
       body: {
         ...state.projectDetail,
