@@ -83,35 +83,28 @@
           </div>
         </div>
       </div>
-
       <div class="panel tab-panel">
-        TBD
+        <div class="panel-header">
+          <ul class="nav-tab">
+            <li :class="{ active: $route.name === 'projectVideo' }">
+              <router-link :to="`/project/${projectId}/info/video/all/receive`">
+                影像回收/辨識狀況
+              </router-link>
+            </li>
+            <li :class="{ active: $route.name === 'projectSpecies' }">
+              <router-link :to="`/project/${projectId}/info/species`">
+                已辨識物種
+              </router-link>
+            </li>
+          </ul>
+        </div>
+        <div class="panel-body">
+          <div class="tab-panel">
+            <router-view />
+          </div>
+        </div>
       </div>
     </div>
-
-    <ul>
-      <li>
-        <router-link
-          :to="{
-            name: 'projectStudyAreasView',
-            params: {
-              projectId,
-              studyAreaId: '5cacb8d89c37591f7dcb7d', // TODO: adapt API
-            },
-          }"
-          >樣區資訊</router-link
-        >
-      </li>
-      <li></li>
-    </ul>
-    <br />
-    <p>當前計畫詳細資訊</p>
-    <ul>
-      <li :key="field.id" v-for="field in projectDetail.dataFields">
-        {{ field.description }}
-      </li>
-    </ul>
-    <br />
   </div>
 </template>
 
@@ -125,6 +118,11 @@ const account = createNamespacedHelpers('account');
 
 export default {
   name: 'project-info',
+  data() {
+    return {
+      currentTab: 0,
+    };
+  },
   computed: {
     ...projects.mapGetters(['projectDetail']),
     ...account.mapGetters(['userId', 'isAdministrator']),

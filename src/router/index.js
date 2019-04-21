@@ -29,10 +29,33 @@ export default new Router({
           children: [
             {
               path: '/',
+              redirect: 'info',
+            },
+            {
+              path: 'info',
               name: 'projectInfo',
-              meta: { projectAside: true },
               component: () =>
                 import('@/pages/Project/ProjectInfo/ProjectInfo.vue'),
+              children: [
+                {
+                  path: '/',
+                  redirect: 'video/all/receive',
+                },
+                {
+                  path: 'video/:selectedStudyAreaId/:type',
+                  name: 'projectVideo',
+                  meta: { projectAside: true },
+                  component: () =>
+                    import('@/pages/Project/ProjectInfo/ProjectVideo.vue'),
+                },
+                {
+                  path: 'species',
+                  name: 'projectSpecies',
+                  meta: { projectAside: true },
+                  component: () =>
+                    import('@/pages/Project/ProjectInfo/ProjectSpecies.vue'),
+                },
+              ],
             },
             {
               path: 'edit',
