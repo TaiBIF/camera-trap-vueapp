@@ -1,8 +1,12 @@
 <template>
   <div>
     <h1>計畫管理-編輯設定</h1>
-    <DataFields />
-    <Species />
+    <DataFields
+      :dataFields="dataFields"
+      :tempDataFields="tempDataFields"
+      @change="tempDataFields = $event"
+    />
+    <Species v-if="false" />
     <DataFieldsTemplate />
     <CameraTestTime
       v-if="dailyTestTime !== undefined"
@@ -31,6 +35,7 @@ import DataFields from './DataFields.vue';
 import DataFieldsTemplate from './DataFieldsTemplate.vue';
 import Species from './Species.vue';
 
+const dataFields = createNamespacedHelpers('dataFields');
 const projects = createNamespacedHelpers('projects');
 
 export default {
@@ -43,35 +48,46 @@ export default {
   data() {
     return {
       dailyTestTime: undefined,
+      tempDataFields: [],
     };
   },
   props: {
     setLoading: Function,
   },
   mounted() {
-    this.setData(this.projectDetail);
+    this.getDataFields();
+    this.setData();
   },
   watch: {
-    projectDetail: function(val) {
-      this.setData(val);
+    projectDetail: function() {
+      this.setData();
     },
   },
   computed: {
-    ...projects.mapGetters(['projectDetail']),
+    ...dataFields.mapGetters(['dataFields']),
+    ...projects.mapGetters(['projectDetail', 'projectDataFields']),
     projectId: function() {
       return this.$route.params.projectId;
     },
   },
   methods: {
-    ...projects.mapActions(['putProjectDailyTestTime']),
-    setData(detail) {
-      this.dailyTestTime = idx(detail, _ => _.dailyTestTime);
+    ...dataFields.mapActions(['getDataFields', 'postDataFields']),
+    ...projects.mapActions(['putProjectDailyTestTime', 'putProjectDataFields']),
+    setData() {
+      this.dailyTestTime = idx(this.projectDetail, _ => _.dailyTestTime);
+      this.tempDataFields = this.projectDataFields;
     },
     async doSubmit() {
       this.setLoading(true);
-      await this.putProjectDailyTestTime({
+      // todo 同時修改多種資料需合併成一次請求
+
+      // await this.putProjectDailyTestTime({
+      //   id: this.projectId,
+      //   dailyTestTime: this.dailyTestTime,
+      // });
+      await this.putProjectDataFields({
         id: this.projectId,
-        dailyTestTime: this.dailyTestTime,
+        fields: this.tempDataFields,
       });
       this.setLoading(false);
     },
