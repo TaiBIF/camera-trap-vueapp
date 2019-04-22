@@ -44,8 +44,7 @@ const actions = {
           }
         : undefined),
     };
-    const data = await postDataFields(body);
-    console.log(data);
+    await postDataFields(body);
   },
 };
 
