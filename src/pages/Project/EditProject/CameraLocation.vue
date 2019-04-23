@@ -38,6 +38,32 @@
             />
             <h5 class="text-gray">請選擇樣區</h5>
           </div>
+          <div class="sheet-view show" v-else>
+            <div class="control p-2">
+              <div class="row">
+                <div class="col-12 text-right">
+                  <div class="form-group-inline">
+                    <label for="">座標大地基準：</label>
+                    WGS84
+                    <span class="icon-note">
+                      <i class="icon-info"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-container">
+              <hot-table
+                id="sheet"
+                licenseKey="non-commercial-and-evaluation"
+                :settings="HandsontableSetting"
+              ></hot-table>
+              <a class="text-green btn btn-link" @click="addNewCameraLoation">
+                <span class="icon"><i class="icon-add-green"></i></span>
+                <span class="text">新增相機位置</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -56,9 +82,11 @@
 </template>
 
 <script>
+import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
 
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -66,6 +94,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 export default {
   components: {
     StudyAreaSidebar,
+    HotTable,
   },
   data: function() {
     return {
@@ -74,6 +103,51 @@ export default {
       currentCameraLocationId: undefined,
       newCameraLocation: {},
       editCameraLocation: {},
+      HandsontableSetting: {
+        rowHeaders: true,
+        colHeaders: [
+          // 'URL',
+          '<span style="color: red;">*</span>相機位置名稱',
+          '架設日期',
+          '<span style="color: red;">*</span>經度 (X)',
+          '<span style="color: red;">*</span>緯度 (Y)',
+          '海拔 (公尺)',
+          '植被',
+          '土地覆蓋類型',
+        ],
+        columns: [
+          {
+            data: 'name',
+            type: 'text',
+          },
+          {
+            data: 'settingTime',
+            type: 'date',
+            dateFormat: 'YYYY-MM-DD',
+          },
+          {
+            data: 'longitude',
+            type: 'numeric',
+          },
+          {
+            data: 'latitude',
+            type: 'numeric',
+          },
+          {
+            data: 'altitude',
+            type: 'numeric',
+          },
+          {
+            data: 'vegetation',
+            type: 'text',
+          },
+          {
+            data: 'landCover',
+            type: 'text',
+          },
+        ],
+        data: [],
+      },
     };
   },
   props: {
@@ -93,6 +167,12 @@ export default {
       this.editCameraLocation.settingTime = moment(
         this.editCameraLocation.settingTime,
       ).format('YYYY-MM-DD');
+    },
+    cameraLocations: function(val) {
+      this.HandsontableSetting.data = val.map(v => ({
+        ...v,
+        settingTime: dateFormatYYYYMMDD(v.settingTime),
+      }));
     },
   },
   computed: {
@@ -172,6 +252,12 @@ export default {
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }
+    },
+    addNewCameraLoation() {
+      this.HandsontableSetting.data.push({});
+    },
+    async doSubmit() {
+      console.log(this.HandsontableSetting.data);
     },
   },
 };

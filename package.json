@@ -9,8 +9,10 @@
     "storybook": "start-storybook"
   },
   "dependencies": {
+    "@handsontable/vue": "^4.0.0",
     "babel-plugin-idx": "^2.4.0",
     "bootstrap": "^4.3.1",
+    "handsontable": "^7.0.2",
     "idx": "^2.5.5",
     "immer": "^2.1.4",
     "jquery": "^3.3.1",
