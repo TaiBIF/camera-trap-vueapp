@@ -185,7 +185,7 @@ export default {
       try {
         await this.putProjectMember({
           projectId: this.projectId,
-          payload: this.members,
+          members: this.members,
         });
         this.errorMessage = '';
       } catch (e) {

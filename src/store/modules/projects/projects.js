@@ -103,12 +103,15 @@ const actions = {
     });
     commit('updateProjectMember', data);
   },
-  async putProjectMember({ commit }, { projectId, payload }) {
-    const requests = payload.map(v =>
-      putProjectMember(projectId, v.id, { role: v.role.key }),
+  async putProjectMember({ commit }, { projectId, members }) {
+    const data = await putProjectMember(
+      projectId,
+      members.map(v => ({
+        user: v.id,
+        role: v.role.key,
+      })),
     );
-    const data = await Promise.all(requests);
-    commit('updateProjectMember', data.pop());
+    commit('updateProjectMember', data);
   },
   async getProjectSpecies({ commit }, id) {
     const data = await getProjectSpecies(id);

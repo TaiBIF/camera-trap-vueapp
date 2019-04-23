@@ -49,9 +49,9 @@ const postProjectMember = async (id, body) => {
 };
 
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidmembers
-const putProjectMember = async (projectId, userId, body) => {
+const putProjectMember = async (projectId, body) => {
   const res = await fetchWrap({
-    url: `/api/v1/projects/${projectId}/members/${userId}`,
+    url: `/api/v1/projects/${projectId}/members`,
     method: 'PUT',
     body,
   });
