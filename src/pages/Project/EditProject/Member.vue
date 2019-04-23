@@ -150,11 +150,7 @@ export default {
     },
   },
   methods: {
-    ...projects.mapActions([
-      'postProjectMember',
-      'deleteProjectMember',
-      'putProjectMember',
-    ]),
+    ...projects.mapActions(['postProjectMember', 'putProjectMember']),
     updateMember(newMember) {
       this.members =
         newMember &&
@@ -182,12 +178,7 @@ export default {
       }
     },
     async deleteMember(userId) {
-      try {
-        await this.deleteProjectMember({ id: this.projectId, userId });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
+      this.members = this.members.filter(v => v.id !== userId);
       this.removeMemberTarget = undefined;
     },
     async doSubmit() {

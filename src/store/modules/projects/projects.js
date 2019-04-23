@@ -1,8 +1,8 @@
 import idx from 'idx';
 import produce from 'immer';
 
+import { getLanguage } from '@/utils/i18n';
 import {
-  deleteProjectMember,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
@@ -12,7 +12,6 @@ import {
   putProjectMember,
   putProjectSpecies,
 } from '@/service';
-import { getLanguage } from '@/utils/i18n';
 
 // 計畫資料
 
@@ -110,13 +109,6 @@ const actions = {
     );
     const data = await Promise.all(requests);
     commit('updateProjectMember', data.pop());
-  },
-  async deleteProjectMember({ state, commit }, { id, userId }) {
-    await deleteProjectMember(id, userId);
-    commit(
-      'updateProjectMember',
-      state.projectDetail.members.filter(v => v.user.id !== userId),
-    );
   },
   async getProjectSpecies({ commit }, id) {
     const data = await getProjectSpecies(id);
