@@ -56,6 +56,7 @@
               <hot-table
                 id="sheet"
                 licenseKey="non-commercial-and-evaluation"
+                language="zh-TW"
                 :settings="HandsontableSetting"
               ></hot-table>
               <a class="text-green btn btn-link" @click="addNewCameraLoation">
@@ -144,6 +145,20 @@ export default {
           {
             data: 'landCover',
             type: 'text',
+          },
+        ],
+        contextMenu: [
+          'cut',
+          'copy',
+          '---------',
+          'undo',
+          'redo',
+          '---------',
+          {
+            name: '複製一列並貼上',
+          },
+          {
+            name: '刪除相機位置',
           },
         ],
         data: [],
