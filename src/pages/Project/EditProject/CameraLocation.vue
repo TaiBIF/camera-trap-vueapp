@@ -18,7 +18,27 @@
             @addArea="addStudyArea"
           />
         </div>
-        <div class="maintain p-0"></div>
+        <div class="maintain p-0">
+          <div class="empty-result" v-if="studyAreas.length === 0">
+            <img
+              src="/assets/common/empty-site.png"
+              width="174"
+              srcset="/assets/common/empty-site@2x.png"
+            />
+            <h5 class="text-gray">您還沒新增任何樣區</h5>
+          </div>
+          <div
+            class="empty-result"
+            v-else-if="currentStudyAreaId === undefined"
+          >
+            <img
+              src="/assets/common/empty-site.png"
+              width="174"
+              srcset="/assets/common/empty-site@2x.png"
+            />
+            <h5 class="text-gray">請選擇樣區</h5>
+          </div>
+        </div>
       </div>
     </div>
 
