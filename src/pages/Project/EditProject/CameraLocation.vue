@@ -221,7 +221,9 @@ export default {
     cameraLocations: function(val) {
       this.HandsontableSetting.data = val.map(v => ({
         ...v,
-        settingTime: dateFormatYYYYMMDD(v.settingTime),
+        ...(v.settingTime
+          ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
+          : undefined),
       }));
     },
   },
@@ -236,9 +238,7 @@ export default {
     ...studyAreas.mapActions([
       'postProjectStudyAreas',
       'getProjectCameraLocations',
-      'postProjectCameraLocations',
-      'putProjectCameraLocations',
-      'deleteProjectCameraLocations',
+      'modifyProjectCameraLocations',
     ]),
     selectStudyArea(id) {
       this.currentStudyAreaId = id;
@@ -256,58 +256,27 @@ export default {
       }
       this.setLoading(false);
     },
-    async addCameraLocation() {
-      try {
-        await this.postProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: this.currentStudyAreaId,
-          cameraLocation: {
-            ...this.newCameraLocation,
-            settingTime: moment(
-              this.newCameraLocation.settingTime,
-            ).toISOString(),
-          },
-        });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
-    },
-    async putCameraLocation() {
-      try {
-        await this.putProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: this.currentStudyAreaId,
-          cameraLocationId: this.currentCameraLocationId,
-          cameraLocation: {
-            ...this.editCameraLocation,
-            settingTime: moment(
-              this.editCameraLocation.settingTime,
-            ).toISOString(),
-          },
-        });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
-    },
-    async deleteCameraLocation(cameraLocationId) {
-      try {
-        await this.deleteProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: this.currentStudyAreaId,
-          cameraLocationId: cameraLocationId,
-        });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
-    },
     addNewCameraLoation() {
-      this.HandsontableSetting.data.push({});
+      this.HandsontableSetting.data.push({
+        studyArea: this.currentStudyAreaId,
+      });
     },
     async doSubmit() {
-      console.log(this.HandsontableSetting.data);
+      try {
+        await this.modifyProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.currentStudyAreaId,
+          payload: this.HandsontableSetting.data.map(v => ({
+            ...v,
+            ...(v.settingTime
+              ? { settingTime: moment(v.settingTime).toISOString() }
+              : undefined),
+          })),
+        });
+        this.errorMessage = '';
+      } catch (e) {
+        this.errorMessage = JSON.stringify(e);
+      }
     },
   },
 };
