@@ -121,15 +121,19 @@ export default {
           {
             data: 'name',
             type: 'text',
-            validator: async (value, callback) => {
+            validator: async function(value, callback) {
               if (!value) {
                 callback(false); // 不能為空字串
               } else {
+                const rowData = this.instance.getSourceDataAtRow(this.row);
                 const data = await getProjectCameraLocationsByName(
-                  this.projectId,
+                  rowData.projectId,
                   value,
                 );
-                callback(data.total === 0); // 同一計畫底下相機位置名稱不可重複
+                callback(
+                  data.total === 0 ||
+                    (data.total === 1 && data.items[0].id === rowData.id),
+                ); // 同一計畫底下相機位置名稱不可重複，但如果是修改自己本來的名字則是可以的
               }
             },
           },
@@ -240,6 +244,7 @@ export default {
     },
     cameraLocations: function(val) {
       this.HandsontableSetting.data = val.map(v => ({
+        projectId: this.projectId, // name 的 validator 會使用到
         ...v,
         ...(v.settingTime
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
@@ -278,6 +283,7 @@ export default {
     },
     addNewCameraLoation() {
       this.HandsontableSetting.data.push({
+        projectId: this.projectId, // name 的 validator 會使用到
         studyArea: this.currentStudyAreaId,
       });
     },
