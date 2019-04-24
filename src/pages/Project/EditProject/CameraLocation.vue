@@ -150,15 +150,50 @@ export default {
         contextMenu: [
           'cut',
           'copy',
+          {
+            name: '貼上 請使用鍵盤 ctrl+v 或 cmd+v',
+            disabled: true,
+          },
           '---------',
           'undo',
           'redo',
           '---------',
           {
             name: '複製一列並貼上',
+            disabled: function() {
+              return (
+                // 選擇多格 or 同時選擇多個範圍(例如拖拉範圍選擇)
+                // 這兩種情況會造成複製不只一列
+                this.getSelected().length !== 1 ||
+                this.getSelected()[0][0] !== this.getSelected()[0][2]
+              );
+            },
+            callback: (key, selection) => {
+              const copyTarget = {
+                ...this.$data.HandsontableSetting.data[selection[0].start.row],
+                id: undefined,
+              };
+              this.$data.HandsontableSetting.data.splice(
+                selection[0].start.row,
+                0,
+                copyTarget,
+              );
+            },
           },
           {
             name: '刪除相機位置',
+            disabled: function() {
+              return (
+                // 選擇多格不能刪除相機，會造成不知道要怎要刪除
+                this.getSelected().length !== 1
+              );
+            },
+            callback: (key, selection) => {
+              this.$data.HandsontableSetting.data.splice(
+                selection[0].start.row,
+                selection[0].end.row - selection[0].start.row + 1,
+              );
+            },
           },
         ],
         data: [],
