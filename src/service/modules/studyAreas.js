@@ -57,6 +57,17 @@ const deleteProjectCameraLocations = async (projectId, cameraLocationId) => {
   return res;
 };
 
+const getProjectCameraLocationsByName = async (
+  projectId,
+  cameraLocationName,
+) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/camera-locations?name=${cameraLocationName}`,
+    method: 'GET',
+  });
+  return res;
+};
+
 export {
   getProjectStudyAreas,
   postProjectStudyAreas,
@@ -64,4 +75,5 @@ export {
   postProjectCameraLocations,
   putProjectCameraLocations,
   deleteProjectCameraLocations,
+  getProjectCameraLocationsByName,
 };

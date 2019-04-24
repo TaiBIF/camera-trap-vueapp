@@ -88,6 +88,7 @@ import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import { getProjectCameraLocationsByName } from '@/service';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -120,6 +121,17 @@ export default {
           {
             data: 'name',
             type: 'text',
+            validator: async (value, callback) => {
+              if (!value) {
+                callback(false); // 不能為空字串
+              } else {
+                const data = await getProjectCameraLocationsByName(
+                  this.projectId,
+                  value,
+                );
+                callback(data.total === 0); // 同一計畫底下相機位置名稱不可重複
+              }
+            },
           },
           {
             data: 'settingTime',
@@ -129,10 +141,18 @@ export default {
           {
             data: 'longitude',
             type: 'numeric',
+            validator: (value, callback) => {
+              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
+              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
+            },
           },
           {
             data: 'latitude',
             type: 'numeric',
+            validator: (value, callback) => {
+              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
+              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
+            },
           },
           {
             data: 'altitude',
