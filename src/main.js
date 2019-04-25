@@ -8,6 +8,7 @@ import store from './store';
 
 import './sass/app.sass';
 import 'bootstrap';
+import 'handsontable/languages/zh-TW';
 
 Vue.use(VeeValidate);
 Vue.use(VTooltip);
