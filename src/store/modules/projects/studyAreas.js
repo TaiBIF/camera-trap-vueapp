@@ -26,6 +26,7 @@ const getters = {
         d.children.forEach(v => (v.title = v.title[getLanguage()]));
       }),
     ),
+  cameraLocations: state => state.cameraLocations,
 };
 
 const mutations = {

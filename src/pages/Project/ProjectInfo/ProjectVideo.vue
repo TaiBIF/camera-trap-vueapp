@@ -180,7 +180,9 @@ export default {
       );
     },
     selectedStudyArea: function() {
-      return this.allAreas.find(({ key }) => key === this.selectedStudyAreaId);
+      return (
+        this.allAreas.find(({ key }) => key === this.selectedStudyAreaId) || {}
+      );
     },
   },
   methods: {
