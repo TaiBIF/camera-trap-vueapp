@@ -42,7 +42,7 @@ export default new Router({
                   redirect: 'video/all/receive',
                 },
                 {
-                  path: 'video/:selectedStudyAreaId/:type',
+                  path: 'video/:selectedStudyAreaId/:type/:selectedCameraId?',
                   name: 'projectVideo',
                   meta: { projectAside: true },
                   component: () =>

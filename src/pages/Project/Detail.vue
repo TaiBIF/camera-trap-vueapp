@@ -41,16 +41,32 @@ export default {
     this.getProjectDetail(this.projectId);
     this.getProjectStudyAreas(this.projectId);
   },
+  watch: {
+    selectedStudyAreaId(value) {
+      if (value && value !== 'all') {
+        this.getProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: value,
+        });
+      }
+    },
+  },
   computed: {
     ...projects.mapGetters(['projectDetail']),
     ...studyAreas.mapGetters(['studyAreas']),
     projectId: function() {
       return this.$route.params.projectId;
     },
+    selectedStudyAreaId: function() {
+      return this.$route.params.selectedStudyAreaId;
+    },
   },
   methods: {
     ...projects.mapActions(['getProjectDetail']),
-    ...studyAreas.mapActions(['getProjectStudyAreas']),
+    ...studyAreas.mapActions([
+      'getProjectStudyAreas',
+      'getProjectCameraLocations',
+    ]),
   },
 };
 </script>
