@@ -57,8 +57,11 @@
         <div class="row">
           <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-8">
             <h1 class="display-heading mt-1">
-              {{ selectedStudyArea.value }}
+              {{
+                selectedCamera ? selectedCamera.name : selectedStudyArea.value
+              }}
             </h1>
+            <!-- TODO: wait for API -->
             <small class="sub-heading text-gray"
               >最後更新時間：2018/08/16</small
             >
@@ -68,23 +71,38 @@
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'receive' }"
-                :to="
-                  `/project/${projectId}/info/video/${selectedStudyAreaId}/receive`
-                "
+                :to="generateVideoPath('receive')"
               >
                 影像回收狀況
               </router-link>
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'identify' }"
-                :to="
-                  `/project/${projectId}/info/video/${selectedStudyAreaId}/identify`
-                "
+                :to="generateVideoPath('identify')"
               >
                 影像辨識進度
               </router-link>
             </div>
           </div>
+        </div>
+        <div v-if="selectedCamera" class="row">
+          <div class="cameraInfo">
+            <div>
+              架設日期：{{ dateFormatYYYYMMDD(selectedCamera.settingTime) }}
+            </div>
+            <div>
+              經緯度：{{
+                `${parseFloat(selectedCamera.longitude).toFixed(
+                  6,
+                )}, ${parseFloat(selectedCamera.latitude).toFixed(6)}`
+              }}
+            </div>
+            <div>海拔：{{ selectedCamera.altitude }}m</div>
+            <div>植披：{{ selectedCamera.vegetation }}</div>
+            <div>土地利用型態：{{ selectedCamera.landCover }}</div>
+          </div>
+        </div>
+        <div class="row">
           <project-video-identify />
           <project-video-receive />
         </div>
@@ -95,6 +113,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import ProjectMap from '@/pages/Project/ProjectInfo/ProjectMap.vue';
 import ProjectVideoIdentify from '@/pages/Project/ProjectInfo/ProjectVideoIdentify.vue';
 import ProjectVideoReceive from '@/pages/Project/ProjectInfo/ProjectVideoReceive.vue';
@@ -112,9 +131,15 @@ export default {
     return {};
   },
   computed: {
-    ...studyAreas.mapGetters(['studyAreas']),
+    ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     projectId: function() {
       return this.$route.params.projectId;
+    },
+    selectedStudyAreaId: function() {
+      return this.$route.params.selectedStudyAreaId || 'all';
+    },
+    selectedCameraId: function() {
+      return this.$route.params.selectedCameraId;
     },
     allAreas: function() {
       return this.studyAreas.reduce(
@@ -153,9 +178,6 @@ export default {
     parentAreaOptions: function() {
       return this.allAreas.filter(({ parentId }) => !parentId);
     },
-    selectedStudyAreaId: function() {
-      return this.$route.params.selectedStudyAreaId || 'all';
-    },
     selectedParentAreaId: function() {
       const area = this.allAreas.find(
         ({ path }) => path === this.selectedStudyAreaId,
@@ -184,8 +206,20 @@ export default {
         this.allAreas.find(({ key }) => key === this.selectedStudyAreaId) || {}
       );
     },
+    selectedCamera: function() {
+      if (!this.selectedCameraId) {
+        return null;
+      }
+      return (
+        this.cameraLocations.find(({ id }) => id === this.selectedCameraId) ||
+        {}
+      );
+    },
   },
   methods: {
+    dateFormatYYYYMMDD(dateString) {
+      return dateFormatYYYYMMDD(dateString);
+    },
     changeRoute(event) {
       const studyArea = this.allAreas.find(
         ({ key }) => key === event.target.value,
@@ -198,6 +232,27 @@ export default {
         });
       }
     },
+    generateVideoPath(type) {
+      if (this.selectedCameraId) {
+        return `/project/${this.projectId}/info/video/${
+          this.selectedStudyAreaId
+        }/${type}/${this.selectedCameraId}`;
+      }
+      return `/project/${this.projectId}/info/video/${
+        this.selectedStudyAreaId
+      }/${type}`;
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.cameraInfo {
+  width: 100%;
+  padding: 10px;
+  background-color: #f6f5f5;
+  color: #8b8b8b;
+  margin: 10px;
+  box-sizing: border-box;
+}
+</style>
