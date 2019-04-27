@@ -39,11 +39,14 @@
                 >
                   <div class="checkbox checkbox-inline" v-if="index < 12">
                     <input
+                      v-if="!isCheckAllCameraLocations"
                       type="checkbox"
                       v-model="query.cameraLocations"
                       :id="camera.id"
                       :value="camera.id"
+                      :disabled="isCheckAllCameraLocations"
                     />
+                    <input v-else type="checkbox" disabled="true" />
                     <label :for="camera.id">
                       <span class="text">{{ camera.name }}</span>
                     </label>
@@ -259,3 +262,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+input[type='checkbox'][disabled] + label {
+  color: #ccc;
+}
+</style>
