@@ -152,6 +152,12 @@ export default {
       },
     };
   },
+  mounted() {
+    setTimeout(() => {
+      this.setSheetHeight();
+      window.onresize = () => this.setSheetHeight();
+    }, 500);
+  },
   watch: {
     currentPage: function() {
       this.$emit('changePage', {
@@ -183,6 +189,18 @@ export default {
     //計算最多總頁數
     totalPage() {
       return Math.ceil(this.annotationsTotal / this.pageSize);
+    },
+  },
+  methods: {
+    setSheetHeight() {
+      const sheetHeight =
+        window.innerHeight -
+        document.querySelector('header').clientHeight -
+        document.querySelector('.search-container').clientHeight -
+        document.querySelector('.sheet-footer').clientHeight -
+        document.querySelector('.sheet-header').clientHeight;
+
+      this.HandsontableSetting.height = sheetHeight;
     },
   },
 };
