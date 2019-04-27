@@ -21,9 +21,11 @@
               <div class="checkbox checkbox-inline">
                 <input
                   type="checkbox"
-                  v-model="query.cameraLocations"
                   id="camera-all"
-                  value="all"
+                  :checked="isCheckAllCameraLocations"
+                  @click="
+                    query.cameraLocations = cameraLocations.map(v => v.id)
+                  "
                 />
                 <label for="camera-all">全部相機位置</label>
               </div>
@@ -39,7 +41,6 @@
                       v-model="query.cameraLocations"
                       :id="camera.id"
                       :value="camera.id"
-                      :disabled="query.cameraLocations.indexOf('all') > -1"
                     />
                     <label :for="camera.id">
                       <span class="text">{{ camera.name }}</span>
@@ -133,6 +134,9 @@ export default {
         });
       }
       return title;
+    },
+    isCheckAllCameraLocations: function() {
+      return this.query.cameraLocations.length === this.cameraLocations.length;
     },
   },
   methods: {
