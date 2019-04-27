@@ -106,6 +106,9 @@
         </form>
       </div>
     </div>
+    <div class="sheet-container">
+      <AnnotationsSheet @changePage="setPagination" />
+    </div>
 
     <camera-location-modal
       v-if="CameraModalOpen"
@@ -126,6 +129,8 @@ import moment from 'moment';
 import { getTodayDate, subNYears } from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
 
+import AnnotationsSheet from './AnnotationsSheet';
+
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
 
@@ -134,6 +139,7 @@ let debounceTimeId = undefined;
 export default {
   components: {
     CameraLocationModal,
+    AnnotationsSheet,
     VueTimepicker,
     DatePicker,
   },
@@ -142,6 +148,8 @@ export default {
       isLoading: false,
       CameraModalOpen: false,
       query: {
+        index: 0,
+        size: 50,
         cameraLocations: [],
         startDate: subNYears(getTodayDate(), 5),
         endDate: getTodayDate(),
@@ -217,6 +225,11 @@ export default {
       this.query.cameraLocations = val;
       this.CameraModalOpen = false;
     },
+    setPagination(val) {
+      this.query.index = val.currentPage - 1;
+      this.query.size = val.pageSize;
+      this.doSearch();
+    },
     async doSearch() {
       if (this.query.cameraLocations.length === 0) {
         return;
@@ -237,6 +250,8 @@ export default {
           cameraLocations: query.cameraLocations,
           startTime: getTime(query.startDate, query.startTime),
           endTime: getTime(query.endDate, query.endTime),
+          index: query.index,
+          size: query.size,
         },
       });
       this.isLoading = false;

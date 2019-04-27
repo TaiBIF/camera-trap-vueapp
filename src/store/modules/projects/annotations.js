@@ -7,7 +7,7 @@ import { getLanguage } from '@/utils/i18n';
 
 const state = {
   annotations: [],
-  annotationsTotal: undefined,
+  annotationsTotal: 0,
 };
 
 const getters = {
