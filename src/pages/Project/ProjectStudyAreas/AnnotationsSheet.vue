@@ -85,6 +85,8 @@ import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 
 const annotations = createNamespacedHelpers('annotations');
+const projects = createNamespacedHelpers('projects');
+const dataFields = createNamespacedHelpers('dataFields');
 
 export default {
   components: {
@@ -99,53 +101,12 @@ export default {
       HandsontableSetting: {
         height: 500,
         rowHeaders: true,
-        colHeaders: [
-          // 'URL',
-          '<span style="color: red;">*</span>相機位置名稱',
-          '架設日期',
-          '<span style="color: red;">*</span>經度 (X)',
-          '<span style="color: red;">*</span>緯度 (Y)',
-          '海拔 (公尺)',
-          '植被',
-          '土地覆蓋類型',
-        ],
+        colHeaders: ['樣區', '相機位置', '檔名', '時間', '物種'],
         columns: [
           {
             data: 'name',
             type: 'text',
-          },
-          {
-            data: 'settingTime',
-            type: 'date',
-            dateFormat: 'YYYY-MM-DD',
-          },
-          {
-            data: 'longitude',
-            type: 'numeric',
-            validator: (value, callback) => {
-              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
-              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
-            },
-          },
-          {
-            data: 'latitude',
-            type: 'numeric',
-            validator: (value, callback) => {
-              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
-              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
-            },
-          },
-          {
-            data: 'altitude',
-            type: 'numeric',
-          },
-          {
-            data: 'vegetation',
-            type: 'text',
-          },
-          {
-            data: 'landCover',
-            type: 'text',
+            readOnly: true,
           },
         ],
         data: [{ name: 'abc' }],
@@ -178,6 +139,8 @@ export default {
   computed: {
     ...annotations.mapState(['annotationsTotal']),
     ...annotations.mapGetters(['annotations']),
+    ...dataFields.mapGetters(['dataFields']),
+    ...projects.mapGetters(['projectSpecies']),
     //計算目前筆數範圍
     currentDataRange() {
       const { currentPage, pageSize, annotationsTotal } = this;

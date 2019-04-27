@@ -136,6 +136,8 @@ import AnnotationsSheet from './AnnotationsSheet';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
+const projects = createNamespacedHelpers('projects');
+const dataFields = createNamespacedHelpers('dataFields');
 
 let debounceTimeId = undefined;
 
@@ -168,6 +170,8 @@ export default {
     };
   },
   mounted() {
+    this.getDataFields();
+    this.getProjectSpecies(this.projectId);
     this.getProjectCameraLocations({
       projectId: this.projectId,
       studyAreaId: this.studyAreaId,
@@ -222,6 +226,8 @@ export default {
     },
   },
   methods: {
+    ...dataFields.mapActions(['getDataFields']),
+    ...projects.mapActions(['getProjectSpecies']),
     ...studyAreas.mapActions(['getProjectCameraLocations']),
     ...annotations.mapActions(['getAnnotations']),
     setSelectedCamera(val) {
