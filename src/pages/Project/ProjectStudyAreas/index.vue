@@ -1,6 +1,6 @@
 <template>
   <div class="maintain page-sheet p-0">
-    <div class="search-container">
+    <div class="search-container" v-bind:class="{ loading: isLoading }">
       <!-- Edit mode -->
       <!-- Overview mode -->
       <div class="search-content">
@@ -24,7 +24,9 @@
                   id="camera-all"
                   :checked="isCheckAllCameraLocations"
                   @click="
-                    query.cameraLocations = cameraLocations.map(v => v.id)
+                    query.cameraLocations = isCheckAllCameraLocations
+                      ? []
+                      : cameraLocations.map(v => v.id)
                   "
                 />
                 <label for="camera-all">全部相機位置</label>
@@ -59,6 +61,48 @@
               </div>
             </div>
           </div>
+          <div class="form-group mb-2">
+            <label>資料時間</label>
+            <div class="d-inline-block">
+              <div class="input-group-inline">
+                <div class="input-group">
+                  <date-picker
+                    :format="'YYYY-MM-DD'"
+                    :first-day-of-week="1"
+                    v-model="query.startDate"
+                  ></date-picker>
+                  <div class="input-group-append">
+                    <i class="icon icon-calendar"></i>
+                  </div>
+                </div>
+                <div class="input-group ml-2">
+                  <vue-timepicker v-model="query.startTime"></vue-timepicker>
+                </div>
+                <span class="input-text">到</span>
+                <div class="input-group">
+                  <date-picker
+                    :format="'YYYY-MM-DD'"
+                    :first-day-of-week="1"
+                    v-model="query.endDate"
+                  ></date-picker>
+                  <div class="input-group-append">
+                    <i class="icon icon-calendar"></i>
+                  </div>
+                </div>
+                <div class="input-group ml-2">
+                  <vue-timepicker v-model="query.endTime"></vue-timepicker>
+                </div>
+                <a
+                  @click="doSearch"
+                  class="btn btn-sm btn-green"
+                  :style="{ margin: '4px' }"
+                  :disabled="query.cameraLocations.length === 0"
+                >
+                  篩選
+                </a>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -75,21 +119,40 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import DatePicker from 'vue2-datepicker';
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
 
+import { getTodayDate, subNYears } from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
 
+let debounceTimeId = undefined;
+
 export default {
   components: {
     CameraLocationModal,
+    VueTimepicker,
+    DatePicker,
   },
   data() {
     return {
+      isLoading: false,
       CameraModalOpen: false,
       query: {
         cameraLocations: [],
+        startDate: subNYears(getTodayDate(), 5),
+        endDate: getTodayDate(),
+        startTime: {
+          HH: '00',
+          mm: '00',
+        },
+        endTime: {
+          HH: '23',
+          mm: '59',
+        },
       },
     };
   },
@@ -105,6 +168,14 @@ export default {
         projectId: this.projectId,
         studyAreaId: this.studyAreaId,
       });
+    },
+    'query.cameraLocations': function() {
+      debounceTimeId && window.clearTimeout(debounceTimeId);
+
+      debounceTimeId = setTimeout(() => {
+        debounceTimeId = undefined;
+        this.doSearch();
+      }, 2000);
     },
   },
   computed: {
@@ -146,11 +217,29 @@ export default {
       this.query.cameraLocations = val;
       this.CameraModalOpen = false;
     },
-    doSearch() {
-      this.getAnnotations({
+    async doSearch() {
+      if (this.query.cameraLocations.length === 0) {
+        return;
+      }
+      const { query } = this;
+      const getTime = (day, time) => {
+        return moment(day)
+          .hour(time.HH)
+          .minute(time.mm)
+          .toISOString();
+      };
+
+      this.isLoading = true;
+
+      await this.getAnnotations({
         studyAreaId: this.studyAreaId,
-        ...this.query,
+        ...{
+          cameraLocations: query.cameraLocations,
+          startTime: getTime(query.startDate, query.startTime),
+          endTime: getTime(query.endDate, query.endTime),
+        },
       });
+      this.isLoading = false;
     },
   },
 };
