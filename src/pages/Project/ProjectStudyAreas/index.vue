@@ -14,20 +14,79 @@
           {{ studyAreaTitle }}
         </h3>
         <hr class="my-0" />
+        <form action="" class="form form-horizontal">
+          <div class="form-group mb-0">
+            <label>相機位置</label>
+            <div class="d-inline-block">
+              <div class="checkbox checkbox-inline">
+                <input
+                  type="checkbox"
+                  v-model="query.cameraLocations"
+                  id="camera-all"
+                  value="all"
+                />
+                <label for="camera-all">全部相機位置</label>
+              </div>
+              <div class="mb-2">
+                <div
+                  class="d-inline-block"
+                  :key="camera.id"
+                  v-for="(camera, index) in cameraLocations"
+                >
+                  <div class="checkbox checkbox-inline" v-if="index < 12">
+                    <input
+                      type="checkbox"
+                      v-model="query.cameraLocations"
+                      :id="camera.id"
+                      :value="camera.id"
+                      :disabled="query.cameraLocations.indexOf('all') > -1"
+                    />
+                    <label :for="camera.id">
+                      <span class="text">{{ camera.name }}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="d-inline-block" v-if="cameraLocations.length >= 12">
+                  <a
+                    class="link text-gray"
+                    role="button"
+                    @click="CameraModalOpen = true"
+                  >
+                    查看更多
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
+
+    <camera-location-modal
+      v-if="CameraModalOpen"
+      :cameraLocations="cameraLocations"
+      :selected="query.cameraLocations"
+      @submit="setSelectedCamera"
+      @close="CameraModalOpen = false"
+    />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
+import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
+
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
 
 export default {
+  components: {
+    CameraLocationModal,
+  },
   data() {
     return {
+      CameraModalOpen: false,
       query: {
         cameraLocations: [],
       },
@@ -48,6 +107,7 @@ export default {
     },
   },
   computed: {
+    ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas']),
     projectId: function() {
       return this.$route.params.projectId;
@@ -78,6 +138,10 @@ export default {
   methods: {
     ...studyAreas.mapActions(['getProjectCameraLocations']),
     ...annotations.mapActions(['getAnnotations']),
+    setSelectedCamera(val) {
+      this.query.cameraLocations = val;
+      this.CameraModalOpen = false;
+    },
     doSearch() {
       this.getAnnotations({
         studyAreaId: this.studyAreaId,
