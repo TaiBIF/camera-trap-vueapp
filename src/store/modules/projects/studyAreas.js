@@ -28,6 +28,23 @@ const getters = {
       }),
     ),
   cameraLocations: state => state.cameraLocations,
+  studyAreaTitle: (_, getters) => id => {
+    let title = '';
+    getters.studyAreas.forEach(v => {
+      // study area 第一層
+      if (v.id === id) {
+        title = v.title;
+      } else if (v.children.length > 0) {
+        v.children.forEach(v2 => {
+          // study area 第二層
+          if (v2.id === id) {
+            title = `${v.title} - ${v2.title}`;
+          }
+        });
+      }
+    });
+    return title;
+  },
 };
 
 const mutations = {

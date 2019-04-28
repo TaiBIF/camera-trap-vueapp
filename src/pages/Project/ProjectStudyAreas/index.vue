@@ -11,7 +11,7 @@
           下載篩選結果
         </a>
         <h3 class="text-green mb-2">
-          {{ studyAreaTitle }}
+          {{ studyAreaTitle(studyAreaId) }}
         </h3>
         <hr class="my-0" />
         <form action="" class="form form-horizontal">
@@ -230,31 +230,12 @@ export default {
   },
   computed: {
     ...studyAreas.mapState(['cameraLocations']),
-    ...studyAreas.mapGetters(['studyAreas']),
+    ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
     projectId: function() {
       return this.$route.params.projectId;
     },
     studyAreaId: function() {
       return this.$route.params.studyAreaId;
-    },
-    studyAreaTitle: function() {
-      let title = '';
-      if (this.studyAreas.length > 0) {
-        this.studyAreas.forEach(v => {
-          // study area 第一層
-          if (v.id === this.studyAreaId) {
-            title = v.title;
-          } else if (v.children.length > 0) {
-            v.children.forEach(v2 => {
-              // study area 第二層
-              if (v2.id === this.studyAreaId) {
-                title = `${v.title} - ${v2.title}`;
-              }
-            });
-          }
-        });
-      }
-      return title;
     },
     isCheckAllCameraLocations: function() {
       return this.query.cameraLocations.length === this.cameraLocations.length;
