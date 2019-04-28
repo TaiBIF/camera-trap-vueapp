@@ -142,6 +142,7 @@ export default {
       });
     },
     pageSize: function() {
+      this.currentPage = 1;
       this.$emit('changePage', {
         currentPage: this.currentPage,
         pageSize: this.pageSize,
