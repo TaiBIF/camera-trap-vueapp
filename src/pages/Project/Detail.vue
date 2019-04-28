@@ -40,15 +40,11 @@ export default {
   mounted() {
     this.getProjectDetail(this.projectId);
     this.getProjectStudyAreas(this.projectId);
+    this.fetchProjectCameraLocations();
   },
   watch: {
-    selectedStudyAreaId(value) {
-      if (value && value !== 'all') {
-        this.getProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: value,
-        });
-      }
+    selectedStudyAreaId() {
+      this.fetchProjectCameraLocations();
     },
   },
   computed: {
@@ -67,6 +63,14 @@ export default {
       'getProjectStudyAreas',
       'getProjectCameraLocations',
     ]),
+    fetchProjectCameraLocations() {
+      if (this.selectedStudyAreaId && this.selectedStudyAreaId !== 'all') {
+        this.getProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.selectedStudyAreaId,
+        });
+      }
+    },
   },
 };
 </script>
