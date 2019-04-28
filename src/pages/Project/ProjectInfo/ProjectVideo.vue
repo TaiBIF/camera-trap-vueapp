@@ -123,7 +123,10 @@ export default {
     ProjectChart,
   },
   data() {
-    return {};
+    return {
+      selectedParentAreaId: '',
+      selectedChildAreaId: '',
+    };
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
@@ -173,24 +176,6 @@ export default {
     parentAreaOptions: function() {
       return this.allAreas.filter(({ parentId }) => !parentId);
     },
-    selectedParentAreaId: function() {
-      const area = this.allAreas.find(
-        ({ path }) => path === this.selectedStudyAreaId,
-      );
-      if (area) {
-        return area.parentId || area.key;
-      }
-      return 'all';
-    },
-    selectedChildAreaId: function() {
-      const area = this.allAreas.find(
-        ({ key }) => key === this.selectedStudyAreaId,
-      );
-      if (area && area.parentId) {
-        return area.key;
-      }
-      return null;
-    },
     childAreaOptions: function() {
       return this.allAreas.filter(
         ({ parentId }) => parentId === this.selectedParentAreaId,
@@ -211,9 +196,29 @@ export default {
       );
     },
   },
+  watch: {
+    allAreas: 'updateSelectArea',
+    selectedStudyAreaId: 'updateSelectArea',
+  },
   methods: {
     dateFormatYYYYMMDD(dateString) {
       return dateFormatYYYYMMDD(dateString);
+    },
+    updateSelectArea() {
+      const selectedArea = this.allAreas.find(
+        ({ key }) => key === this.selectedStudyAreaId,
+      );
+      if (selectedArea) {
+        // move to next tick to wait options ready
+        setTimeout(() => {
+          this.selectedParentAreaId = selectedArea.parentId || selectedArea.key;
+          this.selectedChildAreaId = selectedArea.parentId
+            ? selectedArea.key
+            : '';
+        }, 0);
+      } else {
+        this.selectedParentAreaId = 'all';
+      }
     },
     changeRoute(event) {
       const studyArea = this.allAreas.find(
