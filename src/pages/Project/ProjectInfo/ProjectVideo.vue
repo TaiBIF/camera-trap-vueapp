@@ -54,6 +54,11 @@
         <project-map />
       </div>
       <div class="col-7">
+        <div v-if="selectedCameraId" class="backLink">
+          <router-link :to="backToAreaLink">{{
+            `＜ 返回 ${selectedStudyArea.value}`
+          }}</router-link>
+        </div>
         <div class="row">
           <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-8">
             <h1 class="display-heading mt-1">
@@ -66,7 +71,10 @@
               >最後更新時間：2018/08/16</small
             >
           </div>
-          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-4 text-right">
+          <div
+            v-if="!selectedCameraId"
+            class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-4 text-right"
+          >
             <div class="btn-group">
               <router-link
                 class="btn btn-border-gray"
@@ -138,6 +146,11 @@ export default {
     },
     selectedCameraId: function() {
       return this.$route.params.selectedCameraId;
+    },
+    backToAreaLink: function() {
+      return `/project/${this.projectId}/info/video/${
+        this.selectedStudyAreaId
+      }/receive`;
     },
     allAreas: function() {
       return this.studyAreas.reduce(
@@ -247,6 +260,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.backLink {
+  margin: 0 -15px 5px;
+
+  & > a {
+    color: #8b8b8b;
+  }
+}
 .cameraInfo {
   width: 100%;
   padding: 10px;
