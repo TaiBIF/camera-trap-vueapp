@@ -12,7 +12,7 @@
             class="btn btn-icon"
             v-tooltip.top="'影像檢視'"
             :class="{ active: galleryShow }"
-            @click="galleryShow = !galleryShow"
+            @click="$emit('galleryShow', !galleryShow)"
           >
             <i class="icon-gallery"></i>
           </a>
@@ -21,7 +21,7 @@
             class="btn btn-icon"
             v-tooltip.top="'版本紀錄'"
             :class="{ active: historyShow }"
-            @click="historyShow = !historyShow"
+            @click="$emit('historyShow', !historyShow)"
           >
             <i class="icon-time-machine"></i>
           </a>
@@ -92,10 +92,18 @@ export default {
   components: {
     HotTable,
   },
+  props: {
+    galleryShow: {
+      type: Boolean,
+      required: true,
+    },
+    historyShow: {
+      type: Boolean,
+      required: true,
+    },
+  },
   data() {
     return {
-      galleryShow: true,
-      historyShow: true,
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       HandsontableSetting: {

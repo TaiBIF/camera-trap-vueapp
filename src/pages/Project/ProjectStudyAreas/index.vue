@@ -110,7 +110,14 @@
       </div>
     </div>
     <div class="sheet-container">
-      <AnnotationsSheet @changePage="setPagination" />
+      <AnnotationsSheet
+        :galleryShow="galleryShow"
+        :historyShow="historyShow"
+        @changePage="setPagination"
+        @galleryShow="galleryShow = $event"
+        @historyShow="historyShow = $event"
+      />
+      <right-side :galleryShow="galleryShow" :historyShow="historyShow" />
     </div>
 
     <camera-location-modal
@@ -133,6 +140,7 @@ import { getTodayDate, subNYears } from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
 
 import AnnotationsSheet from './AnnotationsSheet';
+import RightSide from './RightSide.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
@@ -145,6 +153,7 @@ export default {
   components: {
     CameraLocationModal,
     AnnotationsSheet,
+    RightSide,
     VueTimepicker,
     DatePicker,
   },
@@ -152,6 +161,8 @@ export default {
     return {
       isLoading: false,
       CameraModalOpen: false,
+      galleryShow: false,
+      historyShow: false,
       query: {
         index: 0,
         size: 50,
