@@ -101,6 +101,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    currentAnnotationIdx: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -112,12 +116,13 @@ export default {
         colHeaders: ['樣區', '相機位置', '檔名', '時間', '物種'],
         columns: [
           {
-            data: 'name',
+            data: 'studyArea',
             type: 'text',
             readOnly: true,
           },
         ],
         data: [{ name: 'abc' }],
+        afterSelectionEnd: this.changeAnnotationIdx,
       },
     };
   },
@@ -172,6 +177,9 @@ export default {
         document.querySelector('.sheet-header').clientHeight;
 
       this.HandsontableSetting.height = sheetHeight;
+    },
+    changeAnnotationIdx(row, column, row2) {
+      this.$emit('currentAnnotationIdx', row2);
     },
   },
 };

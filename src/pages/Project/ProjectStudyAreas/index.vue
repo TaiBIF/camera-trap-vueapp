@@ -113,11 +113,18 @@
       <AnnotationsSheet
         :galleryShow="galleryShow"
         :historyShow="historyShow"
+        :currentAnnotationIdx="currentAnnotationIdx"
         @changePage="setPagination"
         @galleryShow="galleryShow = $event"
         @historyShow="historyShow = $event"
+        @currentAnnotationIdx="currentAnnotationIdx = $event"
       />
-      <right-side :galleryShow="galleryShow" :historyShow="historyShow" />
+      <right-side
+        :galleryShow="galleryShow"
+        :historyShow="historyShow"
+        :currentAnnotationIdx="currentAnnotationIdx"
+        @currentAnnotationIdx="currentAnnotationIdx = $event"
+      />
     </div>
 
     <camera-location-modal
@@ -163,6 +170,7 @@ export default {
       CameraModalOpen: false,
       galleryShow: false,
       historyShow: false,
+      currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: {
         index: 0,
         size: 50,
@@ -263,6 +271,7 @@ export default {
       };
 
       this.isLoading = true;
+      this.currentAnnotationIdx = -1;
 
       await this.getAnnotations({
         studyAreaId: this.studyAreaId,

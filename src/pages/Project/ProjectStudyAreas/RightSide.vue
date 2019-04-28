@@ -3,6 +3,7 @@
     class="sidebar"
     :style="{ width: `${historyShow || galleryShow ? galleryWidth : 0}px` }"
   >
+    {{ currentAnnotationIdx }}
     <!-- <div class="photo-container" v-if="displayImageComponent">
       <div class="gallery-header">
         <a
@@ -121,6 +122,10 @@ export default {
     },
     historyShow: {
       type: Boolean,
+      required: true,
+    },
+    currentAnnotationIdx: {
+      type: Number,
       required: true,
     },
   },
