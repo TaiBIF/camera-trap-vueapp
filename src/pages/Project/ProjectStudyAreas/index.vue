@@ -79,7 +79,10 @@
                   </div>
                 </div>
                 <div class="input-group ml-2">
-                  <vue-timepicker v-model="query.startTime"></vue-timepicker>
+                  <vue-timepicker
+                    v-model="query.startTime"
+                    hide-clear-button
+                  ></vue-timepicker>
                 </div>
                 <span class="input-text">到</span>
                 <div class="input-group">
@@ -93,7 +96,10 @@
                   </div>
                 </div>
                 <div class="input-group ml-2">
-                  <vue-timepicker v-model="query.endTime"></vue-timepicker>
+                  <vue-timepicker
+                    v-model="query.endTime"
+                    hide-clear-button
+                  ></vue-timepicker>
                 </div>
                 <a
                   @click="doSearch"
@@ -156,6 +162,12 @@ const dataFields = createNamespacedHelpers('dataFields');
 
 let debounceTimeId = undefined;
 
+const getTime = (day, time) => {
+  return moment(day)
+    .hour(time.HH)
+    .minute(time.mm);
+};
+
 export default {
   components: {
     CameraLocationModal,
@@ -211,6 +223,10 @@ export default {
         this.doSearch();
       }, 2000);
     },
+    'query.startDate': 'swapDate',
+    'query.endDate': 'swapDate',
+    'query.startTime': 'swapDate',
+    'query.endTime': 'swapDate',
   },
   computed: {
     ...studyAreas.mapState(['cameraLocations']),
@@ -249,6 +265,27 @@ export default {
     ...projects.mapActions(['getProjectSpecies']),
     ...studyAreas.mapActions(['getProjectCameraLocations']),
     ...annotations.mapActions(['getAnnotations']),
+    swapDate() {
+      const { query } = this;
+
+      // 先判斷 date 如果 startTime > endTime 則先交換 date
+      let startTime = getTime(query.startDate, query.startTime);
+      let endTime = getTime(query.endDate, query.endTime);
+      if (startTime > endTime) {
+        const tmpDate = query.startDate;
+        query.startDate = query.endDate;
+        query.endDate = tmpDate;
+      }
+
+      // 如果已經交換 date 還是 startTime > endTime 則連 time 也交換
+      startTime = getTime(query.startDate, query.startTime);
+      endTime = getTime(query.endDate, query.endTime);
+      if (startTime > endTime) {
+        const tmpTime = query.startTime;
+        query.startTime = query.endTime;
+        query.endTime = tmpTime;
+      }
+    },
     setSelectedCamera(val) {
       this.query.cameraLocations = val;
       this.CameraModalOpen = false;
@@ -263,12 +300,6 @@ export default {
         return;
       }
       const { query } = this;
-      const getTime = (day, time) => {
-        return moment(day)
-          .hour(time.HH)
-          .minute(time.mm)
-          .toISOString();
-      };
 
       this.isLoading = true;
       this.currentAnnotationIdx = -1;
@@ -277,8 +308,8 @@ export default {
         studyAreaId: this.studyAreaId,
         ...{
           cameraLocations: query.cameraLocations,
-          startTime: getTime(query.startDate, query.startTime),
-          endTime: getTime(query.endDate, query.endTime),
+          startTime: getTime(query.startDate, query.startTime).toISOString(),
+          endTime: getTime(query.endDate, query.endTime).toISOString(),
           index: query.index,
           size: query.size,
         },
