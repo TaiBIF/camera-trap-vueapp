@@ -102,10 +102,7 @@
             <div>土地利用型態：{{ selectedCamera.landCover }}</div>
           </div>
         </div>
-        <div class="row">
-          <project-video-identify />
-          <project-video-receive />
-        </div>
+        <project-chart />
       </div>
     </div>
   </div>
@@ -114,9 +111,8 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import ProjectChart from '@/pages/Project/ProjectInfo/ProjectChart.vue';
 import ProjectMap from '@/pages/Project/ProjectInfo/ProjectMap.vue';
-import ProjectVideoIdentify from '@/pages/Project/ProjectInfo/ProjectVideoIdentify.vue';
-import ProjectVideoReceive from '@/pages/Project/ProjectInfo/ProjectVideoReceive.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 
@@ -124,8 +120,7 @@ export default {
   name: 'project-video',
   components: {
     ProjectMap,
-    ProjectVideoReceive,
-    ProjectVideoIdentify,
+    ProjectChart,
   },
   data() {
     return {};
