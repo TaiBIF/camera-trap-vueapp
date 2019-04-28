@@ -96,6 +96,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { equals } from 'ramda';
 import { getProjectCameraLocations } from '@/service';
 import DatePicker from 'vue2-datepicker';
+import moment from 'moment';
 import vSelect from 'vue-select';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -185,6 +186,12 @@ export default {
         this.fetchCameraLocations(area.value);
       }
     },
+    'form.startAt': function() {
+      this.swapDate();
+    },
+    'form.endAt': function() {
+      this.swapDate();
+    },
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
@@ -236,6 +243,17 @@ export default {
     },
   },
   methods: {
+    swapDate() {
+      if (
+        !!this.form.startAt &&
+        !!this.form.endAt &&
+        moment(this.form.startAt) > moment(this.form.endAt)
+      ) {
+        const tmp = this.form.startAt;
+        this.form.startAt = this.form.endAt;
+        this.form.endAt = tmp;
+      }
+    },
     async fetchCameraLocations(areaId) {
       const { items } = await getProjectCameraLocations(this.projectId, areaId);
       if (items) {
