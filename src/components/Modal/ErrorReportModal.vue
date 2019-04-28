@@ -93,9 +93,9 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { equals } from 'ramda';
 import { getProjectCameraLocations } from '@/service';
 import DatePicker from 'vue2-datepicker';
-import isEqual from 'lodash.isequal';
 import vSelect from 'vue-select';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -245,7 +245,7 @@ export default {
         }));
 
         // only change options when camera is different, to prevent current selected camera be reset
-        if (!isEqual(this.cameraOptions, newOptions)) {
+        if (!equals(this.cameraOptions, newOptions)) {
           this.cameraOptions = newOptions;
         }
       }
