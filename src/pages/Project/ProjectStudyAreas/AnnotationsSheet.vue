@@ -123,7 +123,7 @@ export default {
             readOnly: true,
           },
         ],
-        data: [{ name: 'abc' }],
+        data: [],
         afterSelectionEnd: this.changeAnnotationIdx,
       },
     };
