@@ -84,10 +84,14 @@
 <script>
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
+import * as R from 'ramda';
+
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
+const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
   components: {
@@ -107,6 +111,7 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
       currentPage: 1, //目前在第幾頁
@@ -119,6 +124,26 @@ export default {
         columns: [
           {
             data: 'studyArea',
+            type: 'text',
+            readOnly: true,
+          },
+          {
+            data: 'cameraLocation',
+            type: 'text',
+            readOnly: true,
+          },
+          {
+            data: 'filename',
+            type: 'text',
+            readOnly: true,
+          },
+          {
+            data: 'time',
+            type: 'text',
+            readOnly: true,
+          },
+          {
+            data: 'species',
             type: 'text',
             readOnly: true,
           },
@@ -149,7 +174,21 @@ export default {
       });
     },
     annotations: function(val) {
-      this.HandsontableSetting.data = val;
+      const cameraLocationName = id =>
+        R.find(R.propEq('id', id), this.cameraLocations).name;
+
+      const speciesName = ({ id }) =>
+        R.find(R.propEq('id', id), this.projectSpecies).title;
+
+      this.HandsontableSetting.data = R.map(
+        R.evolve({
+          studyArea: this.studyAreaTitle,
+          cameraLocation: cameraLocationName,
+          time: dateFormatYYYYMMDDHHmmss,
+          species: speciesName,
+        }),
+        val,
+      );
     },
     currentAnnotationIdx: function(val) {
       // 改變時要修改選擇 row，例如右側影像檢視切換成下一張時
@@ -167,6 +206,8 @@ export default {
     ...annotations.mapGetters(['annotations']),
     ...dataFields.mapGetters(['dataFields']),
     ...projects.mapGetters(['projectSpecies']),
+    ...studyAreas.mapState(['cameraLocations']),
+    ...studyAreas.mapGetters(['studyAreaTitle']),
     //計算目前筆數範圍
     currentDataRange() {
       const { currentPage, pageSize, annotationsTotal } = this;
