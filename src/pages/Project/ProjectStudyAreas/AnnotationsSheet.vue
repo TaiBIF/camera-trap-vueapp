@@ -30,6 +30,7 @@
     </div>
     <!-- handsontable -->
     <hot-table
+      ref="sheet"
       id="sheeta"
       licenseKey="non-commercial-and-evaluation"
       language="zh-TW"
@@ -112,6 +113,7 @@ export default {
       pageSize: 50, //一頁顯示的筆數
       HandsontableSetting: {
         height: 500,
+        outsideClickDeselects: false,
         rowHeaders: true,
         colHeaders: ['樣區', '相機位置', '檔名', '時間', '物種'],
         columns: [
@@ -147,6 +149,16 @@ export default {
     },
     annotations: function(val) {
       this.HandsontableSetting.data = val;
+    },
+    currentAnnotationIdx: function(val) {
+      // 改變時要修改選擇 row，例如右側影像檢視切換成下一張時
+      const { hotInstance } = this.$refs.sheet;
+      const selected = hotInstance.getSelected();
+
+      // 如果外部設定的不是目前表單所選擇的則要改變選擇的 row
+      if (!!selected && selected[0][2] !== val) {
+        hotInstance.selectRows(val);
+      }
     },
   },
   computed: {

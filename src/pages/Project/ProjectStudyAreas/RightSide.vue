@@ -3,18 +3,11 @@
     class="sidebar"
     :style="{ width: `${historyShow || galleryShow ? galleryWidth : 0}px` }"
   >
-    {{ currentAnnotationIdx }}
-    <!-- <div class="photo-container" v-if="displayImageComponent">
-      <div class="gallery-header">
-        <a
-          @click="changeMode('galleryShow', false)"
-          class="close mt-1 float-right"
-        >
-          <i class="icon-remove-sm"></i>
-        </a>
-        影像檢視
-      </div>
-      <div class="gallery-body" v-if="!hasImage && !hasVideo">
+    <div
+      class="photo-container"
+      v-if="galleryShow && currentAnnotationIdx !== -1"
+    >
+      <div class="gallery-body" v-if="!hasImage">
         <div class="empty-result">
           <img
             src="/assets/common/empty-site.png"
@@ -22,59 +15,77 @@
             srcset="/assets/common/empty-site@2x.png"
           />
           <h5 class="text-gray">尚未上傳照片資料</h5>
-          <a class="btn btn-orange">
+          <router-link
+            :to="{
+              name: 'projectUpload',
+              params: {
+                projectId,
+              },
+            }"
+            class="btn btn-orange"
+          >
             <span class="icon"><i class="icon-upload-white"></i></span>
             <span class="text">補上傳影像檔</span>
-          </a>
+          </router-link>
         </div>
       </div>
       <div class="gallery-body" v-else>
         <zoom-drag
-          v-if="siteData.data[currentRow].imageUrl"
-          :row="siteData.data[currentRow]"
-          :index="currentRow"
-          :total="siteDataLength"
+          v-if="currentData.url"
+          :row="currentData"
+          :index="currentAnnotationIdx"
+          :total="annotationsTotal"
+          :imageInfo="imageInfo"
         />
-        <youtube-embed v-else :row="siteData.data[currentRow]" />
         <div class="control">
           <span
             class="prev"
             v-tooltip.top="'上一張'"
-            @click="currentRow > 0 ? currentRow-- : currentRow"
+            :disabled="true"
+            @click="
+              $emit(
+                'currentAnnotationIdx',
+                currentAnnotationIdx > 0
+                  ? currentAnnotationIdx - 1
+                  : currentAnnotationIdx,
+              )
+            "
           >
             <i class="fa fa-caret-left"></i>
           </span>
           <span class="text">
-            {{ siteData.data[currentRow].fileName }} |
-            {{ siteData.data[currentRow].corrected_date_time }}
+            {{ imageInfo }}
           </span>
           <span
             class="prev"
             v-tooltip.top="'下一張'"
             @click="
-              currentRow > siteData.data[currentRow].length - 1
-                ? currentRow
-                : currentRow++
+              $emit(
+                'currentAnnotationIdx',
+                currentAnnotationIdx < annotations.length - 1
+                  ? currentAnnotationIdx + 1
+                  : currentAnnotationIdx,
+              )
             "
           >
             <i class="fa fa-caret-right"></i>
           </span>
         </div>
-        <div class="text-right my-2">
+        <!-- <div class="text-right my-2">
           <router-link
-            v-if="siteData.data[currentRow].type === 'StillImage'"
+            v-if="currentData.type === 'StillImage'"
             :to="
               `/project/${$route.params.id}/site/${$route.params.site_id}/${
                 $route.params.subsite_id
-              }/photo/tag?image_id=${siteData.data[currentRow]._id}`
+              }/photo/tag?image_id=${currentData._id}`
             "
             class="btn btn-sm btn-default"
           >
             進階標註
           </router-link>
-        </div>
+        </div> -->
       </div>
-    </div> -->
+    </div>
     <!--  -->
     <!-- <div class="version-container" v-if="historyShow">
       <div class="version-header">
@@ -109,11 +120,17 @@
 </template>
 
 <script>
-// import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
+import { createNamespacedHelpers } from 'vuex';
+import idx from 'idx';
+
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
+import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
+
+const annotations = createNamespacedHelpers('annotations');
 
 export default {
   components: {
-    // ZoomDrag,
+    ZoomDrag,
   },
   props: {
     galleryShow: {
@@ -133,6 +150,26 @@ export default {
     return {
       galleryWidth: 450,
     };
+  },
+  computed: {
+    ...annotations.mapState(['annotationsTotal']),
+    ...annotations.mapGetters(['annotations']),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
+    currentData() {
+      return idx(this.annotations, _ => _[this.currentAnnotationIdx].file);
+    },
+    hasImage() {
+      return idx(this.currentData, _ => _.url);
+    },
+    imageInfo() {
+      return `${
+        this.annotations[this.currentAnnotationIdx].filename
+      } | ${dateFormatYYYYMMDDHHmmss(
+        this.annotations[this.currentAnnotationIdx].time,
+      )}`;
+    },
   },
 };
 </script>

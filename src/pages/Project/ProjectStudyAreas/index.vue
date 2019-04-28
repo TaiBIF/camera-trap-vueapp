@@ -168,7 +168,7 @@ export default {
     return {
       isLoading: false,
       CameraModalOpen: false,
-      galleryShow: false,
+      galleryShow: true,
       historyShow: false,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: {
