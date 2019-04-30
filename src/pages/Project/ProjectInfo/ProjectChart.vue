@@ -19,7 +19,9 @@
         相機異常回報
       </a>
     </div>
-    <v-charts :options="barOption" ref="barCharts" />
+    <camera-bar-chart v-if="selectedCameraId" />
+    <receive-bar-chart v-else-if="chartType === 'receive'" />
+    <identify-bar-chart v-else-if="chartType === 'identify'" />
     <error-report-modal
       :open="showErrorReportModal"
       @close="showErrorReportModal = false"
@@ -29,93 +31,30 @@
 </template>
 
 <script>
+import CameraBarChart from '@/pages/Project/ProjectInfo/charts/CameraBarChart.vue';
 import ErrorReportModal from '@/components/Modal/ErrorReportModal.vue';
-import VueHighcharts from 'vue2-highcharts';
+import IdentifyBarChart from '@/pages/Project/ProjectInfo/charts/IdentifyBarChart.vue';
+import ReceiveBarChart from '@/pages/Project/ProjectInfo/charts/ReceiveBarChart.vue';
 
 const currentYear = new Date().getFullYear();
 
 export default {
   name: 'project-chart',
   components: {
-    'v-charts': VueHighcharts,
     ErrorReportModal,
+    CameraBarChart,
+    IdentifyBarChart,
+    ReceiveBarChart,
   },
   data() {
     return {
       currentYear: currentYear,
       selectedYear: currentYear,
       showErrorReportModal: false,
-      barOption: {
-        chart: {
-          type: 'column',
-          height: 230,
-        },
-        colors: ['#8ACFCB'],
-        title: {
-          enable: false,
-          text: '',
-        },
-        tooltip: {
-          headerFormat: '',
-          backgroundColor: 'rgba(0, 0, 0, .8)',
-          useHTML: true,
-          pointFormatter() {
-            return `
-              <div class="tooltip ${this.errorNumber > 0 ? 'showError' : ''}">
-                <div>
-                  <h5>${this.y} <small>筆</small></h5>
-                  <span>${this.errorNumber} 筆資料異常</span>
-                </div>
-                <div>資料最新上傳日：${this.lastUploaded}</div>
-              </div>
-            `;
-          },
-        },
-        plotOptions: {
-          column: {
-            states: {
-              hover: {
-                color: '#09968F',
-              },
-            },
-          },
-        },
-        xAxis: {
-          categories: [
-            '1月',
-            '2月',
-            '3月',
-            '4月',
-            '5月',
-            '6月',
-            '7月',
-            '9月',
-            '9月',
-            '10月',
-            '11月',
-            '12月',
-          ],
-        },
-        yAxis: {
-          title: {
-            text: '',
-          },
-        },
-        series: null,
-      },
     };
   },
-  mounted() {
-    if (this.selectedCameraId) {
-      this.loadCameraChart();
-    }
-  },
+  mounted() {},
   watch: {
-    selectedCameraId: function(selectedCameraId) {
-      if (selectedCameraId) {
-        this.loadCameraChart();
-      }
-    },
     selectedYear: function(year) {
       // TODO: fetch new data
     },
@@ -127,6 +66,9 @@ export default {
     selectedCameraId: function() {
       return this.$route.params.selectedCameraId;
     },
+    chartType: function() {
+      return this.$route.params.type;
+    },
   },
   methods: {
     changeSelectedYear(year) {
@@ -135,33 +77,6 @@ export default {
       }
       this.selectedYear = year;
     },
-    loadCameraChart() {
-      const BarChartData = {
-        name: '每月影像筆數',
-        // TODO: data from API
-        data: [
-          { value: 20, error: 0 },
-          { value: 120, error: 10 },
-          { value: 220, error: 100 },
-          { value: 60, error: 0 },
-          { value: 30, error: 1 },
-          { value: 20, error: 0 },
-          { value: 80, error: 0 },
-          { value: 60, error: 1 },
-          { value: 90, error: 0 },
-          { value: 30, error: 0 },
-        ].map(({ value, error }, i) => ({
-          name: i + 1 + '月',
-          y: value,
-          errorNumber: error,
-          lastUploaded: '2018/08/16',
-          color: error > 0 ? '#FEC9D4' : '#8ACFCB',
-        })),
-      };
-      const barCharts = this.$refs.barCharts;
-      barCharts.removeSeries();
-      barCharts.addSeries(BarChartData);
-    },
     submitErrorReport(data) {
       // TODO: wait for API,
       // TODO: close error report modal and show success modal
@@ -169,7 +84,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scope>
+<style lang="scss" scoped>
 .control {
   display: flex;
   justify-content: center;
@@ -185,34 +100,6 @@ export default {
   & > a {
     position: absolute;
     right: 0;
-  }
-}
-.tooltip {
-  color: #fff;
-  margin: 0;
-  padding: 0;
-
-  div:first-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  h5 {
-    margin: 0;
-  }
-  span {
-    display: none;
-  }
-  &.showError {
-    span {
-      display: inline-block;
-      padding: 5px;
-      margin-left: 5px;
-      color: #fff;
-      background-color: #db5158;
-      border-radius: 3px;
-      font-size: 10px;
-    }
   }
 }
 </style>
