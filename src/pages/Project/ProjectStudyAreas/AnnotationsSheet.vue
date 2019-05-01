@@ -274,7 +274,7 @@ export default {
         },
         {
           data: 'species',
-          readOnly: isEdit,
+          readOnly: !isEdit,
           renderer: this.setSpeciesTooltip,
         },
       ];
@@ -315,7 +315,7 @@ export default {
           }
           return {
             data: v.id,
-            readOnly: isEdit,
+            readOnly: !isEdit,
             ...obj,
           };
         });
