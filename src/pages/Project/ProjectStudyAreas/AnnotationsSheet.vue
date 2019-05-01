@@ -87,7 +87,10 @@ import { createNamespacedHelpers } from 'vuex';
 import * as R from 'ramda';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
+import { getLanguage } from '@/utils/i18n';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
+
+import 'handsontable-key-value';
 
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
@@ -235,6 +238,8 @@ export default {
     },
     // 設定每個 column 要如何顯示
     setSheetColumn() {
+      const isEdit = true;
+
       const defaultColumn = [
         {
           data: 'studyArea',
@@ -269,7 +274,7 @@ export default {
         },
         {
           data: 'species',
-          readOnly: true,
+          readOnly: isEdit,
           renderer: this.setSpeciesTooltip,
         },
       ];
@@ -297,14 +302,20 @@ export default {
               break;
             case 'select':
               obj = {
-                editor: 'select',
-                selectOptions: v.options.map(v => v.id),
+                type: 'key-value',
+                filter: false,
+                source: v.options.map(v => ({
+                  id: v.id,
+                  value: v[getLanguage()],
+                })),
+                keyProperty: 'id',
+                valueProperty: 'value',
               };
               break;
           }
           return {
             data: v.id,
-            readOnly: true,
+            readOnly: isEdit,
             ...obj,
           };
         });
