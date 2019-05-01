@@ -146,6 +146,7 @@ export default {
   watch: {
     isEdit: function() {
       this.setSheetHeight();
+      this.setSheetColumn();
     },
     currentPage: function() {
       this.$emit('changePage', {
@@ -245,8 +246,6 @@ export default {
     },
     // 設定每個 column 要如何顯示
     setSheetColumn() {
-      const isEdit = true;
-
       const defaultColumn = [
         {
           data: 'studyArea',
@@ -281,7 +280,7 @@ export default {
         },
         {
           data: 'species',
-          readOnly: !isEdit,
+          readOnly: !this.isEdit,
           renderer: this.setSpeciesTooltip,
         },
       ];
@@ -322,7 +321,7 @@ export default {
           }
           return {
             data: v.id,
-            readOnly: !isEdit,
+            readOnly: !this.isEdit,
             ...obj,
           };
         });
