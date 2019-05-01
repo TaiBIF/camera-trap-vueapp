@@ -31,7 +31,7 @@
     <!-- handsontable -->
     <hot-table
       ref="sheet"
-      id="sheeta"
+      id="sheet"
       licenseKey="non-commercial-and-evaluation"
       language="zh-TW"
       :settings="HandsontableSetting"
@@ -87,6 +87,7 @@ import { createNamespacedHelpers } from 'vuex';
 import * as R from 'ramda';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
+import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
@@ -144,8 +145,8 @@ export default {
           },
           {
             data: 'species',
-            type: 'text',
             readOnly: true,
+            renderer: this.setSpeciesTooltip,
           },
         ],
         data: [],
@@ -178,7 +179,7 @@ export default {
         R.find(R.propEq('id', id), this.cameraLocations).name;
 
       const speciesName = ({ id }) =>
-        R.find(R.propEq('id', id), this.projectSpecies).title;
+        R.find(R.propEq('id', id), this.projectSpecies);
 
       this.HandsontableSetting.data = R.map(
         R.evolve({
@@ -234,6 +235,23 @@ export default {
     },
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
+    },
+    setSpeciesTooltip(instance, td, row, col, prop, value) {
+      td.innerHTML = value.title;
+
+      if (value.code) {
+        // 如果有 code 則要顯示物種提示
+        td.dataset.tooltip = SpeciesTooltip[value.code];
+      } else if (this.annotations[row].failures.length > 0) {
+        // 如果有錯誤則要顯示錯誤提示
+        if (this.annotations[row].failures.includes('new-species')) {
+          td.dataset.tooltip = failures['new-species'];
+        }
+        td.innerHTML += '<span class="alert-box">!</span>';
+        td.className = 'htInvalid';
+      }
+
+      return td;
     },
   },
 };
