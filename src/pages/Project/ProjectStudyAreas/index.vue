@@ -2,8 +2,29 @@
   <div class="maintain page-sheet p-0">
     <div class="search-container" v-bind:class="{ loading: isLoading }">
       <!-- Edit mode -->
+      <div v-if="isEdit" class="edit-container">
+        <div class="row">
+          <div class="col-7">
+            <span class="text-gray">{{ studyAreaTitle(studyAreaId) }}</span>
+            <span class="divider"></span>
+            <span class="text-gray">{{ queryLocation }}</span>
+            <span class="divider"></span>
+            <span class="text-gray">{{ queryTimeRange }}</span>
+          </div>
+          <div class="col-5 text-right">
+            <span class="divider"></span>
+            <button @click="isEdit = false" class="btn btn-circle">
+              <i class="icon-save"></i>
+            </button>
+            <span class="divider"></span>
+            <button @click="isEdit = false" class="btn btn-basic btn-sm">
+              關閉編輯模式
+            </button>
+          </div>
+        </div>
+      </div>
       <!-- Overview mode -->
-      <div class="search-content">
+      <div class="search-content" v-if="isEdit === false">
         <a
           class="btn btn-green-border btn-sm float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
@@ -113,10 +134,22 @@
             </div>
           </div>
         </form>
+        <div>
+          <button
+            class="btn btn-sm btn-block btn-green"
+            @click="isEdit = true"
+            :disabled="annotationsTotal === 0"
+          >
+            <i class="fa fa-pencil-alt"></i> 進入編輯模式
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- 下方編輯頁面 -->
     <div class="sheet-container">
       <AnnotationsSheet
+        :isEdit="isEdit"
         :galleryShow="galleryShow"
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
@@ -149,7 +182,11 @@ import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
 
-import { getTodayDate, subNYears } from '@/utils/dateHelper.js';
+import {
+  dateFormatYYYYMMDDHHmmss,
+  getTodayDate,
+  subNYears,
+} from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
 
 import AnnotationsSheet from './AnnotationsSheet';
@@ -168,6 +205,22 @@ const getTime = (day, time) => {
     .minute(time.mm);
 };
 
+const defaultQuery = {
+  index: 0,
+  size: 50,
+  cameraLocations: [],
+  startDate: subNYears(getTodayDate(), 5),
+  endDate: getTodayDate(),
+  startTime: {
+    HH: '00',
+    mm: '00',
+  },
+  endTime: {
+    HH: '23',
+    mm: '59',
+  },
+};
+
 export default {
   components: {
     CameraLocationModal,
@@ -179,25 +232,12 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEdit: false,
       CameraModalOpen: false,
-      galleryShow: true,
+      galleryShow: false,
       historyShow: false,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
-      query: {
-        index: 0,
-        size: 50,
-        cameraLocations: [],
-        startDate: subNYears(getTodayDate(), 5),
-        endDate: getTodayDate(),
-        startTime: {
-          HH: '00',
-          mm: '00',
-        },
-        endTime: {
-          HH: '23',
-          mm: '59',
-        },
-      },
+      query: Object.assign({}, defaultQuery),
     };
   },
   mounted() {
@@ -209,6 +249,10 @@ export default {
     });
   },
   watch: {
+    $route() {
+      this.isEdit = false;
+      this.query = Object.assign({}, defaultQuery);
+    },
     studyAreaId: function() {
       this.getProjectCameraLocations({
         projectId: this.projectId,
@@ -231,6 +275,7 @@ export default {
   computed: {
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
+    ...annotations.mapState(['annotationsTotal']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -239,6 +284,22 @@ export default {
     },
     isCheckAllCameraLocations: function() {
       return this.query.cameraLocations.length === this.cameraLocations.length;
+    },
+    queryTimeRange: function() {
+      const { query } = this;
+      const startTime = getTime(query.startDate, query.startTime);
+      const endTime = getTime(query.endDate, query.endTime);
+
+      return `${dateFormatYYYYMMDDHHmmss(
+        startTime,
+      )} ~ ${dateFormatYYYYMMDDHHmmss(endTime)}`;
+    },
+    queryLocation: function() {
+      const { cameraLocations } = this.query;
+
+      return cameraLocations
+        .map(v => this.cameraLocations.find(c => c.id === v).name)
+        .join(', ');
     },
   },
   methods: {

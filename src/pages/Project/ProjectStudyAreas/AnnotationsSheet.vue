@@ -102,6 +102,10 @@ export default {
     HotTable,
   },
   props: {
+    isEdit: {
+      type: Boolean,
+      required: true,
+    },
     galleryShow: {
       type: Boolean,
       required: true,
@@ -140,6 +144,9 @@ export default {
     }, 500);
   },
   watch: {
+    isEdit: function() {
+      this.setSheetHeight();
+    },
     currentPage: function() {
       this.$emit('changePage', {
         currentPage: this.currentPage,
