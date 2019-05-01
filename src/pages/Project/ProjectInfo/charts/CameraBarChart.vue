@@ -120,7 +120,7 @@ export default {
           y: value,
           errorNumber: error,
           lastUploaded: '2018/08/16',
-          color: error > 0 ? '#FEC9D4' : isRemove ? '#8C9CAB' : '#8ACFCB', // TODO: share config with ChartLegend
+          color: error > 0 ? '#FEC9D4' : isRemove ? '#8C9CAB' : '#BFE08E', // TODO: share config with ChartLegend
         })),
       };
       const barCharts = this.$refs.barCharts;

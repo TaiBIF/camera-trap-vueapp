@@ -20,8 +20,7 @@
       </a>
     </div>
     <camera-bar-chart v-if="selectedCameraId" />
-    <receive-bar-chart v-else-if="chartType === 'receive'" />
-    <identify-bar-chart v-else-if="chartType === 'identify'" />
+    <area-bar-chart v-else />
     <error-report-modal
       :open="showErrorReportModal"
       @close="showErrorReportModal = false"
@@ -31,10 +30,9 @@
 </template>
 
 <script>
+import AreaBarChart from '@/pages/Project/ProjectInfo/charts/AreaBarChart.vue';
 import CameraBarChart from '@/pages/Project/ProjectInfo/charts/CameraBarChart.vue';
 import ErrorReportModal from '@/components/Modal/ErrorReportModal.vue';
-import IdentifyBarChart from '@/pages/Project/ProjectInfo/charts/IdentifyBarChart.vue';
-import ReceiveBarChart from '@/pages/Project/ProjectInfo/charts/ReceiveBarChart.vue';
 
 const currentYear = new Date().getFullYear();
 
@@ -42,9 +40,8 @@ export default {
   name: 'project-chart',
   components: {
     ErrorReportModal,
+    AreaBarChart,
     CameraBarChart,
-    IdentifyBarChart,
-    ReceiveBarChart,
   },
   data() {
     return {
@@ -65,9 +62,6 @@ export default {
     },
     selectedCameraId: function() {
       return this.$route.params.selectedCameraId;
-    },
-    chartType: function() {
-      return this.$route.params.type;
     },
   },
   methods: {

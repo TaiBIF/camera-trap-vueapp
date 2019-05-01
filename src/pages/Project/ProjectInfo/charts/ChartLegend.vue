@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="legend-container">
     <div v-for="(legend, index) in selectedLegends" :key="index">
       <span :style="`background: ${legend.color}`"></span>
       {{ legend.name }}
@@ -20,7 +20,7 @@ export default {
     return {
       legendGroup: {
         receive: [
-          { name: '當月資料完整', color: '#8ACFCB' },
+          { name: '當月資料完整', color: '#BFE08E' },
           { name: '當月資料不完整 (相機故障、失竊等因素)', color: '#FEC9D4' },
           { name: '相機撤除', color: '#8C9CAB' },
         ],
@@ -39,7 +39,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.container {
+.legend-container {
   font-size: 8px;
   color: #8b8b8b;
   float: left;
