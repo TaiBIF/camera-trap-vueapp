@@ -49,7 +49,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-sort-imports-es6-autofix": "^0.4.0",
     "eslint-plugin-vue": "^5.0.0",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "storybook-vue-router": "^1.0.3",
     "vue-template-compiler": "^2.6.10"
