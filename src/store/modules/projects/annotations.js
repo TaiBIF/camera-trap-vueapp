@@ -22,6 +22,10 @@ const getters = {
 };
 
 const mutations = {
+  resetAnnotations(state) {
+    state.annotations = [];
+    state.annotationsTotal = 0;
+  },
   setAnnotations(state, payload) {
     state.annotations = idx(payload, _ => _.items) || [];
     state.annotationsTotal = idx(payload, _ => _.total);

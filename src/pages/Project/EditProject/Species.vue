@@ -18,7 +18,7 @@
                   <div
                     class="row sortable-item"
                     v-for="(sp, idx) in tempSpecies"
-                    :key="sp"
+                    :key="idx"
                   >
                     <div class="col-2">{{ idx + 1 }}</div>
                     <div class="col-4">
@@ -72,6 +72,8 @@
 import { createNamespacedHelpers } from 'vuex';
 import draggable from 'vuedraggable';
 
+import SpeciesTooltip from '@/constant/SpeciesTooltip.js';
+
 const projects = createNamespacedHelpers('projects');
 
 export default {
@@ -81,12 +83,7 @@ export default {
   data: function() {
     return {
       tempSpecies: [],
-      tooltipNote: {
-        'empty-shot': '相機觸發，但影像中無拍攝到生物',
-        test:
-          '研究人員安置相機時觸發拍攝之影像，抑或研究人員設置自動拍攝以測試相機運作之影像',
-        people: '登山客、狩獵者等，非研究人員之人類',
-      },
+      tooltipNote: SpeciesTooltip,
     };
   },
   mounted() {

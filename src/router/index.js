@@ -108,13 +108,6 @@ export default new Router({
                 import('@/pages/Project/ProjectStudyAreas/index.vue'),
             },
             {
-              path: 'study-areas/:studyAreaId/edit',
-              name: 'projectStudyAreasEdit',
-              meta: { projectAside: true },
-              component: () =>
-                import('@/pages/Project/ProjectStudyAreas/Edit.vue'),
-            },
-            {
               path: 'upload',
               name: 'projectUpload',
               meta: { projectAside: false },

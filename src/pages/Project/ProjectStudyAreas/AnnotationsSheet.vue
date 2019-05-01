@@ -31,7 +31,7 @@
     <!-- handsontable -->
     <hot-table
       ref="sheet"
-      id="sheeta"
+      id="sheet"
       licenseKey="non-commercial-and-evaluation"
       language="zh-TW"
       :settings="HandsontableSetting"
@@ -84,16 +84,28 @@
 <script>
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
+import * as R from 'ramda';
+
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
+import { getLanguage } from '@/utils/i18n';
+import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
+
+import 'handsontable-key-value';
 
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
+const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
   components: {
     HotTable,
   },
   props: {
+    isEdit: {
+      type: Boolean,
+      required: true,
+    },
     galleryShow: {
       type: Boolean,
       required: true,
@@ -107,6 +119,7 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
       currentPage: 1, //目前在第幾頁
@@ -115,14 +128,8 @@ export default {
         height: 500,
         outsideClickDeselects: false,
         rowHeaders: true,
-        colHeaders: ['樣區', '相機位置', '檔名', '時間', '物種'],
-        columns: [
-          {
-            data: 'studyArea',
-            type: 'text',
-            readOnly: true,
-          },
-        ],
+        colHeaders: [],
+        columns: [],
         data: [],
         afterSelectionEnd: this.changeAnnotationIdx,
       },
@@ -131,10 +138,16 @@ export default {
   mounted() {
     setTimeout(() => {
       this.setSheetHeight();
+      this.setSheetHeader();
+      this.setSheetColumn();
       window.onresize = () => this.setSheetHeight();
     }, 500);
   },
   watch: {
+    isEdit: function() {
+      this.setSheetHeight();
+      this.setSheetColumn();
+    },
     currentPage: function() {
       this.$emit('changePage', {
         currentPage: this.currentPage,
@@ -142,13 +155,25 @@ export default {
       });
     },
     pageSize: function() {
+      this.currentPage = 1;
       this.$emit('changePage', {
         currentPage: this.currentPage,
         pageSize: this.pageSize,
       });
     },
     annotations: function(val) {
-      this.HandsontableSetting.data = val;
+      this.HandsontableSetting.data = val.map(v => ({
+        id: v.id,
+        studyArea: v.studyArea,
+        cameraLocation: v.cameraLocation,
+        filename: v.filename,
+        time: v.time,
+        species: v.species,
+        ...v.fields.reduce((pre, current) => {
+          pre[current.dataField] = current.value;
+          return pre;
+        }, {}),
+      }));
     },
     currentAnnotationIdx: function(val) {
       // 改變時要修改選擇 row，例如右側影像檢視切換成下一張時
@@ -165,7 +190,9 @@ export default {
     ...annotations.mapState(['annotationsTotal']),
     ...annotations.mapGetters(['annotations']),
     ...dataFields.mapGetters(['dataFields']),
-    ...projects.mapGetters(['projectSpecies']),
+    ...projects.mapGetters(['projectDataFields', 'projectSpecies']),
+    ...studyAreas.mapState(['cameraLocations']),
+    ...studyAreas.mapGetters(['studyAreaTitle']),
     //計算目前筆數範圍
     currentDataRange() {
       const { currentPage, pageSize, annotationsTotal } = this;
@@ -192,6 +219,117 @@ export default {
     },
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
+    },
+    setSpeciesTooltip(instance, td, row, col, prop, { id }) {
+      const sp = R.find(R.propEq('id', id), this.projectSpecies);
+      td.innerHTML = sp.title;
+
+      if (sp.code) {
+        // 如果有 code 則要顯示物種提示
+        td.dataset.tooltip = SpeciesTooltip[sp.code];
+      } else if (this.annotations[row].failures.length > 0) {
+        // 如果有錯誤則要顯示錯誤提示
+        if (this.annotations[row].failures.includes('new-species')) {
+          td.dataset.tooltip = failures['new-species'];
+        }
+        td.innerHTML += '<span class="alert-box">!</span>';
+        td.className = 'htInvalid';
+      }
+
+      return td;
+    },
+    // 除了必填的 header 以外還會有其他不同的自定義欄位
+    setSheetHeader() {
+      this.HandsontableSetting.colHeaders = this.projectDataFields.map(
+        v => v.title,
+      );
+    },
+    // 設定每個 column 要如何顯示
+    setSheetColumn() {
+      const defaultColumn = [
+        {
+          data: 'studyArea',
+          readOnly: true,
+          renderer: (instance, td, row, col, prop, value) => {
+            td.innerHTML = this.studyAreaTitle(value);
+            return td;
+          },
+        },
+        {
+          data: 'cameraLocation',
+          readOnly: true,
+          renderer: (instance, td, row, col, prop, value) => {
+            td.innerHTML = R.find(
+              R.propEq('id', value),
+              this.cameraLocations,
+            ).name;
+            return td;
+          },
+        },
+        {
+          data: 'filename',
+          readOnly: true,
+        },
+        {
+          data: 'time',
+          readOnly: true,
+          renderer: (instance, td, row, col, prop, value) => {
+            td.innerHTML = dateFormatYYYYMMDDHHmmss(value);
+            return td;
+          },
+        },
+        {
+          data: 'species',
+          readOnly: !this.isEdit,
+          renderer: this.setSpeciesTooltip,
+        },
+      ];
+
+      const CustomizationColumn = this.projectDataFields
+        .slice(defaultColumn.length)
+        .map(v => {
+          let obj = {};
+          switch (v.widgetType) {
+            case 'text':
+              obj = {
+                renderer: (instance, td, row, col, prop, value) => {
+                  td.innerHTML = value || '';
+                  return td;
+                },
+              };
+              break;
+            case 'time':
+              obj = {
+                renderer: (instance, td, row, col, prop, value) => {
+                  td.innerHTML = value ? dateFormatYYYYMMDDHHmmss(value) : '';
+                  return td;
+                },
+              };
+              break;
+            case 'select':
+              obj = {
+                type: 'key-value',
+                filter: false,
+                source: v.options.map(v => ({
+                  id: v.id,
+                  value: v[getLanguage()],
+                })),
+                keyProperty: 'id',
+                valueProperty: 'value',
+              };
+              break;
+          }
+          return {
+            data: v.id,
+            readOnly: !this.isEdit,
+            ...obj,
+          };
+        });
+
+      this.HandsontableSetting.columns = [
+        ...defaultColumn,
+        ...CustomizationColumn,
+      ];
     },
   },
 };

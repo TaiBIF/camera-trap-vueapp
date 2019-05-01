@@ -13,6 +13,7 @@
     "babel-plugin-idx": "^2.4.0",
     "bootstrap": "^4.3.1",
     "handsontable": "^7.0.2",
+    "handsontable-key-value": "^3.0.1",
     "idx": "^2.5.5",
     "immer": "^2.1.4",
     "jquery": "^3.4.0",
