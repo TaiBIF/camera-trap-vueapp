@@ -24,7 +24,7 @@
         </div>
       </div>
       <!-- Overview mode -->
-      <div class="search-content" v-if="isEdit === false">
+      <div v-else class="search-content">
         <a
           class="btn btn-green-border btn-sm float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
@@ -252,6 +252,7 @@ export default {
     $route() {
       this.isEdit = false;
       this.query = Object.assign({}, defaultQuery);
+      this.resetAnnotations();
     },
     studyAreaId: function() {
       this.getProjectCameraLocations({
@@ -283,7 +284,10 @@ export default {
       return this.$route.params.studyAreaId;
     },
     isCheckAllCameraLocations: function() {
-      return this.query.cameraLocations.length === this.cameraLocations.length;
+      return (
+        this.cameraLocations.length > 0 &&
+        this.query.cameraLocations.length === this.cameraLocations.length
+      );
     },
     queryTimeRange: function() {
       const { query } = this;
@@ -307,6 +311,7 @@ export default {
     ...projects.mapActions(['getProjectSpecies']),
     ...studyAreas.mapActions(['getProjectCameraLocations']),
     ...annotations.mapActions(['getAnnotations']),
+    ...annotations.mapMutations(['resetAnnotations']),
     swapDate() {
       const { query } = this;
 
