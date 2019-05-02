@@ -1,11 +1,25 @@
 <template>
-  <div>
-    <h1>建立計畫</h1>
-    <div>
-      <BasicInfo :project="project" :areas="projectAreas" @change="onChange" />
-      <CcInfo :project="project" @change="onChange" />
+  <div class="page-project">
+    <div class="container">
+      <h1 class="heading">新增計畫</h1>
+      <div>
+        <BasicInfo
+          v-if="step === 1"
+          doneBtnText="下一步"
+          :project="project"
+          :areas="projectAreas"
+          @change="onChange"
+          @done="step = 2"
+        />
+        <CcInfo
+          v-if="step === 2"
+          doneBtnText="新增計畫"
+          :project="project"
+          @change="onChange"
+          @done="submitProject"
+        />
+      </div>
     </div>
-    <button @click="submitProject">新增</button>
   </div>
 </template>
 
@@ -15,28 +29,31 @@ import { createNamespacedHelpers } from 'vuex';
 import BasicInfo from '@/components/ProjectEdit/BasicInfo.vue';
 import CcInfo from '@/components/ProjectEdit/CcInfo.vue';
 
+import { getTodayDate, plusNYears } from '@/utils/dateHelper.js';
+
 const config = createNamespacedHelpers('config');
 const projects = createNamespacedHelpers('projects');
 
 export default {
   data: function() {
     return {
+      step: 1,
       project: {
         title: undefined,
         shortTitle: undefined,
         funder: undefined,
         code: undefined,
         principalInvestigator: undefined,
-        startTime: undefined,
-        endTime: undefined,
+        startTime: getTodayDate(),
+        endTime: plusNYears(getTodayDate(), 1),
         areas: [],
         description: undefined,
         note: undefined,
         coverImageFile: undefined,
-        publishTime: undefined,
-        interpretiveDataLicense: undefined,
-        identificationInformationLicense: undefined,
-        videoMaterialLicense: undefined,
+        publishTime: plusNYears(getTodayDate(), 1),
+        interpretiveDataLicense: 'cc0',
+        identificationInformationLicense: 'by',
+        videoMaterialLicense: 'cc0',
       },
     };
   },

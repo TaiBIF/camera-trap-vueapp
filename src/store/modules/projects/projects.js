@@ -1,17 +1,17 @@
 import idx from 'idx';
 import produce from 'immer';
 
+import { getLanguage } from '@/utils/i18n';
 import {
-  deleteProjectMember,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
   postProject,
   postProjectMember,
   putProject,
+  putProjectMember,
   putProjectSpecies,
 } from '@/service';
-import { getLanguage } from '@/utils/i18n';
 
 // 計畫資料
 
@@ -88,7 +88,7 @@ const actions = {
       id,
       produce(JSON.parse(JSON.stringify(body)), draft => {
         draft.areas = draft.areas.map(v => v.id);
-        draft.coverImageFile = draft.coverImageFile.id
+        draft.coverImageFile = idx(draft, _ => _.coverImageFile.id)
           ? draft.coverImageFile.id
           : draft.coverImageFile;
         draft.dataFields = draft.dataFields.map(v => v.id);
@@ -97,15 +97,21 @@ const actions = {
     commit('setProjectDetail', data);
   },
   async postProjectMember({ commit }, { id, body }) {
-    const data = await postProjectMember(id, body);
+    const data = await postProjectMember(id, {
+      ...body,
+      role: idx(body, _ => _.role.key),
+    });
     commit('updateProjectMember', data);
   },
-  async deleteProjectMember({ state, commit }, { id, userId }) {
-    await deleteProjectMember(id, userId);
-    commit(
-      'updateProjectMember',
-      state.projectDetail.members.filter(v => v.user.id !== userId),
+  async putProjectMember({ commit }, { projectId, members }) {
+    const data = await putProjectMember(
+      projectId,
+      members.map(v => ({
+        user: v.id,
+        role: v.role.key,
+      })),
     );
+    commit('updateProjectMember', data);
   },
   async getProjectSpecies({ commit }, id) {
     const data = await getProjectSpecies(id);
@@ -123,24 +129,6 @@ const actions = {
     );
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
-  },
-  async putProjectDataFields({ state, dispatch }, { id, fields }) {
-    dispatch('putProject', {
-      id,
-      body: {
-        ...state.projectDetail,
-        dataFields: fields,
-      },
-    });
-  },
-  async putProjectDailyTestTime({ state, dispatch }, { id, dailyTestTime }) {
-    dispatch('putProject', {
-      id,
-      body: {
-        ...state.projectDetail,
-        dailyTestTime,
-      },
-    });
   },
 };
 

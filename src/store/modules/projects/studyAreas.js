@@ -1,5 +1,6 @@
 import idx from 'idx';
 import produce from 'immer';
+import * as R from 'ramda';
 
 import {
   deleteProjectCameraLocations,
@@ -26,6 +27,24 @@ const getters = {
         d.children.forEach(v => (v.title = v.title[getLanguage()]));
       }),
     ),
+  cameraLocations: state => state.cameraLocations,
+  studyAreaTitle: (_, getters) => id => {
+    let title = '';
+    getters.studyAreas.forEach(v => {
+      // study area 第一層
+      if (v.id === id) {
+        title = v.title;
+      } else if (v.children.length > 0) {
+        v.children.forEach(v2 => {
+          // study area 第二層
+          if (v2.id === id) {
+            title = `${v.title} - ${v2.title}`;
+          }
+        });
+      }
+    });
+    return title;
+  },
 };
 
 const mutations = {
@@ -56,29 +75,27 @@ const actions = {
     const data = await getProjectCameraLocations(projectId, studyAreaId);
     commit('setCameraLocations', idx(data, _ => _.items) || []);
   },
-  async postProjectCameraLocations(
-    { dispatch },
-    { projectId, studyAreaId, cameraLocation },
+  async modifyProjectCameraLocations(
+    { state, dispatch },
+    { projectId, studyAreaId, payload },
   ) {
-    await postProjectCameraLocations(projectId, studyAreaId, cameraLocation);
-    dispatch('getProjectCameraLocations', { projectId, studyAreaId });
-  },
-  async putProjectCameraLocations(
-    { dispatch },
-    { projectId, studyAreaId, cameraLocationId, cameraLocation },
-  ) {
-    await putProjectCameraLocations(
-      projectId,
-      cameraLocationId,
-      cameraLocation,
+    const post = payload.filter(v => v.id === undefined); // 沒有 id 表示新增
+    const put = R.innerJoin(
+      (record, v) => record.id === v.id && R.equals(record, v) === false, // id 相同，並且內容不相同的
+      payload,
+      state.cameraLocations,
     );
-    dispatch('getProjectCameraLocations', { projectId, studyAreaId });
-  },
-  async deleteProjectCameraLocations(
-    { dispatch },
-    { projectId, studyAreaId, cameraLocationId },
-  ) {
-    await deleteProjectCameraLocations(projectId, cameraLocationId);
+    const del = R.differenceWith(
+      (a, b) => a.id === b.id,
+      state.cameraLocations,
+      payload,
+    );
+
+    await Promise.all([
+      ...post.map(v => postProjectCameraLocations(projectId, v.studyArea, v)),
+      ...put.map(v => putProjectCameraLocations(projectId, v.id, v)),
+      ...del.map(v => deleteProjectCameraLocations(projectId, v.id)),
+    ]);
     dispatch('getProjectCameraLocations', { projectId, studyAreaId });
   },
 };

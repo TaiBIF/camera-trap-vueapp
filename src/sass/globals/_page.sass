@@ -484,12 +484,17 @@
 
         .aside-project
             padding: 10px 20px
-            color: $green
-            background-color: $bg-green
             margin-bottom: 10px
+            background-color: $bg-gray
 
             > a
                 display: block
+                color: $black
+
+            &.active
+                background-color: $bg-green
+                > a
+                    color: $green
 
     .camera-chart
         position: absolute

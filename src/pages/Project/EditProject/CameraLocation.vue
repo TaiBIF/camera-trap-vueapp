@@ -1,155 +1,234 @@
 <template>
   <div>
-    <h1>計畫管理-相機位置管理</h1>
     <p v-if="errorMessage" :style="{ color: 'red' }">
       錯誤訊息: {{ errorMessage }}
     </p>
-    <div id="split-view">
-      <ul>
-        <li :key="area.id" v-for="area in studyAreas">
-          <p
-            @click="currentstudyAreaId = area.id"
-            :style="[
-              currentstudyAreaId === area.id
-                ? { color: 'red' }
-                : { color: 'black' },
-            ]"
-          >
-            {{ `${area.title} / ${area.id}` }}
-          </p>
-          <ul>
-            <li
-              :key="area.id"
-              @click="currentstudyAreaId = area.id"
-              v-for="area in area.children"
-            >
-              <p
-                @click="currentstudyAreaId = area.id"
-                :style="[
-                  currentstudyAreaId === area.id
-                    ? { color: 'red' }
-                    : { color: 'black' },
-                ]"
-              >
-                {{ `${area.title} / ${area.id}` }}
-              </p>
-            </li>
-            <li>
-              <label>新增: </label
-              ><input
-                type="text"
-                @change="addStudyArea($event.target.value, area.id)"
-              />
-            </li>
-          </ul>
-        </li>
-        <li>
-          <label>新增: </label
-          ><input type="text" @change="addStudyArea($event.target.value)" />
-        </li>
-      </ul>
-      <div>
-        <p>id: {{ currentstudyAreaId }}</p>
-        <ul>
-          <li :key="loc.id" v-for="loc in cameraLocations">
-            <button @click="deleteCameraLocation(loc.id)">X</button>
-            <span @click="currentCameraLocationId = loc.id">
-              {{ `${loc.name} / ${loc.vegetation} / ${loc.settingTime}` }}
-            </span>
-          </li>
-        </ul>
-        <div
-          :style="[
-            {
-              margin: '1rem',
-              border: '1px green solid',
-            },
-          ]"
-        >
-          <h1>新增相機位置</h1>
-          <label>相機位置名稱</label>
-          <input type="text" v-model="newCameraLocation.name" />
-          <br />
-          <label>架設日期</label>
-          <input type="date" v-model="newCameraLocation.settingTime" />
-          <br />
-          <label>緯度 (WGS84) </label>
-          <input type="text" v-model="newCameraLocation.latitude" />
-          <br />
-          <label>經度 (WGS84) </label>
-          <input type="text" v-model="newCameraLocation.longitude" />
-          <br />
-          <label>海拔（公尺） </label>
-          <input type="text" v-model="newCameraLocation.altitude" />
-          <br />
-          <label>植被</label>
-          <input type="text" v-model="newCameraLocation.vegetation" />
-          <br />
-          <label>土地覆蓋類型 </label>
-          <input type="text" v-model="newCameraLocation.landCover" />
-          <button @click="addCameraLocation" :disabled="!currentstudyAreaId">
-            新增
-          </button>
+    <div class="panel">
+      <div class="panel-heading">
+        <h4>相機位置管理</h4>
+      </div>
+      <div class="panel-body camera-editor">
+        <div class="sidebar" style="width: 300px">
+          <study-area-sidebar
+            :studyAreas="studyAreas"
+            :projectId="projectId"
+            :currentStudyAreaId="currentStudyAreaId"
+            :isEditMode="true"
+            @selectArea="selectStudyArea"
+            @addArea="addStudyArea"
+          />
         </div>
-        <div
-          :style="[
-            {
-              margin: '1rem',
-              border: '1px green solid',
-            },
-          ]"
-        >
-          <h1>編輯相機位置</h1>
-          <label>相機位置名稱</label>
-          <input type="text" v-model="editCameraLocation.name" />
-          <br />
-          <label>架設日期</label>
-          <input type="date" v-model="editCameraLocation.settingTime" />
-          <br />
-          <label>緯度 (WGS84) </label>
-          <input type="text" v-model="editCameraLocation.latitude" />
-          <br />
-          <label>經度 (WGS84) </label>
-          <input type="text" v-model="editCameraLocation.longitude" />
-          <br />
-          <label>海拔（公尺） </label>
-          <input type="text" v-model="editCameraLocation.altitude" />
-          <br />
-          <label>植被</label>
-          <input type="text" v-model="editCameraLocation.vegetation" />
-          <br />
-          <label>土地覆蓋類型 </label>
-          <input type="text" v-model="editCameraLocation.landCover" />
-          <button
-            @click="putCameraLocation"
-            :disabled="!currentCameraLocationId"
+        <div class="maintain p-0">
+          <div class="empty-result" v-if="studyAreas.length === 0">
+            <img
+              src="/assets/common/empty-site.png"
+              width="174"
+              srcset="/assets/common/empty-site@2x.png"
+            />
+            <h5 class="text-gray">您還沒新增任何樣區</h5>
+          </div>
+          <div
+            class="empty-result"
+            v-else-if="currentStudyAreaId === undefined"
           >
-            編輯
-          </button>
+            <img
+              src="/assets/common/empty-site.png"
+              width="174"
+              srcset="/assets/common/empty-site@2x.png"
+            />
+            <h5 class="text-gray">請選擇樣區</h5>
+          </div>
+          <div class="sheet-view show" v-else>
+            <div class="control p-2">
+              <div class="row">
+                <div class="col-12 text-right">
+                  <div class="form-group-inline">
+                    <label for="">座標大地基準：</label>
+                    WGS84
+                    <span class="icon-note">
+                      <i class="icon-info"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-container">
+              <hot-table
+                id="sheet"
+                licenseKey="non-commercial-and-evaluation"
+                language="zh-TW"
+                :settings="HandsontableSetting"
+              ></hot-table>
+              <a class="text-green btn btn-link" @click="addNewCameraLoation">
+                <span class="icon"><i class="icon-add-green"></i></span>
+                <span class="text">新增相機位置</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div class="action">
+      <div @click="$router.back()" class="btn btn-default">取消</div>
+      <button
+        type="submit"
+        @click.stop.prevent="doSubmit()"
+        class="btn btn-orange"
+      >
+        儲存設定
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
+
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import { getProjectCameraLocationsByName } from '@/service';
+import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
+  components: {
+    StudyAreaSidebar,
+    HotTable,
+  },
   data: function() {
     return {
       errorMessage: undefined,
-      currentstudyAreaId: '',
-      currentCameraLocationId: '',
+      currentStudyAreaId: undefined,
+      currentCameraLocationId: undefined,
       newCameraLocation: {},
       editCameraLocation: {},
+      HandsontableSetting: {
+        rowHeaders: true,
+        colHeaders: [
+          // 'URL',
+          '<span style="color: red;">*</span>相機位置名稱',
+          '架設日期',
+          '<span style="color: red;">*</span>經度 (X)',
+          '<span style="color: red;">*</span>緯度 (Y)',
+          '海拔 (公尺)',
+          '植被',
+          '土地覆蓋類型',
+        ],
+        columns: [
+          {
+            data: 'name',
+            type: 'text',
+            validator: async function(value, callback) {
+              if (!value) {
+                callback(false); // 不能為空字串
+              } else {
+                const rowData = this.instance.getSourceDataAtRow(this.row);
+                const data = await getProjectCameraLocationsByName(
+                  rowData.projectId,
+                  value,
+                );
+                callback(
+                  data.total === 0 ||
+                    (data.total === 1 && data.items[0].id === rowData.id),
+                ); // 同一計畫底下相機位置名稱不可重複，但如果是修改自己本來的名字則是可以的
+              }
+            },
+          },
+          {
+            data: 'settingTime',
+            type: 'date',
+            dateFormat: 'YYYY-MM-DD',
+          },
+          {
+            data: 'longitude',
+            type: 'numeric',
+            validator: (value, callback) => {
+              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
+              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
+            },
+          },
+          {
+            data: 'latitude',
+            type: 'numeric',
+            validator: (value, callback) => {
+              // 不能為空字串, 輸入只能是數字, 輸入要大於等於 0
+              callback(value !== '' && !isNaN(Math.sign(value)) && value >= 0);
+            },
+          },
+          {
+            data: 'altitude',
+            type: 'numeric',
+          },
+          {
+            data: 'vegetation',
+            type: 'text',
+          },
+          {
+            data: 'landCover',
+            type: 'text',
+          },
+        ],
+        contextMenu: [
+          'cut',
+          'copy',
+          {
+            name: '貼上 請使用鍵盤 ctrl+v 或 cmd+v',
+            disabled: true,
+          },
+          '---------',
+          'undo',
+          'redo',
+          '---------',
+          {
+            name: '複製一列並貼上',
+            disabled: function() {
+              return (
+                // 選擇多格 or 同時選擇多個範圍(例如拖拉範圍選擇)
+                // 這兩種情況會造成複製不只一列
+                this.getSelected().length !== 1 ||
+                this.getSelected()[0][0] !== this.getSelected()[0][2]
+              );
+            },
+            callback: (key, selection) => {
+              const copyTarget = {
+                ...this.$data.HandsontableSetting.data[selection[0].start.row],
+                id: undefined,
+              };
+              this.$data.HandsontableSetting.data.splice(
+                selection[0].start.row,
+                0,
+                copyTarget,
+              );
+            },
+          },
+          {
+            name: '刪除相機位置',
+            disabled: function() {
+              return (
+                // 選擇多格不能刪除相機，會造成不知道要怎要刪除
+                this.getSelected().length !== 1
+              );
+            },
+            callback: (key, selection) => {
+              this.$data.HandsontableSetting.data.splice(
+                selection[0].start.row,
+                selection[0].end.row - selection[0].start.row + 1,
+              );
+            },
+          },
+        ],
+        data: [],
+      },
     };
   },
+  props: {
+    setLoading: Function,
+  },
   watch: {
-    currentstudyAreaId: function(val) {
+    currentStudyAreaId: function(val) {
       this.currentCameraLocationId = '';
       this.getProjectCameraLocations({
         projectId: this.projectId,
@@ -163,6 +242,15 @@ export default {
         this.editCameraLocation.settingTime,
       ).format('YYYY-MM-DD');
     },
+    cameraLocations: function(val) {
+      this.HandsontableSetting.data = val.map(v => ({
+        projectId: this.projectId, // name 的 validator 會使用到
+        ...v,
+        ...(v.settingTime
+          ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
+          : undefined),
+      }));
+    },
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas']),
@@ -175,11 +263,13 @@ export default {
     ...studyAreas.mapActions([
       'postProjectStudyAreas',
       'getProjectCameraLocations',
-      'postProjectCameraLocations',
-      'putProjectCameraLocations',
-      'deleteProjectCameraLocations',
+      'modifyProjectCameraLocations',
     ]),
+    selectStudyArea(id) {
+      this.currentStudyAreaId = id;
+    },
     async addStudyArea(title, parent) {
+      this.setLoading(true);
       try {
         await this.postProjectStudyAreas({
           id: this.projectId,
@@ -189,48 +279,25 @@ export default {
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }
+      this.setLoading(false);
     },
-    async addCameraLocation() {
-      try {
-        await this.postProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: this.currentstudyAreaId,
-          cameraLocation: {
-            ...this.newCameraLocation,
-            settingTime: moment(
-              this.newCameraLocation.settingTime,
-            ).toISOString(),
-          },
-        });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
+    addNewCameraLoation() {
+      this.HandsontableSetting.data.push({
+        projectId: this.projectId, // name 的 validator 會使用到
+        studyArea: this.currentStudyAreaId,
+      });
     },
-    async putCameraLocation() {
+    async doSubmit() {
       try {
-        await this.putProjectCameraLocations({
+        await this.modifyProjectCameraLocations({
           projectId: this.projectId,
-          studyAreaId: this.currentstudyAreaId,
-          cameraLocationId: this.currentCameraLocationId,
-          cameraLocation: {
-            ...this.editCameraLocation,
-            settingTime: moment(
-              this.editCameraLocation.settingTime,
-            ).toISOString(),
-          },
-        });
-        this.errorMessage = '';
-      } catch (e) {
-        this.errorMessage = JSON.stringify(e);
-      }
-    },
-    async deleteCameraLocation(cameraLocationId) {
-      try {
-        await this.deleteProjectCameraLocations({
-          projectId: this.projectId,
-          studyAreaId: this.currentstudyAreaId,
-          cameraLocationId: cameraLocationId,
+          studyAreaId: this.currentStudyAreaId,
+          payload: this.HandsontableSetting.data.map(v => ({
+            ...v,
+            ...(v.settingTime
+              ? { settingTime: moment(v.settingTime).toISOString() }
+              : undefined),
+          })),
         });
         this.errorMessage = '';
       } catch (e) {
