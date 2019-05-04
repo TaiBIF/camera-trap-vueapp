@@ -3,6 +3,7 @@ version: 2.1
 vars:
 
 orbs:
+  aws-s3: circleci/aws-s3@1.0.0
   node10:
     orbs:
       aws: circleci/aws-cli@0.1.4
@@ -41,8 +42,9 @@ orbs:
                 then
                   BUCKET=camera-trap.tw
                 fi
-                aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete
-                aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete
+                aws s3 sync dist "s3://$BUCKET" --delete --acl public-read
+                # aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete
+                # aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete --acl public-read
           - run:
               name: Invalidate Cloudfront distribution
               command: |
