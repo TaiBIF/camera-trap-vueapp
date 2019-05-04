@@ -132,6 +132,7 @@ export default {
         columns: [],
         data: [],
         afterSelectionEnd: this.changeAnnotationIdx,
+        afterChange: this.changeAnnotation,
       },
     };
   },
@@ -207,6 +208,7 @@ export default {
     },
   },
   methods: {
+    ...annotations.mapActions(['setAnnotations']),
     setSheetHeight() {
       const sheetHeight =
         window.innerHeight -
@@ -222,20 +224,20 @@ export default {
     },
     setSpeciesTooltip(instance, td, row, col, prop, id) {
       if (id) {
-      const sp = R.find(R.propEq('id', id), this.projectSpecies);
-      td.innerHTML = sp.title;
+        const sp = R.find(R.propEq('id', id), this.projectSpecies);
+        td.innerHTML = sp.title;
 
-      if (sp.code) {
-        // 如果有 code 則要顯示物種提示
-        td.dataset.tooltip = SpeciesTooltip[sp.code];
-      } else if (this.annotations[row].failures.length > 0) {
-        // 如果有錯誤則要顯示錯誤提示
-        if (this.annotations[row].failures.includes('new-species')) {
-          td.dataset.tooltip = failures['new-species'];
+        if (sp.code) {
+          // 如果有 code 則要顯示物種提示
+          td.dataset.tooltip = SpeciesTooltip[sp.code];
+        } else if (this.annotations[row].failures.length > 0) {
+          // 如果有錯誤則要顯示錯誤提示
+          if (this.annotations[row].failures.includes('new-species')) {
+            td.dataset.tooltip = failures['new-species'];
+          }
+          td.innerHTML += '<span class="alert-box">!</span>';
+          td.className = 'htInvalid';
         }
-        td.innerHTML += '<span class="alert-box">!</span>';
-        td.className = 'htInvalid';
-      }
       }
 
       return td;
@@ -344,6 +346,40 @@ export default {
         ...defaultColumn,
         ...CustomizationColumn,
       ];
+    },
+    changeAnnotation(changes) {
+      if (!!changes && this.isEdit === true) {
+        changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
+          let annotation = R.pipe(
+            R.clone,
+            R.pick(['fields', 'species']),
+          )(this.annotations[row]);
+
+          if (prop === 'species') {
+            annotation.species = newVal;
+          } else {
+            const targetIdx = R.findIndex(R.propEq('dataField', prop))(
+              annotation.fields,
+            );
+
+            if (targetIdx === -1) {
+              // 不存在就新增
+              annotation.fields.push({
+                dataField: prop,
+                value: newVal,
+              });
+            } else {
+              // 存在則修改
+              annotation.fields[targetIdx].value = newVal;
+            }
+          }
+
+          this.setAnnotations({
+            annotationId: this.annotations[row].id,
+            body: annotation,
+          });
+        });
+      }
     },
   },
 };
