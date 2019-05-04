@@ -27,6 +27,12 @@ const getters = {
       draft.forEach(d => {
         d.title = d.title[getLanguage()];
         d.children.forEach(v => (v.title = v.title[getLanguage()]));
+        const { latitude, longitude } =
+          d.cameraLocation || idx(d, _ => _.children[0].cameraLocation) || {};
+        d.position = {
+          lat: latitude,
+          lng: longitude,
+        };
       }),
     ),
   cameraLocations: state => state.cameraLocations,

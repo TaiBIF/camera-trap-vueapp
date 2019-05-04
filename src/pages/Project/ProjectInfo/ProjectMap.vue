@@ -3,7 +3,7 @@
     <l-map
       style="height: 395px"
       :zoom="zoom"
-      :center="center"
+      :center="mapCenter"
       :options="options"
       @update:bounds="centerUpdated"
       @update:zoom="zoomUpdated"
@@ -134,11 +134,6 @@ export default {
   data() {
     return {
       zoom: 9,
-      center: {
-        // TODO: calculate center base on current data
-        lat: 68.33,
-        lng: 121.262417,
-      },
       options: {
         zoomControl: true,
       },
@@ -171,26 +166,64 @@ export default {
       return 'camera';
     },
     areas: function() {
-      return this.studyAreas.map(({ title, id, children }, index) => ({
+      return this.studyAreas.map(({ title, id, children, position }) => ({
         title,
-        position: {
-          // TODO: calculate base on camera location
-          lat: 68.33 + index * 0.01,
-          lng: 121.262417 + index * 0.1,
-        },
+        position,
         path: idx(children, _ => _[0].id) || id, // if area have children, use first child id as path
       }));
     },
     cameras: function() {
-      return this.cameraLocations.map(({ id, name, latitude, longitude }) => ({
-        id,
-        name,
-        position: {
-          lat: latitude,
-          lng: longitude,
-        },
-        icon: IconSelect, // TODO: icon base on camera has error or not: IconSelect/ErrorIconSelect
-      }));
+      return this.cameraLocations.map(
+        ({ id, name, latitude, longitude, failures }) => ({
+          id,
+          name,
+          position: {
+            lat: latitude,
+            lng: longitude,
+          },
+          icon: failures > 0 ? ErrorIconSelect : IconSelect,
+        }),
+      );
+    },
+    mapCenter: function() {
+      // project level: calculate center base on all parent studyAreas
+      if (this.selectedStudyAreaId === 'all') {
+        return this.areas.reduce(
+          (res, { position }) => {
+            const { lat, lng } = position;
+            res.lat += lat / this.areas.length;
+            res.lng += lng / this.areas.length;
+            return res;
+          },
+          {
+            lat: 0,
+            lng: 0,
+          },
+        );
+      }
+      // studyArea level: calculate center base on all cameraLocation in this studyArea
+      if (!this.selectedCameraId) {
+        return this.cameras.reduce(
+          (res, { position }) => {
+            const { lat, lng } = position;
+            res.lat += lat / this.cameras.length;
+            res.lng += lng / this.cameras.length;
+            return res;
+          },
+          {
+            lat: 0,
+            lng: 0,
+          },
+        );
+      }
+      // camera level: use current cameraLocation
+      const { position } =
+        this.cameras.find(({ id }) => id === this.selectedCameraId) || {};
+
+      return {
+        lat: position.lat,
+        lng: position.lng,
+      };
     },
   },
   methods: {
