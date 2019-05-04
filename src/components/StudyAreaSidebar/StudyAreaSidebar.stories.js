@@ -14,13 +14,24 @@ storiesOf('StudyAreaSidebar', module)
             id: 'a',
             title: '母樣區',
             children: [
-              { id: 'a1', title: '子樣區' },
+              {
+                id: 'a1',
+                title: '子樣區',
+                failures: 0,
+                isLockedAllCameraLocation: false,
+              },
               {
                 id: 'a2',
                 title: '樣區 with error',
-                hasError: true,
+                failures: 1,
+                isLockedAllCameraLocation: false,
               },
-              { id: 'a3', title: '樣區 lock', locked: true },
+              {
+                id: 'a3',
+                title: '樣區 lock',
+                failures: 0,
+                isLockedAllCameraLocation: true,
+              },
             ],
           },
           {
