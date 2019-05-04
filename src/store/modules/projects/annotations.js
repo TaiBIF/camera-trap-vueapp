@@ -72,7 +72,7 @@ const actions = {
     await rollbackRevision(annotationId, revisionId);
 
     dispatch('getRevision', annotationId);
-    dispatch('getAnnotations', state.query);
+    dispatch('getAnnotations', state.query); // todo 目前是整個重新 query，之後需改成用新 api 只更新指定 annotation
   },
 };
 
