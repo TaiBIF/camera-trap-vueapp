@@ -147,7 +147,7 @@
           <button
             class="btn btn-sm btn-block btn-green"
             @click="isEdit = true"
-            :disabled="annotationsTotal === 0"
+            :disabled="disabledEdit"
           >
             <i class="fa fa-pencil-alt"></i> 進入編輯模式
           </button>
@@ -205,6 +205,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
+const account = createNamespacedHelpers('account');
 
 let debounceTimeId = undefined;
 
@@ -286,6 +287,7 @@ export default {
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
     ...annotations.mapState(['annotationsTotal']),
+    ...account.mapGetters(['userId']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -313,6 +315,14 @@ export default {
       return cameraLocations
         .map(v => this.cameraLocations.find(c => c.id === v).name)
         .join(', ');
+    },
+    disabledEdit: function() {
+      return (
+        this.annotationsTotal === 0 ||
+        this.cameraLocations.some(
+          v => v.isLocked === true && v.lockUser.id !== this.userId,
+        )
+      );
     },
   },
   methods: {
