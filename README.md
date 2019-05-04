@@ -9,7 +9,7 @@ A proper implementation using Vue.js.
 clone repo
 
 ```
-git clone xxx
+git clone git@github.com:TaiBIF/camera-trap-vueapp.git
 ```
 
 npm install
