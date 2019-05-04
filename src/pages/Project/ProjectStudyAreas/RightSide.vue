@@ -98,14 +98,23 @@
       <div class="version-body">
         <table class="table version-list">
           <tbody>
-            <tr v-for="(rev, i) in revision" :key="rev.id">
+            <tr v-for="rev in revision" :key="rev.id">
               <td>{{ rev.createTime }}</td>
               <td class="text-gray">
                 由 <b>{{ rev.name }}</b> 編輯
               </td>
-              <td class="text-gray" v-if="i === 0">目前版本</td>
+              <td class="text-gray" v-if="rev.isCurrent">目前版本</td>
               <td class="text-gray" v-else>
-                <a class="btn btn-basic btn-sm">還原成此版本 </a>
+                <a
+                  class="btn btn-basic btn-sm"
+                  @click="
+                    rollbackRevision({
+                      annotationId: currentData.id,
+                      revisionId: rev.id,
+                    })
+                  "
+                  >還原成此版本
+                </a>
               </td>
             </tr>
           </tbody>
@@ -149,9 +158,7 @@ export default {
   },
   watch: {
     currentAnnotationIdx: function() {
-      this.getRevision(
-        idx(this.annotations, _ => _[this.currentAnnotationIdx].id),
-      );
+      this.getRevision(this.currentData.id);
     },
   },
   computed: {
@@ -160,22 +167,23 @@ export default {
     projectId: function() {
       return this.$route.params.projectId;
     },
+    currentData() {
+      return this.annotations[this.currentAnnotationIdx];
+    },
     currentImage() {
-      return idx(this.annotations, _ => _[this.currentAnnotationIdx].file);
+      return this.currentData.file;
     },
     hasImage() {
       return idx(this.currentImage, _ => _.url);
     },
     imageInfo() {
-      return `${
-        this.annotations[this.currentAnnotationIdx].filename
-      } | ${dateFormatYYYYMMDDHHmmss(
-        this.annotations[this.currentAnnotationIdx].time,
+      return `${this.currentData.filename} | ${dateFormatYYYYMMDDHHmmss(
+        this.currentData.time,
       )}`;
     },
   },
   methods: {
-    ...annotations.mapActions(['getRevision']),
+    ...annotations.mapActions(['getRevision', 'rollbackRevision']),
   },
 };
 </script>

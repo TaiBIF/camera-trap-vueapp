@@ -26,4 +26,12 @@ const getRevision = async annotationId => {
   return res;
 };
 
-export { getAnnotations, setAnnotations, getRevision };
+const rollbackRevision = async (annotationId, revisionId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/annotations/${annotationId}/revisions/${revisionId}/_rollback`,
+    method: 'POST',
+  });
+  return res;
+};
+
+export { getAnnotations, setAnnotations, getRevision, rollbackRevision };
