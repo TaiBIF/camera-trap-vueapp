@@ -9,4 +9,13 @@ const getAnnotations = async query => {
   return res;
 };
 
-export { getAnnotations };
+const setAnnotations = async (annotationId, body) => {
+  const res = await fetchWrap({
+    url: `/api/v1/annotations/${annotationId}`,
+    method: 'PUT',
+    body,
+  });
+  return res;
+};
+
+export { getAnnotations, setAnnotations };
