@@ -45,13 +45,6 @@ orbs:
                 aws s3 sync dist "s3://$BUCKET" --delete --acl public-read
                 # aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete
                 # aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete --acl public-read
-          # - aws-s3/sync:
-          #   from: dist
-          #   to: 's3://$BUCKET'
-          #   arguments: |
-          #     --acl public-read \
-          #     --cache-control "max-age=86400"
-          #   overwrite: true
           - run:
               name: Invalidate Cloudfront distribution
               command: |
