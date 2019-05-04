@@ -18,4 +18,12 @@ const setAnnotations = async (annotationId, body) => {
   return res;
 };
 
-export { getAnnotations, setAnnotations };
+const getRevision = async annotationId => {
+  const res = await fetchWrap({
+    url: `/api/v1/annotations/${annotationId}/revisions`,
+    method: 'GET',
+  });
+  return res;
+};
+
+export { getAnnotations, setAnnotations, getRevision };

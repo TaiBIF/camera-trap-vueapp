@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import idx from 'idx';
 
-import { getAnnotations, setAnnotations } from '@/service';
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
+import { getAnnotations, getRevision, setAnnotations } from '@/service';
 
 // 計畫標注資訊，全放在 project 會過大
 
 const state = {
   annotations: [],
   annotationsTotal: 0,
+  revision: [],
 };
 
 const getters = {
@@ -15,6 +17,13 @@ const getters = {
     state.annotations.map(v => ({
       ...v,
       species: idx(v, _ => _.species.id),
+    })),
+  revision: state =>
+    state.revision.map(v => ({
+      id: v.id,
+      name: v.user.name,
+      isCurrent: v.isCurrent,
+      createTime: dateFormatYYYYMMDDHHmmss(v.createTime),
     })),
 };
 
@@ -31,6 +40,9 @@ const mutations = {
     const idx = state.annotations.findIndex(v => v.id === annotation.id);
     Vue.set(state.annotations, idx, annotation);
   },
+  setRevision(state, payload) {
+    state.revision = payload;
+  },
 };
 
 const actions = {
@@ -41,6 +53,10 @@ const actions = {
   async setAnnotations({ commit }, { annotationId, body }) {
     const data = await setAnnotations(annotationId, body);
     commit('updateAnnotations', data);
+  },
+  async getRevision({ commit }, annotationId) {
+    const data = await getRevision(annotationId);
+    commit('setRevision', idx(data, _ => _.items) || []);
   },
 };
 

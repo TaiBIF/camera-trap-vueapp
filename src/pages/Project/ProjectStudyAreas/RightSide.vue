@@ -31,8 +31,7 @@
       </div>
       <div class="gallery-body" v-else>
         <zoom-drag
-          v-if="currentData.url"
-          :row="currentData"
+          :row="currentImage"
           :index="currentAnnotationIdx"
           :total="annotationsTotal"
           :imageInfo="imageInfo"
@@ -86,8 +85,7 @@
         </div> -->
       </div>
     </div>
-    <!--  -->
-    <!-- <div class="version-container" v-if="historyShow">
+    <div class="version-container" v-if="historyShow">
       <div class="version-header">
         <a
           @click="changeMode('historyShow', false)"
@@ -100,22 +98,20 @@
       <div class="version-body">
         <table class="table version-list">
           <tbody>
-            <tr v-for="(rev, i) in revision" :key="`rev-${i}`">
-              <td>{{ rev.created }}</td>
+            <tr v-for="(rev, i) in revision" :key="rev.id">
+              <td>{{ rev.createTime }}</td>
               <td class="text-gray">
-                由 <b>{{ rev.modifiedBy.name }}</b> 編輯
+                由 <b>{{ rev.name }}</b> 編輯
               </td>
               <td class="text-gray" v-if="i === 0">目前版本</td>
               <td class="text-gray" v-else>
-                <a class="btn btn-basic btn-sm" @click="restoreRev(i)"
-                  >還原成此版本</a
-                >
+                <a class="btn btn-basic btn-sm">還原成此版本 </a>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -151,17 +147,24 @@ export default {
       galleryWidth: 450,
     };
   },
+  watch: {
+    currentAnnotationIdx: function() {
+      this.getRevision(
+        idx(this.annotations, _ => _[this.currentAnnotationIdx].id),
+      );
+    },
+  },
   computed: {
     ...annotations.mapState(['annotationsTotal']),
-    ...annotations.mapGetters(['annotations']),
+    ...annotations.mapGetters(['annotations', 'revision']),
     projectId: function() {
       return this.$route.params.projectId;
     },
-    currentData() {
+    currentImage() {
       return idx(this.annotations, _ => _[this.currentAnnotationIdx].file);
     },
     hasImage() {
-      return idx(this.currentData, _ => _.url);
+      return idx(this.currentImage, _ => _.url);
     },
     imageInfo() {
       return `${
@@ -170,6 +173,9 @@ export default {
         this.annotations[this.currentAnnotationIdx].time,
       )}`;
     },
+  },
+  methods: {
+    ...annotations.mapActions(['getRevision']),
   },
 };
 </script>
