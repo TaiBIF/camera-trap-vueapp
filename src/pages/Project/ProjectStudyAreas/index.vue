@@ -13,11 +13,11 @@
           </div>
           <div class="col-5 text-right">
             <span class="divider"></span>
-            <button @click="isEdit = false" class="btn btn-circle">
+            <button @click="setEdit(false)" class="btn btn-circle">
               <i class="icon-save"></i>
             </button>
             <span class="divider"></span>
-            <button @click="isEdit = false" class="btn btn-basic btn-sm">
+            <button @click="setEdit(false)" class="btn btn-basic btn-sm">
               關閉編輯模式
             </button>
           </div>
@@ -43,9 +43,9 @@
                 <input
                   type="checkbox"
                   id="camera-all"
-                  :checked="isCheckAllCameraLocations"
+                  :checked="isCheckedAllCameraLocations"
                   @click="
-                    query.cameraLocations = isCheckAllCameraLocations
+                    query.cameraLocations = isCheckedAllCameraLocations
                       ? []
                       : cameraLocations.map(v => v.id)
                   "
@@ -60,16 +60,25 @@
                 >
                   <div class="checkbox checkbox-inline" v-if="index < 12">
                     <input
-                      v-if="!isCheckAllCameraLocations"
+                      v-if="!isCheckedAllCameraLocations"
                       type="checkbox"
                       v-model="query.cameraLocations"
                       :id="camera.id"
                       :value="camera.id"
-                      :disabled="isCheckAllCameraLocations"
+                      :disabled="isCheckedAllCameraLocations"
                     />
                     <input v-else type="checkbox" disabled="true" />
                     <label :for="camera.id">
                       <span class="text">{{ camera.name }}</span>
+                      <span class="icon" v-if="camera.isLocked">
+                        <i
+                          class="icon-lock align-middle"
+                          v-tooltip.top="`${camera.lockUser.name} 正在編輯中`"
+                        ></i>
+                      </span>
+                      <span class="error-label" v-if="camera.failures > 0">
+                        {{ camera.failures }}
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -137,8 +146,8 @@
         <div>
           <button
             class="btn btn-sm btn-block btn-green"
-            @click="isEdit = true"
-            :disabled="annotationsTotal === 0"
+            @click="setEdit(true)"
+            :disabled="disabledEdit"
           >
             <i class="fa fa-pencil-alt"></i> 進入編輯模式
           </button>
@@ -196,6 +205,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
+const account = createNamespacedHelpers('account');
 
 let debounceTimeId = undefined;
 
@@ -277,13 +287,14 @@ export default {
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
     ...annotations.mapState(['annotationsTotal']),
+    ...account.mapGetters(['userId']),
     projectId: function() {
       return this.$route.params.projectId;
     },
     studyAreaId: function() {
       return this.$route.params.studyAreaId;
     },
-    isCheckAllCameraLocations: function() {
+    isCheckedAllCameraLocations: function() {
       return (
         this.cameraLocations.length > 0 &&
         this.query.cameraLocations.length === this.cameraLocations.length
@@ -305,11 +316,22 @@ export default {
         .map(v => this.cameraLocations.find(c => c.id === v).name)
         .join(', ');
     },
+    disabledEdit: function() {
+      return (
+        this.annotationsTotal === 0 ||
+        this.cameraLocations.some(
+          v => v.isLocked === true && v.lockUser.id !== this.userId,
+        )
+      );
+    },
   },
   methods: {
     ...dataFields.mapActions(['getDataFields']),
     ...projects.mapActions(['getProjectSpecies']),
-    ...studyAreas.mapActions(['getProjectCameraLocations']),
+    ...studyAreas.mapActions([
+      'getProjectCameraLocations',
+      'setLockProjectCameraLocations',
+    ]),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     swapDate() {
@@ -341,6 +363,16 @@ export default {
       this.query.index = val.currentPage - 1;
       this.query.size = val.pageSize;
       this.doSearch();
+    },
+    setEdit(bool) {
+      this.isEdit = bool;
+
+      this.setLockProjectCameraLocations({
+        projectId: this.projectId,
+        studyAreaId: this.studyAreaId,
+        cameraLocations: this.query.cameraLocations,
+        isLock: bool,
+      });
     },
     async doSearch() {
       if (this.query.cameraLocations.length === 0) {

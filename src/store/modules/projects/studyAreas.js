@@ -6,9 +6,11 @@ import {
   deleteProjectCameraLocations,
   getProjectCameraLocations,
   getProjectStudyAreas,
+  lockProjectCameraLocations,
   postProjectCameraLocations,
   postProjectStudyAreas,
   putProjectCameraLocations,
+  unlockProjectCameraLocations,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
 
@@ -96,6 +98,19 @@ const actions = {
       ...put.map(v => putProjectCameraLocations(projectId, v.id, v)),
       ...del.map(v => deleteProjectCameraLocations(projectId, v.id)),
     ]);
+    dispatch('getProjectCameraLocations', { projectId, studyAreaId });
+  },
+  async setLockProjectCameraLocations(
+    { dispatch },
+    { projectId, studyAreaId, cameraLocations, isLock },
+  ) {
+    await Promise.all(
+      cameraLocations.map(id =>
+        isLock
+          ? lockProjectCameraLocations(projectId, id)
+          : unlockProjectCameraLocations(projectId, id),
+      ),
+    );
     dispatch('getProjectCameraLocations', { projectId, studyAreaId });
   },
 };

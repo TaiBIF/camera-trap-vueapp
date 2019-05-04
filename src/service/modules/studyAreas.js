@@ -68,6 +68,22 @@ const getProjectCameraLocationsByName = async (
   return res;
 };
 
+const lockProjectCameraLocations = async (projectId, cameraLocationId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/camera-locations/${cameraLocationId}/_lock`,
+    method: 'POST',
+  });
+  return res;
+};
+
+const unlockProjectCameraLocations = async (projectId, cameraLocationId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/camera-locations/${cameraLocationId}/_unlock`,
+    method: 'POST',
+  });
+  return res;
+};
+
 export {
   getProjectStudyAreas,
   postProjectStudyAreas,
@@ -76,4 +92,6 @@ export {
   putProjectCameraLocations,
   deleteProjectCameraLocations,
   getProjectCameraLocationsByName,
+  lockProjectCameraLocations,
+  unlockProjectCameraLocations,
 };
