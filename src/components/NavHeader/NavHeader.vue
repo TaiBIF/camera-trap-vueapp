@@ -118,66 +118,7 @@
               >
                 <i class="fa fa-bell"></i>
               </a>
-              <div
-                id="notification-container"
-                class="dropdown-menu dropdown-menu-right"
-                aria-labelledby="notification"
-              >
-                <a
-                  class="dropdown-item notification-item"
-                  v-for="(msg, mid) in notifications"
-                  :key="`log-msg-${mid}`"
-                >
-                  <div v-if="msg.collection == 'UploadSession'">
-                    <div class="meta text-gray date">
-                      {{ formattedDateTime(msg.modified) }} 您上傳了
-                    </div>
-                    <h5 class="text-green">
-                      <a href="#" class="link">
-                        <!-- {{msg.projectTitle}} {{msg.site}}-{{msg.subSite}} {{msg.cameraLocation}}<br /> {{msg.earliestDataDate}}-{{msg.latestDataDate}} -->
-                        <span v-html="msg.message"></span>
-                      </a>
-                    </h5>
-                    <div class="meta" v-if="msg.status == 'ERROR'">
-                      上傳內容可能有誤
-                      <!-- a class="text-green link">檢視錯誤</a -->
-                    </div>
-                    <div class="meta" v-else>
-                      上傳成功
-                    </div>
-                  </div>
-                  <div v-if="msg.collection == 'AbnormalData'">
-                    <div class="meta text-gray date">
-                      {{ formattedDateTime(msg.modified) }}
-                    </div>
-                    <h5 class="text-green">
-                      <a href="#" class="link">
-                        <span v-html="msg.message"></span>
-                      </a>
-                    </h5>
-                  </div>
-                  <div v-if="msg.collection == 'UserReport'">
-                    <div class="meta text-gray date">
-                      {{ formattedDateTime(msg.modified) }}
-                    </div>
-                    <h5 class="text-green">
-                      <a href="#" class="link">
-                        <span v-html="msg.message"></span>
-                      </a>
-                    </h5>
-                  </div>
-                  <div v-if="msg.collection == 'Announcement'">
-                    <div class="meta text-gray date">
-                      {{ formattedDateTime(msg.modified) }}
-                    </div>
-                    <h5 class="text-green">
-                      <a href="#" class="link">
-                        <span v-html="msg.message"></span>
-                      </a>
-                    </h5>
-                  </div>
-                </a>
-              </div>
+              <user-notifications :notifications="notifications" />
             </div>
             <div class="divider"></div>
             <div class="nav-item dropdown">
@@ -206,46 +147,38 @@
       </nav>
       <login-modal :open="loginModalOpen" @close="loginModalOpen = false" />
     </header>
-    <div
+    <system-announcement
       v-if="systemAnnouncements && systemAnnouncements.length > 0"
-      class="system-announcements"
-    >
-      <div><i class="fa fa-exclamation"></i></div>
-      <span>{{ systemAnnouncements[0].message }}</span>
-    </div>
+      :message="systemAnnouncements[0].message"
+    />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-
-import moment from 'moment';
-
 import LoginModal from '@/components/Modal/LoginModal';
+import SystemAnnouncement from '@/components/NavHeader/SystemAnnouncement';
+import UserNotifications from '@/components/NavHeader/UserNotifications';
 
 const account = createNamespacedHelpers('account');
 const notifications = createNamespacedHelpers('notifications');
 
 export default {
   name: 'NavHeader',
-  components: { LoginModal },
+  components: { LoginModal, SystemAnnouncement, UserNotifications },
   mounted() {
     this.loadSystemAnnouncements();
+    this.loadNotifications();
   },
   data() {
     return {
       loginModalOpen: false,
       pathname: this.$route.name,
-      notifications: [
-        {
-          collection: 'test',
-        },
-      ],
     };
   },
   computed: {
     ...account.mapGetters(['userName', 'isLogin']),
-    ...notifications.mapGetters(['systemAnnouncements']),
+    ...notifications.mapGetters(['systemAnnouncements', 'notifications']),
     isProjectPath: function() {
       return this.$route && /^\/project/.test(this.$route.path);
     },
@@ -256,27 +189,15 @@ export default {
       return this.$route && /^\/upload-history/.test(this.$route.path);
     },
     haveNotification: function() {
-      /*
-      Return true when there are any notifications that are not "Announcement".
-      @returns {bool}
-       */
-      if (!this.notifications) {
-        return false;
-      }
-      for (let index = 0; index < this.notifications.length; index += 1) {
-        if (this.notifications[index].collection !== 'Announcement') {
-          return true;
-        }
-      }
-      return false;
+      return this.notifications && this.notifications.length > 0;
     },
   },
   methods: {
     ...account.mapActions(['doLogout']),
-    ...notifications.mapActions(['loadSystemAnnouncements']),
-    formattedDateTime: function(timestamp) {
-      return moment(timestamp * 1000).format('YYYY-MM-DD hh:mm:ss');
-    },
+    ...notifications.mapActions([
+      'loadSystemAnnouncements',
+      'loadNotifications',
+    ]),
   },
   watch: {
     isLogin: function(newValue, oldValue) {
@@ -289,31 +210,9 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 header {
   top: 0;
   left: 0;
-}
-.system-announcements {
-  height: 40px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  background-color: #fec9d4;
-  color: #8b8b8b;
-  & > div {
-    width: 20px;
-    height: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #d80c37;
-    color: white;
-    margin: 0 10px;
-
-    & > i {
-      font-size: 8px;
-    }
-  }
 }
 </style>

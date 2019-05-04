@@ -14,6 +14,51 @@ const getters = {
       message: idx(message, _ => _[getLanguage()]),
       createTime,
     })),
+  notifications: state =>
+    state.notifications.map(
+      ({ id, type, dataField, sender, uploadSession, createTime }) => {
+        const result = {
+          id,
+          type,
+          createTime,
+        };
+
+        if (dataField) {
+          result.dataField = {
+            ...dataField,
+            title: dataField.title[getLanguage()],
+          };
+        }
+        if (sender) {
+          result.sender = sender;
+        }
+        if (uploadSession) {
+          const { project, cameraLocation } = uploadSession;
+          const { studyArea, name, settingTime } = cameraLocation || {};
+          const { id: projectId, title: projectTitle } = project || {};
+          const { id: studyAreaId, title: studyAreaTitle, parent } =
+            studyArea || {};
+
+          result.uploadSession = {
+            project: {
+              id: projectId,
+              title: projectTitle,
+            },
+            studyArea: {
+              id: studyAreaId,
+              title: studyAreaTitle ? studyAreaTitle[getLanguage()] : '',
+              parentTitle: parent ? parent.title[getLanguage()] : '',
+            },
+            cameraLocation: {
+              name,
+              settingTime,
+            },
+          };
+        }
+
+        return result;
+      },
+    ),
 };
 
 const mutations = {
