@@ -94,9 +94,9 @@ workflows:
   Build & Deploy:
     jobs:
       - node10/build:
+      - node10/deploy:
           filters:
             branches:
               only: /^(prod|dev|ci)$/
-      - node10/deploy:
           requires:
             - node10/build
