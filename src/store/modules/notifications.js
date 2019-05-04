@@ -1,12 +1,40 @@
-// 各種通知，包含系統公告及個人通知
+import { getLanguage } from '@/utils/i18n';
+import { getNotifications, getSystemAnnouncements } from '@/service';
+import idx from 'idx';
 
-const state = {};
+const state = {
+  systemAnnouncements: [],
+  notifications: [],
+};
 
-const getters = {};
+const getters = {
+  systemAnnouncements: state =>
+    state.systemAnnouncements.map(({ id, message, createTime }) => ({
+      id,
+      message: idx(message, _ => _[getLanguage()]),
+      createTime,
+    })),
+};
 
-const mutations = {};
+const mutations = {
+  setSystemAnnouncements(state, payload) {
+    state.systemAnnouncements = payload;
+  },
+  setNotifications(state, payload) {
+    state.notifications = payload;
+  },
+};
 
-const actions = {};
+const actions = {
+  async loadSystemAnnouncements({ commit }) {
+    const data = await getSystemAnnouncements();
+    commit('setSystemAnnouncements', data);
+  },
+  async loadNotifications({ commit }) {
+    const data = await getNotifications();
+    commit('setNotifications', data);
+  },
+};
 
 export default {
   namespaced: true,
