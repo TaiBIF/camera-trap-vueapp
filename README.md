@@ -18,7 +18,7 @@ npm install
 install packages
 ```
 
-create .env.local file
+create `.env.local` file
 
 ```
 VUE_APP_BASE_URL=http://localhost:8888
