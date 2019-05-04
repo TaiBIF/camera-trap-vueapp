@@ -30,12 +30,16 @@
       {{ studyArea.title }}
     </router-link>
     <span class="text" v-else> {{ studyArea.title }} </span>
-    <!-- TODO: adjust after API implement lock info -->
-    <div class="icon float-right" v-show="studyArea.locked">
+    <div
+      class="icon float-right"
+      v-show="!isEditMode && studyArea.isLockedAllCameraLocation"
+    >
       <i class="fa fa-lock"></i>
     </div>
-    <!-- TODO: adjust after API implement error info -->
-    <div class="icon float-right" v-show="studyArea.hasError">
+    <div
+      class="icon float-right"
+      v-show="!isEditMode && studyArea.failures > 0"
+    >
       <i class="has-error"></i>
     </div>
   </div>
