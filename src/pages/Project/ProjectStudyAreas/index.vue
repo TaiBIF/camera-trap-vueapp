@@ -13,11 +13,11 @@
           </div>
           <div class="col-5 text-right">
             <span class="divider"></span>
-            <button @click="isEdit = false" class="btn btn-circle">
+            <button @click="setEdit(false)" class="btn btn-circle">
               <i class="icon-save"></i>
             </button>
             <span class="divider"></span>
-            <button @click="isEdit = false" class="btn btn-basic btn-sm">
+            <button @click="setEdit(false)" class="btn btn-basic btn-sm">
               關閉編輯模式
             </button>
           </div>
@@ -146,7 +146,7 @@
         <div>
           <button
             class="btn btn-sm btn-block btn-green"
-            @click="isEdit = true"
+            @click="setEdit(true)"
             :disabled="disabledEdit"
           >
             <i class="fa fa-pencil-alt"></i> 進入編輯模式
@@ -328,7 +328,10 @@ export default {
   methods: {
     ...dataFields.mapActions(['getDataFields']),
     ...projects.mapActions(['getProjectSpecies']),
-    ...studyAreas.mapActions(['getProjectCameraLocations']),
+    ...studyAreas.mapActions([
+      'getProjectCameraLocations',
+      'setLockProjectCameraLocations',
+    ]),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     swapDate() {
@@ -360,6 +363,16 @@ export default {
       this.query.index = val.currentPage - 1;
       this.query.size = val.pageSize;
       this.doSearch();
+    },
+    setEdit(bool) {
+      this.isEdit = bool;
+
+      this.setLockProjectCameraLocations({
+        projectId: this.projectId,
+        studyAreaId: this.studyAreaId,
+        cameraLocations: this.query.cameraLocations,
+        isLock: bool,
+      });
     },
     async doSearch() {
       if (this.query.cameraLocations.length === 0) {
