@@ -39,7 +39,15 @@ const actions = {
     commit('setAnnotations', data);
   },
   async setAnnotations({ commit }, { annotationId, body }) {
-    const data = await setAnnotations(annotationId, body);
+    // const data = await setAnnotations(annotationId, body);
+    // commit('updateAnnotations', data);
+
+    // workaround 之後格式修改後拿掉
+    let data = await setAnnotations(annotationId, body);
+    data.fields = data.fields.map(v => ({
+      dataField: v.dataField.id,
+      value: v.value,
+    }));
     commit('updateAnnotations', data);
   },
 };
