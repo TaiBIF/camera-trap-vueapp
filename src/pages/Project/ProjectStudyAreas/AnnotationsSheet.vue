@@ -168,7 +168,7 @@ export default {
         cameraLocation: v.cameraLocation,
         filename: v.filename,
         time: v.time,
-        species: v.species.id,
+        species: v.species,
         ...v.fields.reduce((pre, current) => {
           pre[current.dataField] = current.value;
           return pre;
@@ -221,6 +221,7 @@ export default {
       this.$emit('currentAnnotationIdx', row2);
     },
     setSpeciesTooltip(instance, td, row, col, prop, id) {
+      if (id) {
       const sp = R.find(R.propEq('id', id), this.projectSpecies);
       td.innerHTML = sp.title;
 
@@ -234,6 +235,7 @@ export default {
         }
         td.innerHTML += '<span class="alert-box">!</span>';
         td.className = 'htInvalid';
+      }
       }
 
       return td;

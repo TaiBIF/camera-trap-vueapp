@@ -14,10 +14,7 @@ const getters = {
   annotations: state =>
     state.annotations.map(v => ({
       ...v,
-      species: {
-        ...v.species,
-        title: v.species[getLanguage()],
-      },
+      species: idx(v, _ => _.species.id),
     })),
 };
 
