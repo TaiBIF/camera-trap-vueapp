@@ -1,0 +1,100 @@
+version: 2.1
+
+vars:
+
+orbs:
+  node10:
+    orbs:
+      aws: circleci/aws-cli@0.1.4
+    executors:
+      default:
+        environment:
+          - TZ: Asia/Taipei
+          - AWS_DEFAULT_REGION: $AWS_REGION
+        docker:
+          - image: circleci/node:10
+
+    commands:
+      checkout_install:
+        steps:
+          - checkout
+          - restore_cache:
+              key: node_modules#{{ checksum "package-lock.json" }}
+          - run: npm i
+          - save_cache:
+              key: node_modules#{{ checksum "package-lock.json" }}
+              paths:
+                - node_modules
+    jobs:
+      deploy:
+        executor: aws/default
+        steps:
+          - restore_cache:
+              key: dist#{{ .Revision }}
+          - aws/install
+          - aws/configure
+          - run:
+              name: Deploy to S3
+              command: |
+                BUCKET=dev.camera-trap.tw
+                if [ $CIRCLE_BRANCH = prod ]
+                then
+                  BUCKET=camera-trap.tw
+                fi
+                aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete
+                aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete
+          - run:
+              name: Invalidate Cloudfront distribution
+              command: |
+                if [ $CIRCLE_BRANCH = prod ]
+                then
+                  aws cloudfront create-invalidation --distribution-id $AWS_CF_DISTRIBUTION_ID_PROD --paths '/*'
+                else
+                  aws cloudfront create-invalidation --distribution-id $AWS_CF_DISTRIBUTION_ID_DEV --paths '/*'
+                fi
+      run:
+        parameters:
+          command:
+            type: string
+            default: npm test
+          section:
+            type: string
+            default: <<parameters.command>>
+        executor: default
+        steps:
+          - checkout_install
+          - run: <<parameters.command>>
+
+      build:
+        executor: default
+        steps:
+          - checkout_install
+          - run:
+              name: Build
+              no_output_timeout: 15m
+              command: |
+                SCRIPT=build:staging
+                if [ $CIRCLE_BRANCH = prod ]
+                then
+                    SCRIPT=build
+                fi
+                npm run $SCRIPT
+          # - run:
+          #     name: Create debug info
+          #     command: node scripts/debug > dist/debug.json
+          - save_cache:
+              key: dist#{{ .Revision }}
+              paths:
+                - dist
+
+workflows:
+  version: 2
+  Build & Deploy:
+    jobs:
+      - node10/build:
+          filters:
+            branches:
+              only: /^(prod|dev|ci)$/
+      - node10/deploy:
+          requires:
+            - node10/build
