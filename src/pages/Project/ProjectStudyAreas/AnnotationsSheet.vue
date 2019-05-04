@@ -168,7 +168,7 @@ export default {
         cameraLocation: v.cameraLocation,
         filename: v.filename,
         time: v.time,
-        species: v.species,
+        species: v.species.id,
         ...v.fields.reduce((pre, current) => {
           pre[current.dataField] = current.value;
           return pre;
@@ -220,7 +220,7 @@ export default {
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
     },
-    setSpeciesTooltip(instance, td, row, col, prop, { id }) {
+    setSpeciesTooltip(instance, td, row, col, prop, id) {
       const sp = R.find(R.propEq('id', id), this.projectSpecies);
       td.innerHTML = sp.title;
 
@@ -282,6 +282,18 @@ export default {
           data: 'species',
           readOnly: !this.isEdit,
           renderer: this.setSpeciesTooltip,
+          ...(this.isEdit
+            ? {
+                type: 'key-value',
+                filter: false,
+                source: this.projectSpecies.map(({ id, title }) => ({
+                  id,
+                  title,
+                })),
+                keyProperty: 'id',
+                valueProperty: 'title',
+              }
+            : {}),
         },
       ];
 
