@@ -21,6 +21,15 @@
                 />
                 <label :for="`modal-${camera.id}`">
                   <span class="text">{{ camera.name }}</span>
+                  <span class="icon" v-if="camera.isLocked">
+                    <i
+                      class="icon-lock align-middle"
+                      v-tooltip.top="`${camera.lockUser.name} 正在編輯中`"
+                    ></i>
+                  </span>
+                  <span class="error-label" v-if="camera.failures > 0">
+                    {{ camera.failures }}
+                  </span>
                 </label>
               </div>
             </div>
