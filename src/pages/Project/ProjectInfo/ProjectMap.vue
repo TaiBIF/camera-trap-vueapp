@@ -86,7 +86,7 @@ import {
   LLayerGroup,
   LMap,
   LMarker,
-  LPolygon,
+  // LPolygon,
   LTileLayer,
   LTooltip,
 } from 'vue2-leaflet';
@@ -126,7 +126,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    LPolygon,
+    // LPolygon,
     LCircle,
     LTooltip,
     LLayerGroup,
