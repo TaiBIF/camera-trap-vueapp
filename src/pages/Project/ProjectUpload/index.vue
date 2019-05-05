@@ -18,7 +18,8 @@
       </a>
     </div>
 
-    <upload-files v-show="fileList.length === 0" @change="fileList = $event" />
+    <upload-files v-if="fileList.length === 0" @change="fileList = $event" />
+    <edit-files v-else :isUploading="isUploading" :fileList="fileList" />
 
     <!-- 上傳說明 -->
     <trail-modal :open="trialModalOpen" @close="trialModalOpen = false" />
@@ -31,17 +32,21 @@ import { createNamespacedHelpers } from 'vuex';
 import TrailModal from '@/components/ProjectUpload/TrialModal.vue';
 import UploadFiles from '@/components/ProjectUpload/UploadFiles.vue';
 
+import EditFiles from './EditFiles.vue';
+
 const projects = createNamespacedHelpers('projects');
 
 export default {
   components: {
     TrailModal,
     UploadFiles,
+    EditFiles,
   },
   data() {
     return {
       trialModalOpen: false,
       fileList: [],
+      isUploading: false,
     };
   },
   watch: {
