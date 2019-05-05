@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <!-- <div class="upload-list-container">
+    <div class="upload-list-container">
       <div class="row mx-0">
         <div class="col-9 px-0" :class="{ 'col-12': isUploading }">
           <table class="table" id="upload-list">
@@ -70,10 +70,12 @@
             </thead>
             <tbody>
               <tr
-                :class="{ 'is-selected': selectedFileList.indexOf(f_id) > -1 }"
-                v-for="(file, f_id) in fileList"
-                :key="`file-${f_id}`"
-                @click.stop.prevent="toggleSelect($event, f_id)"
+                :class="{
+                  'is-selected': selectedFileList.includes(file.upload.uuid),
+                }"
+                v-for="file in fileList"
+                :key="file.upload.uuid"
+                @click="selectRow(file.upload.uuid)"
               >
                 <td>
                   <span class="icon" v-if="file.type === 'jpg'"
@@ -98,7 +100,7 @@
                   </span>
                   <span class="text">{{ file.camera }}</span>
                 </td>
-                <td v-if="isUploading">
+                <!-- <td v-if="isUploading">
                   <div class="float-right">
                     <a
                       v-if="file.state === 0 || file.state === 1"
@@ -135,12 +137,12 @@
                   <div v-if="file.state === 2">
                     <i class="icon icon-upload-success"></i> 上傳完成
                   </div>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-3" v-if="!isUploading">
+        <!-- <div class="col-3" v-if="!isUploading">
           <p class="text-center" v-if="!selectedFileList.length">
             請選擇並編輯上傳檔案
           </p>
@@ -183,9 +185,9 @@
               />
             </div>
           </form>
-        </div>
+        </div> -->
       </div>
-    </div> -->
+    </div>
 
     <!-- <div class="action text-center">
       <p class="text-orange">請為每個檔案都編輯「樣區」和「相機位置」</p>
@@ -229,6 +231,14 @@ export default {
     removeFiles(isAll = false) {
       //todo
       console.log(isAll);
+    },
+    selectRow(uuid) {
+      const idx = this.selectedFileList.indexOf(uuid);
+      if (idx !== -1) {
+        this.selectedFileList.splice(idx, 1);
+      } else {
+        this.selectedFileList.push(uuid);
+      }
     },
   },
 };
