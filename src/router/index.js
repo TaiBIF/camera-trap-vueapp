@@ -33,13 +33,13 @@ export default new Router({
             },
             {
               path: 'info',
-              name: 'projectInfo',
               component: () =>
                 import('@/pages/Project/ProjectInfo/ProjectInfo.vue'),
               children: [
                 {
                   path: '/',
                   redirect: 'video/all/receive',
+                  name: 'projectInfo',
                 },
                 {
                   path: 'video/:selectedStudyAreaId/:type/:selectedCameraId?',

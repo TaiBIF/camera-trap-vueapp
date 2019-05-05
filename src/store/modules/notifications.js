@@ -1,5 +1,9 @@
 import { getLanguage } from '@/utils/i18n';
-import { getNotifications, getSystemAnnouncements } from '@/service';
+import {
+  getNotifications,
+  getSystemAnnouncements,
+  postNotificationsRead,
+} from '@/service';
 import idx from 'idx';
 
 const state = {
@@ -16,11 +20,12 @@ const getters = {
     })),
   notifications: state =>
     state.notifications.map(
-      ({ id, type, dataField, sender, uploadSession, createTime }) => {
+      ({ id, type, dataField, sender, uploadSession, createTime, isRead }) => {
         const result = {
           id,
           type,
           createTime,
+          isRead,
         };
 
         if (dataField) {
@@ -76,6 +81,11 @@ const actions = {
     commit('setSystemAnnouncements', data);
   },
   async loadNotifications({ commit }) {
+    const data = await getNotifications();
+    commit('setNotifications', data);
+  },
+  async reaAllNotifications({ commit }) {
+    await postNotificationsRead();
     const data = await getNotifications();
     commit('setNotifications', data);
   },

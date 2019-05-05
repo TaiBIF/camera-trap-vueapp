@@ -106,8 +106,11 @@
             <li class="divider"></li>
           </ul>
           <div class="navbar-nav subnav">
-            <div v-if="haveNotification" class="divider"></div>
-            <div v-if="haveNotification" class="nav-item dropdown notification">
+            <div class="divider"></div>
+            <div
+              class="nav-item dropdown notification"
+              :class="haveUnreadNotification && 'withUnread'"
+            >
               <a
                 class="nav-item nav-link dropdown-toggle"
                 id="notification"
@@ -188,8 +191,12 @@ export default {
     isHistoryPath: function() {
       return this.$route && /^\/upload-history/.test(this.$route.path);
     },
-    haveNotification: function() {
-      return this.notifications && this.notifications.length > 0;
+    haveUnreadNotification: function() {
+      return (
+        this.notifications &&
+        this.notifications.length > 0 &&
+        this.notifications.some(({ isRead }) => !isRead)
+      );
     },
   },
   methods: {

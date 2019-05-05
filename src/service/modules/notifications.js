@@ -10,8 +10,16 @@ export const getSystemAnnouncements = async () => {
 
 export const getNotifications = async () => {
   const { items } = await fetchWrap({
-    url: '/api/v1/me/notifications',
+    url: '/api/v1/me/notifications?index=0&size=20',
     method: 'GET',
   });
   return items || [];
+};
+
+export const postNotificationsRead = async () => {
+  const data = await fetchWrap({
+    url: '/api/v1/me/notifications/_read',
+    method: 'POST',
+  });
+  return data;
 };
