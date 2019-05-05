@@ -5,7 +5,7 @@
         <tr
           v-for="(data, index) in displayItems"
           :key="`trow-${index}`"
-          :class="{ 'is-active': data.id === activeRow }"
+          :class="{ 'is-active': data.id === activeCameraId }"
           @click="clickRow(data.path)"
         >
           <th>{{ data.name }}</th>
@@ -54,9 +54,9 @@ export default {
     ChartLegend,
   },
   props: {
-    activeRow: {
-      type: Number,
-      default: -1,
+    activeCameraId: {
+      type: String,
+      default: '',
     },
   },
   computed: {
