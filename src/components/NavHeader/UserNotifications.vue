@@ -4,6 +4,15 @@
     class="dropdown-menu dropdown-menu-right"
     aria-labelledby="notification"
   >
+    <div class="notification-head">
+      <div>最近 20 筆通知</div>
+      <button
+        :class="haveUnreadNotification && 'active'"
+        @click="readAllNotifications"
+      >
+        我都知道了
+      </button>
+    </div>
     <div
       class="dropdown-item notification-item"
       v-for="(notification, id) in notifications"
@@ -148,7 +157,11 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
+
+const notifications = createNamespacedHelpers('notifications');
+
 export default {
   name: 'user-notifications',
   props: {
@@ -157,15 +170,48 @@ export default {
       default: () => [],
     },
   },
+  computed: {
+    haveUnreadNotification: function() {
+      return (
+        this.notifications &&
+        this.notifications.length > 0 &&
+        this.notifications.some(({ isRead }) => !isRead)
+      );
+    },
+  },
   methods: {
-    dateFormatYYYYMMDDHHmmss: function(dateString) {
+    ...notifications.mapActions(['reaAllNotifications']),
+    dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
+    },
+    readAllNotifications() {
+      this.reaAllNotifications();
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.notification-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  color: #8b8b8b;
+
+  & > button {
+    border: 0px;
+    background-color: transparent;
+    font-size: 16px;
+    padding: 0;
+    color: #8b8b8b;
+
+    &.active {
+      color: black;
+      cursor: pointer;
+    }
+  }
+}
 .notification-item {
   padding: 15px !important; // overwrite bootstrap
   a {
