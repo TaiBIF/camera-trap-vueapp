@@ -136,6 +136,13 @@ export default {
       selectedChildAreaId: '',
     };
   },
+  mounted() {
+    this.updateSelectArea();
+  },
+  watch: {
+    allAreas: 'updateSelectArea',
+    selectedStudyAreaId: 'updateSelectArea',
+  },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     projectId: function() {
@@ -208,10 +215,6 @@ export default {
         {}
       );
     },
-  },
-  watch: {
-    allAreas: 'updateSelectArea',
-    selectedStudyAreaId: 'updateSelectArea',
   },
   methods: {
     dateFormatYYYYMMDD(dateString) {
