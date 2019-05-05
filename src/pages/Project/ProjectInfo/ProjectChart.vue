@@ -20,7 +20,7 @@
       </a>
     </div>
     <camera-bar-chart v-if="selectedCameraId" />
-    <area-bar-chart v-else />
+    <area-bar-chart v-else :activeCameraId="activeCameraId" />
     <error-report-modal
       :open="showErrorReportModal"
       @close="showErrorReportModal = false"
@@ -42,6 +42,12 @@ export default {
     ErrorReportModal,
     AreaBarChart,
     CameraBarChart,
+  },
+  props: {
+    activeCameraId: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {

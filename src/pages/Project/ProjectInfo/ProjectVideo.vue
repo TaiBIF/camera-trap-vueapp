@@ -51,7 +51,10 @@
     </div>
     <div class="row map-container">
       <div class="col-5">
-        <project-map />
+        <project-map
+          :activeCameraId="activeCameraId"
+          @hoverCamera="activeCamera"
+        />
       </div>
       <div class="col-7">
         <div v-if="selectedCameraId" class="backLink">
@@ -110,7 +113,7 @@
             <div>土地利用型態：{{ selectedCamera.landCover }}</div>
           </div>
         </div>
-        <project-chart />
+        <project-chart :activeCameraId="activeCameraId" />
       </div>
     </div>
   </div>
@@ -134,6 +137,7 @@ export default {
     return {
       selectedParentAreaId: '',
       selectedChildAreaId: '',
+      activeCameraId: '',
     };
   },
   mounted() {
@@ -219,6 +223,9 @@ export default {
   methods: {
     dateFormatYYYYMMDD(dateString) {
       return dateFormatYYYYMMDD(dateString);
+    },
+    activeCamera(cameraId) {
+      this.activeCameraId = cameraId || '';
     },
     updateSelectArea() {
       const selectedArea = this.allAreas.find(

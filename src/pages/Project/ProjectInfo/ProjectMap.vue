@@ -44,6 +44,8 @@
           :lat-lng="camera.position"
           :draggable="false"
           @click="selectCamera(camera.id)"
+          @mouseover="$emit('hoverCamera', camera.id)"
+          @mouseout="$emit('hoverCamera')"
         >
           <l-tooltip
             :content="camera.name"
@@ -97,7 +99,25 @@ import 'leaflet/dist/leaflet.css';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 
-const IconSelect = L.icon({
+const CameraIcon = L.icon({
+  iconUrl: '/assets/common/marker-icon@2x.png',
+  iconSize: [66, 120],
+  iconAnchor: [33, 80],
+  popupAnchor: [-3, -76],
+  shadowSize: [66, 120],
+  shadowAnchor: [31, 77],
+});
+
+const ErrorCameraIcon = L.icon({
+  iconUrl: '/assets/common/marker-icon-error@2x.png',
+  iconSize: [66, 120],
+  iconAnchor: [30, 80],
+  popupAnchor: [-3, -80],
+  shadowSize: [66, 120],
+  shadowAnchor: [33, 80],
+});
+
+const CameraIconSelect = L.icon({
   iconUrl: '/assets/common/marker-icon-select@2x.png',
   iconSize: [66, 120],
   iconAnchor: [33, 80],
@@ -106,7 +126,7 @@ const IconSelect = L.icon({
   shadowAnchor: [31, 77],
 });
 
-const ErrorIconSelect = L.icon({
+const ErrorCameraIconSelect = L.icon({
   iconUrl: '/assets/common/marker-icon-error-select@2x.png',
   iconSize: [66, 120],
   iconAnchor: [30, 80],
@@ -130,6 +150,12 @@ export default {
     LCircle,
     LTooltip,
     LLayerGroup,
+  },
+  props: {
+    activeCameraId: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -181,7 +207,7 @@ export default {
             lat: latitude,
             lng: longitude,
           },
-          icon: failures > 0 ? ErrorIconSelect : IconSelect,
+          icon: this.getMarkerIcon(id, failures),
         }),
       );
     },
@@ -227,6 +253,18 @@ export default {
     },
   },
   methods: {
+    getMarkerIcon: function(id, failures) {
+      if (failures > 0) {
+        if (id === this.activeCameraId) {
+          return ErrorCameraIconSelect;
+        }
+        return ErrorCameraIcon;
+      }
+      if (id === this.activeCameraId) {
+        return CameraIconSelect;
+      }
+      return CameraIcon;
+    },
     centerUpdated() {
       // TODO: reload forest boundary
     },
