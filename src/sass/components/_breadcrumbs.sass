@@ -2,6 +2,8 @@ ul.breadcrumbs
   display: block
   margin: 0
   padding: 0
+  height: 20px
+  line-height: 20px
   li 
     display: inline-block
           
@@ -11,6 +13,7 @@ ul.breadcrumbs
     a,
     a:link
       position: relative
+      display: inline-block
       color: $gray
       font-size: 13px
       padding-right: 20px
@@ -28,9 +31,9 @@ ul.breadcrumbs
         top: 0
         margin: auto
 
-//      &:before
-//        +rotate(-45deg)
-//        bottom: 40%
-//      &:after
-//        top: 40%
-//        +rotate(45deg)
+      &:before
+        transform: rotate(-45deg);
+        bottom: 40%
+      &:after
+        top: 40%
+        transform: rotate(45deg);
