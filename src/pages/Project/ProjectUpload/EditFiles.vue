@@ -191,19 +191,15 @@
       </div>
     </div>
 
-    <!-- <div class="action text-center">
+    <div class="action text-center">
       <p class="text-orange">請為每個檔案都編輯「樣區」和「相機位置」</p>
-      <button
-        @click.stop.prevent="startUpload()"
-        class="btn btn-orange"
-        :disabled="hasEmpty"
-      >
+      <button class="btn btn-orange" :disabled="!canUpload">
         <span class="icon"><i class="icon-upload"></i></span>
         <span class="text"
-          >開始上傳 <span v-if="!hasEmpty">({{ fileList.length }})</span></span
+          >開始上傳 <span v-if="canUpload">({{ fileList.length }})</span></span
         >
       </button>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -259,6 +255,9 @@ export default {
     },
     cameraOptions() {
       return this.cameraLocations;
+    },
+    canUpload() {
+      return this.fileList.every(file => file.cameraLocationId);
     },
   },
   methods: {
