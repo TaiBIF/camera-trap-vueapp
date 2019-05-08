@@ -3,6 +3,7 @@
     <vue-dropzone
       ref="myVueDropzone"
       id="dropzone"
+      class="upload-area"
       :options="dropzoneOptions"
       :useCustomSlot="true"
       @vdropzone-files-added="show($event)"
