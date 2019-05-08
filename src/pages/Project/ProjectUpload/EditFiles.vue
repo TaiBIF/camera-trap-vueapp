@@ -42,11 +42,11 @@
               <span
                 class="text"
                 v-if="selectedFileList.length === fileList.length"
-                @click="removeFiles(true)"
+                @click="removeFiles"
               >
                 移除全部檔案
               </span>
-              <span v-else class="text" @click="removeFiles(true)">
+              <span v-else class="text" @click="removeFiles">
                 移除選取的檔案
               </span>
             </span>
@@ -95,10 +95,15 @@
                 <td>{{ file.size }}</td>
                 <td>{{ file.site }}-{{ file.subsite }}</td>
                 <td>
-                  <span class="action">
-                    <a class="del icon"><i class="icon-trash"></i></a>
-                  </span>
                   <span class="text">{{ file.camera }}</span>
+                  <span class="action">
+                    <a class="del icon">
+                      <i
+                        class="icon-trash"
+                        @click="removeFile(file.upload.uuid)"
+                      />
+                    </a>
+                  </span>
                 </td>
                 <!-- <td v-if="isUploading">
                   <div class="float-right">
@@ -228,9 +233,22 @@ export default {
         ? this.fileList.map(v => v.upload.uuid)
         : [];
     },
-    removeFiles(isAll = false) {
-      //todo
-      console.log(isAll);
+    removeFiles() {
+      // 刪除所有選取的檔案
+      this.$emit(
+        'change',
+        this.fileList.filter(
+          ({ upload: { uuid } }) => !this.selectedFileList.includes(uuid),
+        ),
+      );
+      this.selectedFileList = [];
+    },
+    removeFile(targetId) {
+      // 刪除指定檔案
+      this.$emit(
+        'change',
+        this.fileList.filter(({ upload: { uuid } }) => uuid !== targetId),
+      );
     },
     selectRow(uuid) {
       const idx = this.selectedFileList.indexOf(uuid);

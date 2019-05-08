@@ -20,7 +20,12 @@
       </div>
 
       <upload-files v-if="fileList.length === 0" @change="fileList = $event" />
-      <edit-files v-else :isUploading="isUploading" :fileList="fileList" />
+      <edit-files
+        v-else
+        :isUploading="isUploading"
+        :fileList="fileList"
+        @change="fileList = $event"
+      />
     </div>
     <!-- 上傳說明 -->
     <trail-modal :open="trialModalOpen" @close="trialModalOpen = false" />
