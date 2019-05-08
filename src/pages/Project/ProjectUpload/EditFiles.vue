@@ -93,9 +93,9 @@
                   <span class="text">{{ file.name }}</span>
                 </td>
                 <td>{{ file.size }}</td>
-                <td>{{ file.site }}-{{ file.subsite }}</td>
+                <td>{{ studyAreaTitle(file.studyAreaId) }}</td>
                 <td>
-                  <span class="text">{{ file.camera }}</span>
+                  <span class="text">{{ file.cameraLocationName }}</span>
                   <span class="action">
                     <a class="del icon">
                       <i
@@ -147,8 +147,8 @@
             </tbody>
           </table>
         </div>
-        <!-- <div class="col-3" v-if="!isUploading">
-          <p class="text-center" v-if="!selectedFileList.length">
+        <div class="col-3" v-if="!isUploading">
+          <p class="text-center" v-if="!selectedFileList.length > 0">
             請選擇並編輯上傳檔案
           </p>
           <form class="form" v-else>
@@ -160,37 +160,34 @@
               <label class="required">樣區：</label>
               <v-select
                 :options="siteOptions"
-                v-model="form.site"
-                :onChange="updateSiteValue"
-                :placeholder="multiSite ? '多個樣區位置' : '請選擇檔案所屬樣區'"
+                label="title"
+                v-model="currentSite"
+                @input="setStudyArea"
+                placeholder="請選擇檔案所屬樣區"
               />
             </div>
-            <div class="form-group">
+            <div class="form-group" v-if="subSiteOptions.length > 0">
               <label class="required">子樣區：</label>
               <v-select
                 :options="subSiteOptions"
-                v-model="form.subsite"
-                :onChange="updateSubsiteValue"
-                :placeholder="
-                  multiSite ? '多個子樣區位置' : '請選擇檔案所屬子樣區'
-                "
+                label="title"
+                @input="setStudyArea"
+                placeholder="請選擇檔案所屬子樣區"
                 resetOnOptionsChange
               />
             </div>
-            <div class="form-group">
+            <div class="form-group" v-if="cameraOptions.length > 0">
               <label class="required">相機位置：</label>
               <v-select
                 :options="cameraOptions"
-                v-model="form.camera"
-                :onChange="updateCameraValue"
-                :placeholder="
-                  multiCamera ? '多個相機位置' : '請選擇檔案所屬相機位置'
-                "
+                label="name"
+                @input="setCamera"
+                placeholder="請選擇檔案所屬相機位置"
                 resetOnOptionsChange
               />
             </div>
           </form>
-        </div> -->
+        </div>
       </div>
     </div>
 
@@ -211,7 +208,16 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+import idx from 'idx';
+import vSelect from 'vue-select';
+
+const studyAreas = createNamespacedHelpers('studyAreas');
+
 export default {
+  components: {
+    vSelect,
+  },
   props: {
     isUploading: {
       type: Boolean,
@@ -225,9 +231,39 @@ export default {
   data() {
     return {
       selectedFileList: [], // 對應 fileList 的 _.upload.uuid
+      currentSite: undefined,
     };
   },
+  watch: {
+    selectedFileList: function() {
+      this.currentSite = undefined;
+    },
+    currentSite: function() {
+      this.resetCameraLocations();
+    },
+  },
+  computed: {
+    ...studyAreas.mapGetters([
+      'studyAreas',
+      'cameraLocations',
+      'studyAreaTitle',
+    ]),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
+    siteOptions() {
+      return this.studyAreas;
+    },
+    subSiteOptions() {
+      return idx(this.currentSite, _ => _.children) || [];
+    },
+    cameraOptions() {
+      return this.cameraLocations;
+    },
+  },
   methods: {
+    ...studyAreas.mapActions(['getProjectCameraLocations']),
+    ...studyAreas.mapMutations(['resetCameraLocations']),
     selectAll(e) {
       this.selectedFileList = e.target.checked
         ? this.fileList.map(v => v.upload.uuid)
@@ -257,6 +293,31 @@ export default {
       } else {
         this.selectedFileList.push(uuid);
       }
+    },
+    setStudyArea(val) {
+      // 當前選擇的樣區有以下情況就要去取得相機位置
+      // 1. val.children.length === 0，這表示樣區只有一層
+      // 2. val.children.length === undefined，這表示已經是子樣區了
+      if (!idx(val, _ => _.children.length)) {
+        this.getProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: val.id,
+        });
+      }
+    },
+    setCamera(val) {
+      this.$emit(
+        'change',
+        this.fileList.map(file => {
+          if (this.selectedFileList.includes(file.upload.uuid)) {
+            file.studyAreaId = val.studyArea;
+            file.cameraLocationId = val.id;
+            file.cameraLocationName = val.name;
+          }
+
+          return file;
+        }),
+      );
     },
   },
 };
