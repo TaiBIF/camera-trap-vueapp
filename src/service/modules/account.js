@@ -28,13 +28,14 @@ const getMe = async () => {
 };
 
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-me
-const putMe = async ({ name, email }) => {
+const putMe = async ({ name, email, hotkeys }) => {
   const res = await fetchWrap({
     url: '/api/v1/me',
     method: 'PUT',
     body: {
       name,
       email,
+      hotkeys,
     },
   });
   return res;

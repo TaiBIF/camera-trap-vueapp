@@ -11,6 +11,7 @@ const getters = {
   userName: state => idx(state, _ => _.profile.name) || '',
   userEmail: state => idx(state, _ => _.profile.email) || '',
   userId: state => idx(state, _ => _.profile.id),
+  hotkeys: state => idx(state, _ => _.profile.hotkeys) || [],
   isAdministrator: state =>
     idx(state, _ => _.profile.permission) === 'administrator',
 };
@@ -30,8 +31,8 @@ const actions = {
     await logout();
     commit('setProfile', {});
   },
-  async updateProfile({ commit }, { name, email }) {
-    const data = await putMe({ name, email });
+  async updateProfile({ commit }, { name, email, hotkeys }) {
+    const data = await putMe({ name, email, hotkeys });
     commit('setProfile', data);
   },
 };
