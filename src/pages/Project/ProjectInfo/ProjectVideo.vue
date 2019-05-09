@@ -110,7 +110,7 @@
             </div>
             <div>海拔：{{ selectedCamera.altitude }}m</div>
             <div>植披：{{ selectedCamera.vegetation }}</div>
-            <div>土地利用型態：{{ selectedCamera.landCover }}</div>
+            <div>土地利用型態：{{ selectedCamera.landCoverType }}</div>
           </div>
         </div>
         <project-chart :activeCameraId="activeCameraId" />
