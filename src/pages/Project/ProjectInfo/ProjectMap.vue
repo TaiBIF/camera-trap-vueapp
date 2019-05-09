@@ -86,7 +86,7 @@ import {
   LLayerGroup,
   LMap,
   LMarker,
-  // LPolygon,
+  LPolygon,
   LTileLayer,
   LTooltip,
 } from 'vue2-leaflet';
@@ -106,14 +106,14 @@ const IconSelect = L.icon({
   shadowAnchor: [31, 77],
 });
 
-// const ErrorIconSelect = L.icon({
-//   iconUrl: '/assets/common/marker-icon-error-select@2x.png',
-//   iconSize: [66, 120],
-//   iconAnchor: [30, 80],
-//   popupAnchor: [-3, -80],
-//   shadowSize: [66, 120],
-//   shadowAnchor: [33, 80],
-// });
+const ErrorIconSelect = L.icon({
+  iconUrl: '/assets/common/marker-icon-error-select@2x.png',
+  iconSize: [66, 120],
+  iconAnchor: [30, 80],
+  popupAnchor: [-3, -80],
+  shadowSize: [66, 120],
+  shadowAnchor: [33, 80],
+});
 
 const defaultZoom = {
   area: 9,
@@ -126,7 +126,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    // LPolygon,
+    LPolygon,
     LCircle,
     LTooltip,
     LLayerGroup,
