@@ -176,15 +176,29 @@
                 resetOnOptionsChange
               />
             </div>
-            <div class="form-group" v-if="cameraOptions.length > 0">
-              <label class="required">相機位置：</label>
-              <v-select
-                :options="cameraOptions"
-                label="name"
-                @input="setCamera"
-                placeholder="請選擇檔案所屬相機位置"
-                resetOnOptionsChange
-              />
+            <div v-if="doFetch">
+              <div class="form-group" v-if="cameraOptions.length > 0">
+                <label class="required">相機位置：</label>
+                <v-select
+                  :options="cameraOptions"
+                  label="name"
+                  @input="setCamera"
+                  placeholder="請選擇檔案所屬相機位置"
+                  resetOnOptionsChange
+                />
+              </div>
+              <div v-else>
+                此樣區尚無相機位置，
+                <router-link
+                  :to="{
+                    name: 'projectCameraLocation',
+                    params: {
+                      projectId: $route.params.projectId,
+                    },
+                  }"
+                  >建立一個新的？</router-link
+                >
+              </div>
             </div>
           </form>
         </div>
@@ -228,6 +242,7 @@ export default {
     return {
       selectedFileList: [], // 對應 fileList 的 _.upload.uuid
       currentSite: undefined,
+      doFetch: false, // 紀錄是否有請求取得相機位置用來判斷是沒有相機位置還是還沒送請求
     };
   },
   watch: {
@@ -236,6 +251,7 @@ export default {
     },
     currentSite: function() {
       this.resetCameraLocations();
+      this.doFetch = false;
     },
   },
   computed: {
@@ -293,15 +309,16 @@ export default {
         this.selectedFileList.push(uuid);
       }
     },
-    setStudyArea(val) {
+    async setStudyArea(val) {
       // 當前選擇的樣區有以下情況就要去取得相機位置
       // 1. val.children.length === 0，這表示樣區只有一層
       // 2. val.children.length === undefined，這表示已經是子樣區了
       if (!idx(val, _ => _.children.length)) {
-        this.getProjectCameraLocations({
+        await this.getProjectCameraLocations({
           projectId: this.projectId,
           studyAreaId: val.id,
         });
+        this.doFetch = true;
       }
     },
     setCamera(val) {

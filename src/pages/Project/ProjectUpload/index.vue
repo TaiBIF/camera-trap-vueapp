@@ -19,7 +19,11 @@
         </a>
       </div>
 
-      <upload-files v-if="fileList.length === 0" @change="fileList = $event" />
+      <upload-files
+        v-if="fileList.length === 0"
+        @change="fileList = $event"
+        :disabled="disableUpload"
+      />
       <edit-files
         v-else
         :isUploading="isUploading"
@@ -41,6 +45,7 @@ import UploadFiles from '@/components/ProjectUpload/UploadFiles.vue';
 import EditFiles from './EditFiles.vue';
 
 const projects = createNamespacedHelpers('projects');
+const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
   components: {
@@ -63,6 +68,17 @@ export default {
   },
   computed: {
     ...projects.mapGetters(['projectDetail']),
+    ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
+    disableUpload() {
+      return (
+        this.studyAreas.length === 0 || // 沒有樣區
+        this.studyAreas.every(
+          v =>
+            v.cameraLocation === undefined &&
+            v.children.every(c => c.cameraLocation === undefined),
+        ) // 自己本身沒有相機位置以及子樣區也沒有相機位置
+      );
+    },
   },
 };
 </script>
