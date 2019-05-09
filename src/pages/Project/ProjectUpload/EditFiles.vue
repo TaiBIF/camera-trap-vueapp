@@ -77,13 +77,15 @@
                 @click="selectRow(file.upload.uuid)"
               >
                 <td>
-                  <span class="icon" v-if="file.type === 'jpg'"
+                  <span
+                    class="icon"
+                    v-if="'image/jpeg,image/png'.includes(file.type)"
                     ><i class="icon-photo"></i
                   ></span>
-                  <span class="icon" v-if="file.type === 'csv'"
+                  <span class="icon" v-if="file.type === 'text/csv'"
                     ><i class="icon-csv"></i
                   ></span>
-                  <span class="icon" v-if="file.type === 'zip'"
+                  <span class="icon" v-if="file.type === 'application/zip'"
                     ><i class="icon-zip"></i
                   ></span>
                   <span class="icon" v-if="file.type === 'folder'"
