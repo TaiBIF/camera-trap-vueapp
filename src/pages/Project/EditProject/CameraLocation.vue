@@ -167,7 +167,7 @@ export default {
             type: 'text',
           },
           {
-            data: 'landCover',
+            data: 'landCoverType',
             type: 'text',
           },
         ],
