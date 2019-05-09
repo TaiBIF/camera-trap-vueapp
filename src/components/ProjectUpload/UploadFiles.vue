@@ -48,7 +48,7 @@
 <script>
 import VueDropzone from 'vue2-dropzone';
 
-const uploadAccept = 'image/jpeg,image/png,text/csv,application/zip';
+import uploadAccept from '@/constant/uploadAccept.js';
 
 export default {
   components: {

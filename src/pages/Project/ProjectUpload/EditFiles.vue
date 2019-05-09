@@ -6,12 +6,26 @@
         class="col-9"
         :class="{ 'col-12': isUploading, 'pr-0': !isUploading }"
       >
-        <label for="upload" class="btn btn-upload">
-          <span class="icon">
-            <i class="icon-add-green" />
-          </span>
-          <span class="text">新增上傳檔案</span>
-        </label>
+        <vue-dropzone
+          id="dropzone"
+          style="display: inline-block"
+          :include-styling="false"
+          :options="{
+            url: 'localhost',
+            acceptedFiles: uploadAccept,
+            autoProcessQueue: false,
+            previewsContainer: false,
+          }"
+          :useCustomSlot="true"
+          @vdropzone-files-added="addFiles($event)"
+        >
+          <label class="btn btn-upload">
+            <span class="icon">
+              <i class="icon-add-green" />
+            </span>
+            <span class="text">新增上傳檔案</span>
+          </label>
+        </vue-dropzone>
 
         <div class="message is-alert" v-if="overTotalLimited">
           <div class="alert-box float-left">!</div>
@@ -226,9 +240,13 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import VueDropzone from 'vue2-dropzone';
 import filesize from 'filesize';
 import idx from 'idx';
 import vSelect from 'vue-select';
+import * as R from 'ramda';
+
+import uploadAccept from '@/constant/uploadAccept.js';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const TOTAL_LIMITED = 1024 * 1024 * 1024 * 5; // 5g
@@ -237,6 +255,7 @@ const SINGLE_LIMITED = 1024 * 1024 * 1024 * 2; // 2g
 export default {
   components: {
     vSelect,
+    VueDropzone,
   },
   props: {
     isUploading: {
@@ -250,6 +269,7 @@ export default {
   },
   data() {
     return {
+      uploadAccept,
       selectedFileList: [], // 對應 fileList 的 _.upload.uuid
       currentSite: undefined,
       doFetch: false, // 紀錄是否有請求取得相機位置用來判斷是沒有相機位置還是還沒送請求
@@ -358,6 +378,9 @@ export default {
     },
     formatFilesize(size) {
       return filesize(size);
+    },
+    addFiles(files) {
+      this.$emit('change', R.concat(this.fileList, [...files]));
     },
   },
 };
