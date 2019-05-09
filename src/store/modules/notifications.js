@@ -15,7 +15,7 @@ const getters = {
   systemAnnouncements: state =>
     state.systemAnnouncements.map(({ id, message, createTime }) => ({
       id,
-      message: idx(message, _ => _[getLanguage()]),
+      message: idx(message, _ => _[getLanguage()]) || '',
       createTime,
     })),
   notifications: state =>
@@ -26,12 +26,15 @@ const getters = {
           type,
           createTime,
           isRead,
+          dataField: {},
+          sender: {},
+          uploadSession: {},
         };
 
         if (dataField) {
           result.dataField = {
             ...dataField,
-            title: dataField.title[getLanguage()],
+            title: idx(dataField, _ => _.title[getLanguage()]) || '',
           };
         }
         if (sender) {
