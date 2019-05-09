@@ -13,6 +13,7 @@
     "@handsontable/vue": "^4.0.0",
     "babel-plugin-idx": "^2.4.0",
     "bootstrap": "^4.3.1",
+    "filesize": "^4.1.2",
     "handsontable": "^7.0.2",
     "handsontable-key-value": "^3.0.1",
     "idx": "^2.5.5",

@@ -13,13 +13,12 @@
           <span class="text">新增上傳檔案</span>
         </label>
 
-        <!-- <div class="message is-alert" v-if="alertMsg !== '' && showAlert">
-          <a class="float-right close" @click="showAlert = false">
-            <i class="icon-remove-red"></i>
-          </a>
+        <div class="message is-alert" v-if="overTotalLimited">
           <div class="alert-box float-left">!</div>
-          <div class="text">{{ alertMsg }}</div>
-        </div> -->
+          <div class="text">
+            全部上傳的檔案已超過上限 5GB，建議您可以分次上傳
+          </div>
+        </div>
 
         <div class="float-right" v-if="!isUploading">
           <div class="checkbox checkbox-inline mb-0 mt-2">
@@ -92,7 +91,13 @@
                   ></span>
                   <span class="text">{{ file.name }}</span>
                 </td>
-                <td>{{ file.size }}</td>
+                <td>
+                  {{ formatFilesize(file.size) }}
+                  <span v-if="overSingleLimited(file.size)">
+                    <span class="alert-box">!</span>
+                    <span style="color: #D80C37">超過上限 2GB</span>
+                  </span>
+                </td>
                 <td>{{ studyAreaTitle(file.studyAreaId) }}</td>
                 <td>
                   <span class="text">{{ file.cameraLocationName }}</span>
@@ -219,10 +224,13 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import filesize from 'filesize';
 import idx from 'idx';
 import vSelect from 'vue-select';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const TOTAL_LIMITED = 1024 * 1024 * 1024 * 5; // 5g
+const SINGLE_LIMITED = 1024 * 1024 * 1024 * 2; // 2g
 
 export default {
   components: {
@@ -275,10 +283,21 @@ export default {
     canUpload() {
       return this.fileList.every(file => file.cameraLocationId);
     },
+    overTotalLimited() {
+      return (
+        this.fileList.reduce((pre, current) => {
+          pre += current.size;
+          return pre;
+        }, 0) > TOTAL_LIMITED
+      );
+    },
   },
   methods: {
     ...studyAreas.mapActions(['getProjectCameraLocations']),
     ...studyAreas.mapMutations(['resetCameraLocations']),
+    overSingleLimited(size) {
+      return size > SINGLE_LIMITED;
+    },
     selectAll(e) {
       this.selectedFileList = e.target.checked
         ? this.fileList.map(v => v.upload.uuid)
@@ -334,6 +353,9 @@ export default {
           return file;
         }),
       );
+    },
+    formatFilesize(size) {
+      return filesize(size);
     },
   },
 };
