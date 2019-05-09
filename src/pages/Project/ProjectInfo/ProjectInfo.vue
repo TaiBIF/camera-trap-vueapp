@@ -75,7 +75,8 @@
                 欄位格式請參考
                 <a
                   class="link text-underline text-green"
-                  @click="downloadExampleCsv"
+                  :href="downloadCsvLink"
+                  target="_blank"
                   >範本下載</a
                 >
               </p>
@@ -153,10 +154,10 @@ export default {
       }
       return isAllowManageProject(projectMember.role);
     },
-  },
-  methods: {
-    downloadExampleCsv() {
-      // TODO: apply download csv function after API ready
+    downloadCsvLink() {
+      return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
+        this.projectId
+      }/example.csv`;
     },
   },
 };
