@@ -87,7 +87,11 @@
           <tbody>
             <tr v-for="(s, index) in speciesKeys" :key="`hotkey-${index}`">
               <td width="22%">
-                <v-select v-model="s.key" :options="speciesOptions" />
+                <v-select
+                  v-model="s.key"
+                  :options="speciesOptions"
+                  :clearable="false"
+                />
               </td>
               <td width="22%">
                 <input
