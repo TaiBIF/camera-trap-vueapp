@@ -9,6 +9,7 @@ import store from './store';
 import './sass/app.sass';
 import 'bootstrap';
 import 'handsontable/languages/zh-TW';
+import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 
 Vue.use(VeeValidate);
 Vue.use(VTooltip);

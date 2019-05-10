@@ -62,6 +62,9 @@ const mutations = {
   setCameraLocations(state, payload) {
     state.cameraLocations = payload;
   },
+  resetCameraLocations(state) {
+    state.cameraLocations = [];
+  },
 };
 
 const actions = {
