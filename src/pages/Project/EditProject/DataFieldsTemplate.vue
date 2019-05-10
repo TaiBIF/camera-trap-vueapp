@@ -9,7 +9,7 @@
       </p>
       <p>
         您可以透過下載來預覽範本：
-        <a class="btn btn-default" @click="downloadCsvSrc">
+        <a class="btn btn-default" :href="downloadCsvLink" target="_blank">
           <i class="fa fa-download"></i>
           下載範本
         </a>
@@ -20,9 +20,14 @@
 
 <script>
 export default {
-  methods: {
-    downloadCsvSrc() {
-      // todo
+  computed: {
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
+    downloadCsvLink() {
+      return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
+        this.projectId
+      }/example.csv`;
     },
   },
 };
