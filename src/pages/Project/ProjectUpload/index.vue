@@ -25,8 +25,13 @@
         :disabled="disableUpload"
       />
       <edit-files
-        v-else
-        :isUploading="isUploading"
+        v-else-if="isUploading === false"
+        :fileList="fileList"
+        @change="fileList = $event"
+        @doUpload="isUploading = true"
+      />
+      <upload-process
+        v-else-if="isUploading === true"
         :fileList="fileList"
         @change="fileList = $event"
       />
@@ -43,6 +48,7 @@ import TrailModal from '@/components/ProjectUpload/TrialModal.vue';
 import UploadFiles from '@/components/ProjectUpload/UploadFiles.vue';
 
 import EditFiles from './EditFiles.vue';
+import UploadProcess from './UploadProcess.vue';
 
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -52,6 +58,7 @@ export default {
     TrailModal,
     UploadFiles,
     EditFiles,
+    UploadProcess,
   },
   data() {
     return {
