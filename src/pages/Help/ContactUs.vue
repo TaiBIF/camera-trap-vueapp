@@ -13,7 +13,7 @@
           name="reply_type"
           id="reply-type-1"
           v-model="reportType"
-          value="bug_report"
+          value="issue"
         />
         <label for="reply-type-1">問題回報</label>
       </div>
@@ -23,7 +23,7 @@
           name="reply_type"
           id="reply-type-2"
           v-model="reportType"
-          value="feedback"
+          value="suggestion"
         />
         <label for="reply-type-2">意見反饋</label>
       </div>
@@ -36,6 +36,7 @@
     <ContactUsForm
       v-if="reportType !== ''"
       :type="reportType"
+      :errorMessage="errorMessage"
       @cancel="handleCancel"
       @submit="handleSubmit"
     />
@@ -44,11 +45,20 @@
 </template>
 
 <script>
-// import { uploadFile } from '@/service';
-// import { submitContactForm } from '../../../service/api';
+import { createIssue, uploadFile } from '@/service';
 import ContactUsForm from '@/components/ContactUsForm/ContactUsForm';
 import SuccessModal from '@/components/Modal/SuccessModal';
+import idx from 'idx';
 
+const categoryMap = {
+  系統操作: 'system',
+  帳號相關: 'account',
+  計畫管理: 'project-management',
+  檔案上傳: 'file-upload',
+  資料編輯: 'data-edit',
+  篩選及下載: 'search-and-download',
+  其他問題: 'others',
+};
 export default {
   name: 'Contact',
   components: {
@@ -59,51 +69,49 @@ export default {
     return {
       reportType: '',
       showSuccessModal: false,
+      errorMessage: '',
     };
   },
   methods: {
     handleCancel() {
       this.reportType = '';
+      this.errorMessage = '';
     },
-    handleSubmit(form) {
-      console.log('--- handleSubmit:', form);
-      // TODO: apply file upload and contact us API
-      // if (this.uploadFiles.length > 0) {
-      //   const reportType =
-      //     this.form.reportType === '問題回報' ? 'bug_report' : 'feedback';
-      //   const timestamp = Date.now();
-      //   const attachments = [];
-      //   const promises = [];
-      //   this.uploadFiles.forEach(({ file, type }, index) => {
-      //     const ext = type.replace(/.*\//, '');
-      //     const fileName = `${reportType}_${timestamp}_${index + 1}.${ext}`;
-      //     attachments.push(
-      //       `https://s3-ap-northeast-1.amazonaws.com/camera-trap/user_report_images/${fileName}`,
-      //     );
-      //     promises.push(
-      //       uploadContactUsAttach({
-      //         file,
-      //         fileName,
-      //       }),
-      //     );
-      //   });
-      //   Promise.all(promises).then(() => {
-      //     submitContactForm({
-      //       ...this.form,
-      //       attachments,
-      //     }).then(({ ret }) => {
-      //       if (ret.ok === 1) {
-      //         this.showSuccessModal = true;
-      //       }
-      //     });
-      //   });
-      // } else {
-      //   submitContactForm(this.form).then(({ ret }) => {
-      //     if (ret.ok === 1) {
-      //       this.showSuccessModal = true;
-      //     }
-      //   });
-      // }
+    async handleSubmit({ reportContentType, description, email, uploadFiles }) {
+      this.errorMessage = '';
+
+      const type = this.reportType;
+      const categories = reportContentType.map(type => categoryMap[type]);
+      const issueParams = {
+        type,
+        categories,
+        description,
+        email,
+      };
+      if (uploadFiles.length > 0) {
+        const promises = [];
+        uploadFiles.forEach(({ file }) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          promises.push(uploadFile('issue-attachment', formData));
+        });
+        const results = await Promise.all(promises);
+        if (idx(results, _ => _[0].id)) {
+          issueParams.attachmentFile = results[0].id;
+          // TODO: apply upload mutilple file
+          // issueParams.attachmentFiles = results.map(({id}) => id);
+        } else {
+          const message = idx(results, _ => _[0].message) || '';
+          this.errorMessage = `檔案上傳失敗，請再試一次。 ${message}`;
+        }
+      }
+      if (!this.errorMessage) {
+        const res = await createIssue(issueParams).catch(({ message }) => {
+          this.errorMessage = `傳送失敗，請再試一次。 ${message || ''}`;
+        });
+
+        if (res) this.showSuccessModal = true;
+      }
     },
     handleCloseSuccessModal() {
       this.showSuccessModal = false;

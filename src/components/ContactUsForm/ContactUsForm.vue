@@ -3,8 +3,8 @@
     <form action="" class="form">
       <div class="panel panel-default mb-3">
         <div class="panel-heading">
-          <h4 v-if="type === 'bug_report'">問題回報</h4>
-          <h4 v-if="type === 'feedback'">意見反饋</h4>
+          <h4 v-if="type === 'issue'">問題回報</h4>
+          <h4 v-if="type === 'suggestion'">意見反饋</h4>
         </div>
         <div class="panel-body">
           <div class="form-group row">
@@ -86,7 +86,7 @@
             <label class="col-2 text-right required">問題描述：</label>
             <div class="col-10">
               <textarea
-                v-if="type === 'bug_report'"
+                v-if="type === 'issue'"
                 v-model="description"
                 cols="30"
                 rows="5"
@@ -95,7 +95,7 @@
               >
               </textarea>
               <textarea
-                v-if="type === 'feedback'"
+                v-if="type === 'suggestion'"
                 v-model="description"
                 cols="30"
                 rows="5"
@@ -104,7 +104,7 @@
               >
               </textarea>
             </div>
-            <div v-if="type === 'bug_report'" class="col-10 offset-2 text-gray">
+            <div v-if="type === 'issue'" class="col-10 offset-2 text-gray">
               <small>
                 <p>
                   建議您在問題回報中提供以下資訊，讓我們能更精確的為您提供幫助。
@@ -184,6 +184,7 @@
           </div>
         </div>
       </div>
+      <div class="error" v-show="!!errorMessage">{{ errorMessage }}</div>
       <div class="action">
         <button type="reset" class="btn btn-green-border" @click="handleCancel">
           取消
@@ -225,7 +226,11 @@ export default {
   props: {
     type: {
       type: String,
-      validator: val => ['bug_report', 'feedback'].includes(val),
+      validator: val => ['issue', 'suggestion'].includes(val),
+    },
+    errorMessage: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -296,3 +301,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.error {
+  color: #d80c37;
+}
+</style>
