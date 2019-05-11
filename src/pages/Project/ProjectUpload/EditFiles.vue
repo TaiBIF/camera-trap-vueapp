@@ -189,7 +189,7 @@
       <button
         class="btn btn-orange"
         :disabled="!canUpload"
-        @Click="$emit('doUpload')"
+        @click="$emit('doUpload')"
       >
         <span class="icon"><i class="icon-upload"></i></span>
         <span class="text"
