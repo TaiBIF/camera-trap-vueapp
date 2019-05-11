@@ -1,14 +1,16 @@
 import { fetchUpload } from '@/utils/fetch';
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-files
-const uploadFile = async (type, body) => {
-  const url = `/api/v1/files?type=${type}`;
+const uploadCoverImage = async file => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `/api/v1/files?type=project-cover-image`;
   const data = await fetchUpload({
     url,
     method: 'POST',
-    body,
+    body: formData,
   });
   return data;
 };
 
-export { uploadFile };
+export { uploadCoverImage };
