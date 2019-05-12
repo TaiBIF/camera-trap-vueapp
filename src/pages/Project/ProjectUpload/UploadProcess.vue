@@ -84,16 +84,22 @@
                     v-if="file.uploadStatus === uploadStatus.waiting"
                     style="color: #AAAAAA"
                   >
-                    等待上傳
+                    <i
+                      class="icon far fa-circle"
+                      style="color: #AAAAAA"
+                    />等待上傳
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploading">
-                    上傳中
+                    <i
+                      class="text-green icon fas fa-circle-notch fa-spin"
+                      style="font-size: 25px"
+                    />上傳中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
-                    <i class="icon icon-upload-success"></i> 上傳成功
+                    <i class="icon icon-upload-success" /> 上傳成功
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploadError">
-                    <i class="icon icon-upload-fail"></i> 上傳失敗
+                    <i class="icon icon-upload-fail" /> 上傳失敗
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.cancel">
                     已取消上傳
