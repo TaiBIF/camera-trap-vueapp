@@ -2,10 +2,7 @@
   <div class="col-12 px-0">
     <h1 class="text-green">檔案上傳</h1>
     <div class="row">
-      <div
-        class="col-9"
-        :class="{ 'col-12': isUploading, 'pr-0': !isUploading }"
-      >
+      <div class="col-9 pr-0">
         <vue-dropzone
           id="dropzone"
           style="display: inline-block"
@@ -34,7 +31,7 @@
           </div>
         </div>
 
-        <div class="float-right" v-if="!isUploading">
+        <div class="float-right">
           <div class="checkbox checkbox-inline mb-0 mt-2">
             <input
               type="checkbox"
@@ -70,15 +67,14 @@
 
     <div class="upload-list-container">
       <div class="row mx-0">
-        <div class="col-9 px-0" :class="{ 'col-12': isUploading }">
+        <div class="col-9 px-0">
           <table class="table" id="upload-list">
             <thead>
               <tr>
-                <th :width="!isUploading ? '40%' : '25%'">檔案名稱</th>
+                <th width="40%">檔案名稱</th>
                 <th>檔案大小</th>
                 <th>樣區</th>
                 <th width="25%">樣點</th>
-                <th width="25%" v-if="isUploading">上傳進度</th>
               </tr>
             </thead>
             <tbody>
@@ -126,49 +122,11 @@
                     </a>
                   </span>
                 </td>
-                <!-- <td v-if="isUploading">
-                  <div class="float-right">
-                    <a
-                      v-if="file.state === 0 || file.state === 1"
-                      class="link text-underline text-muted"
-                      >取消</a
-                    >
-
-                    <a
-                      v-if="file.state === -1"
-                      class="link text-danger text-underline"
-                      >錯誤：{{ file.errorMessage }}</a
-                    >
-                    <a
-                      v-if="file.state === 1 || file.state === 2"
-                      :href="
-                        `/index.html#/project/${$route.params.projectId}/site/${
-                          fileList[f_id].site
-                        }/${fileList[f_id].subsite}?camera=${
-                          fileList[f_id].fullCameraLocationMd5
-                        }&upload_session_id=${uploadSessions[f_id]}`
-                      "
-                      class="link text-green text-underline"
-                      >查看</a
-                    >
-                  </div>
-                  <div
-                    :id="`upload-progress-${f_id}`"
-                    class="upload-progress"
-                    :class="{ 'd-none': file.state == 2 || file.state == -1 }"
-                  ></div>
-                  <div v-if="file.state === -1">
-                    <i class="icon icon-upload-fail"></i> 上傳失敗
-                  </div>
-                  <div v-if="file.state === 2">
-                    <i class="icon icon-upload-success"></i> 上傳完成
-                  </div>
-                </td> -->
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="col-3" v-if="!isUploading">
+        <div class="col-3">
           <p class="text-center" v-if="!selectedFileList.length > 0">
             請選擇並編輯上傳檔案
           </p>
@@ -228,7 +186,11 @@
 
     <div class="action text-center">
       <p class="text-orange">請為每個檔案都編輯「樣區」和「相機位置」</p>
-      <button class="btn btn-orange" :disabled="!canUpload">
+      <button
+        class="btn btn-orange"
+        :disabled="!canUpload"
+        @click="$emit('doUpload')"
+      >
         <span class="icon"><i class="icon-upload"></i></span>
         <span class="text"
           >開始上傳 <span v-if="canUpload">({{ fileList.length }})</span></span
@@ -247,6 +209,7 @@ import vSelect from 'vue-select';
 import * as R from 'ramda';
 
 import uploadAccept from '@/constant/uploadAccept.js';
+import uploadStatus from '@/constant/uploadStatus.js';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const TOTAL_LIMITED = 1024 * 1024 * 1024 * 5; // 5g
@@ -258,10 +221,6 @@ export default {
     VueDropzone,
   },
   props: {
-    isUploading: {
-      type: Boolean,
-      default: false,
-    },
     fileList: {
       type: Array,
       required: true,
@@ -367,9 +326,11 @@ export default {
         'change',
         this.fileList.map(file => {
           if (this.selectedFileList.includes(file.upload.uuid)) {
-            file.studyAreaId = val.studyArea;
-            file.cameraLocationId = val.id;
-            file.cameraLocationName = val.name;
+            // fileList 除了選取上傳之後的資訊以外還會再加上以下資訊
+            file.studyAreaId = val.studyArea; // 所選取的樣區 id
+            file.cameraLocationId = val.id; // 所選取的相機位置 id
+            file.cameraLocationName = val.name; // 所選取的相機位置名稱
+            file.uploadStatus = uploadStatus.waiting;
           }
 
           return file;

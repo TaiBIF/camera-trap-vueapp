@@ -1,12 +1,40 @@
 import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-files
-const uploadFile = async (type, body) => {
-  const url = `/api/v1/files?type=${type}`;
+const uploadIssueAttachment = async file => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `/api/v1/files?type=issue-attachment`;
   const data = await fetchUpload({
     url,
     method: 'POST',
-    body,
+    body: formData,
+  });
+  return data;
+};
+
+const uploadCoverImage = async file => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `/api/v1/files?type=project-cover-image`;
+  const data = await fetchUpload({
+    url,
+    method: 'POST',
+    body: formData,
+  });
+  return data;
+};
+
+const uploadAnnotation = async (cameraLocationId, file, signal) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `/api/v1/files?type=project-cover-image&cameraLocation=${cameraLocationId}`;
+  const data = await fetchUpload({
+    url,
+    body: formData,
+    signal,
   });
   return data;
 };
@@ -45,4 +73,9 @@ const createIssue = async ({
   return data;
 };
 
-export { uploadFile, createIssue };
+export {
+  uploadIssueAttachment,
+  uploadCoverImage,
+  uploadAnnotation,
+  createIssue,
+};
