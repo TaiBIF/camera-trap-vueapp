@@ -16,7 +16,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="file in fileList" :key="file.upload.uuid">
+              <tr v-for="(file, idx) in fileList" :key="file.upload.uuid">
                 <td>
                   <span
                     class="icon"
@@ -50,14 +50,16 @@
                   </span>
                 </td>
                 <td>
-                  <!-- <div class="float-right">
+                  <div class="float-right">
                     <a
-                      v-if="file.state === 0 || file.state === 1"
+                      v-if="file.uploadStatus === uploadStatus.waiting"
                       class="link text-underline text-muted"
-                      >取消</a
+                      @click="doCancel(idx)"
                     >
+                      取消
+                    </a>
 
-                    <a
+                    <!-- <a
                       v-if="file.state === -1"
                       class="link text-danger text-underline"
                       >錯誤：{{ file.errorMessage }}</a
@@ -73,8 +75,8 @@
                       "
                       class="link text-green text-underline"
                       >查看</a
-                    >
-                  </div> -->
+                    > -->
+                  </div>
                   <div
                     v-if="file.uploadStatus === uploadStatus.waiting"
                     style="color: #AAAAAA"
@@ -139,15 +141,20 @@ export default {
     },
     async doUpload() {
       for (const index in this.fileList) {
-        this.setFileType(index, uploadStatus.uploading);
         const file = this.fileList[index];
-        try {
-          await uploadAnnotation(file.cameraLocationId, file);
-          this.setFileType(index, uploadStatus.success);
-        } catch (error) {
-          this.setFileType(index, uploadStatus.uploadError);
+        if (file.uploadStatus !== uploadStatus.cancel) {
+          this.setFileType(index, uploadStatus.uploading);
+          try {
+            await uploadAnnotation(file.cameraLocationId, file);
+            this.setFileType(index, uploadStatus.success);
+          } catch (error) {
+            this.setFileType(index, uploadStatus.uploadError);
+          }
         }
       }
+    },
+    doCancel(targetIdx) {
+      this.setFileType(targetIdx, uploadStatus.cancel);
     },
     setFileType(targetIdx, status) {
       this.$emit(
