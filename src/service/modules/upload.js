@@ -1,5 +1,18 @@
 import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
+const uploadIssueAttachment = async file => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `/api/v1/files?type=issue-attachment`;
+  const data = await fetchUpload({
+    url,
+    method: 'POST',
+    body: formData,
+  });
+  return data;
+};
+
 const uploadCoverImage = async file => {
   const formData = new FormData();
   formData.append('file', file);
@@ -60,4 +73,9 @@ const createIssue = async ({
   return data;
 };
 
-export { uploadCoverImage, uploadAnnotation, createIssue };
+export {
+  uploadIssueAttachment,
+  uploadCoverImage,
+  uploadAnnotation,
+  createIssue,
+};
