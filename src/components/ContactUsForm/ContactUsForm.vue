@@ -127,6 +127,7 @@
                 class="form-control"
                 placeholder="請輸入您的電子郵件"
               />
+              <div v-if="!isEmailValid" class="error">email 格式不符</div>
               <div class="note">
                 <small class="text-gray">
                   我們將透過電子郵件與您聯繫此問題的相關事宜，您的電子郵件不會被分享，或用於任何其他用途。
@@ -193,7 +194,7 @@
           type="button"
           class="btn btn-orange"
           @click="handleSubmit"
-          :disabled="!isRequiredInputFill"
+          :disabled="!isRequiredInputFill || !isEmailValid"
         >
           確認送出
         </button>
@@ -249,6 +250,12 @@ export default {
       const { reportContentType, description, email } = this;
 
       return reportContentType.length > 0 && !!description && !!email;
+    },
+    isEmailValid: function() {
+      if (!this.email) return true;
+
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(this.email);
     },
   },
   methods: {
