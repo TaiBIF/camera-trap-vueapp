@@ -49,8 +49,8 @@
                     </a>
                   </span>
                 </td>
-                <!-- <td >
-                  <div class="float-right">
+                <td>
+                  <!-- <div class="float-right">
                     <a
                       v-if="file.state === 0 || file.state === 1"
                       class="link text-underline text-muted"
@@ -74,19 +74,26 @@
                       class="link text-green text-underline"
                       >查看</a
                     >
-                  </div>
+                  </div> -->
                   <div
-                    :id="`upload-progress-${f_id}`"
-                    class="upload-progress"
-                    :class="{ 'd-none': file.state == 2 || file.state == -1 }"
-                  ></div>
-                  <div v-if="file.state === -1">
+                    v-if="file.uploadStatus === uploadStatus.waiting"
+                    style="color: #AAAAAA"
+                  >
+                    等待上傳
+                  </div>
+                  <div v-if="file.uploadStatus === uploadStatus.uploading">
+                    上傳中
+                  </div>
+                  <div v-if="file.uploadStatus === uploadStatus.success">
+                    <i class="icon icon-upload-success"></i> 上傳成功
+                  </div>
+                  <div v-if="file.uploadStatus === uploadStatus.uploadError">
                     <i class="icon icon-upload-fail"></i> 上傳失敗
                   </div>
-                  <div v-if="file.state === 2">
-                    <i class="icon icon-upload-success"></i> 上傳完成
+                  <div v-if="file.uploadStatus === uploadStatus.cancel">
+                    已取消上傳
                   </div>
-                </td> -->
+                </td>
               </tr>
             </tbody>
           </table>
@@ -100,6 +107,9 @@
 import { createNamespacedHelpers } from 'vuex';
 import filesize from 'filesize';
 
+import { uploadAnnotation } from '@/service';
+import uploadStatus from '@/constant/uploadStatus.js';
+
 const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
@@ -110,7 +120,12 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      uploadStatus,
+    };
+  },
+  mounted() {
+    this.doUpload();
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreaTitle']),
@@ -121,6 +136,29 @@ export default {
   methods: {
     formatFilesize(size) {
       return filesize(size);
+    },
+    async doUpload() {
+      for (const index in this.fileList) {
+        this.setFileType(index, uploadStatus.uploading);
+        const file = this.fileList[index];
+        try {
+          await uploadAnnotation(file.cameraLocationId, file);
+          this.setFileType(index, uploadStatus.success);
+        } catch (error) {
+          this.setFileType(index, uploadStatus.uploadError);
+        }
+      }
+    },
+    setFileType(targetIdx, status) {
+      this.$emit(
+        'change',
+        this.fileList.map((file, idx) => {
+          if (idx === Number(targetIdx)) {
+            file.uploadStatus = status;
+          }
+          return file;
+        }),
+      );
     },
   },
 };

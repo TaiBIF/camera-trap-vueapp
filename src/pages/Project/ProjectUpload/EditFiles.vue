@@ -209,6 +209,7 @@ import vSelect from 'vue-select';
 import * as R from 'ramda';
 
 import uploadAccept from '@/constant/uploadAccept.js';
+import uploadStatus from '@/constant/uploadStatus.js';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const TOTAL_LIMITED = 1024 * 1024 * 1024 * 5; // 5g
@@ -329,6 +330,7 @@ export default {
             file.studyAreaId = val.studyArea; // 所選取的樣區 id
             file.cameraLocationId = val.id; // 所選取的相機位置 id
             file.cameraLocationName = val.name; // 所選取的相機位置名稱
+            file.uploadStatus = uploadStatus.waiting;
           }
 
           return file;
