@@ -67,12 +67,6 @@ export default {
       isUploading: false,
     };
   },
-  watch: {
-    fileList: function(val) {
-      console.log(val.length);
-      console.log(val);
-    },
-  },
   computed: {
     ...projects.mapGetters(['projectDetail']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),

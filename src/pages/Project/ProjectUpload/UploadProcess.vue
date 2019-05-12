@@ -52,7 +52,10 @@
                 <td>
                   <div class="float-right">
                     <a
-                      v-if="file.uploadStatus === uploadStatus.waiting"
+                      v-if="
+                        file.uploadStatus === uploadStatus.waiting ||
+                          file.uploadStatus === uploadStatus.uploading
+                      "
                       class="link text-underline text-muted"
                       @click="doCancel(idx)"
                     >
@@ -124,6 +127,7 @@ export default {
   data() {
     return {
       uploadStatus,
+      currentFetchController: undefined,
     };
   },
   mounted() {
@@ -145,16 +149,25 @@ export default {
         if (file.uploadStatus !== uploadStatus.cancel) {
           this.setFileType(index, uploadStatus.uploading);
           try {
-            await uploadAnnotation(file.cameraLocationId, file);
+            this.currentFetchController = new AbortController();
+            await uploadAnnotation(
+              file.cameraLocationId,
+              file,
+              this.currentFetchController.signal,
+            );
             this.setFileType(index, uploadStatus.success);
           } catch (error) {
-            this.setFileType(index, uploadStatus.uploadError);
+            if (file.uploadStatus !== uploadStatus.cancel) {
+              // 不是主動取消才要改變狀態
+              this.setFileType(index, uploadStatus.uploadError);
+            }
           }
         }
       }
     },
     doCancel(targetIdx) {
       this.setFileType(targetIdx, uploadStatus.cancel);
+      this.currentFetchController.abort();
     },
     setFileType(targetIdx, status) {
       this.$emit(
