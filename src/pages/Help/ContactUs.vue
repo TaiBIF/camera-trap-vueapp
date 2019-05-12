@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { createIssue, uploadFile } from '@/service';
+import { createIssue, uploadIssueAttachment } from '@/service';
 import ContactUsForm from '@/components/ContactUsForm/ContactUsForm';
 import SuccessModal from '@/components/Modal/SuccessModal';
 import idx from 'idx';
@@ -91,9 +91,7 @@ export default {
       if (uploadFiles.length > 0) {
         const promises = [];
         uploadFiles.forEach(({ file }) => {
-          const formData = new FormData();
-          formData.append('file', file);
-          promises.push(uploadFile('issue-attachment', formData));
+          promises.push(uploadIssueAttachment(file));
         });
         const results = await Promise.all(promises);
         if (idx(results, _ => _[0].id)) {

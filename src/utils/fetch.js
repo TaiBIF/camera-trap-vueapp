@@ -27,12 +27,13 @@ const fetchWrap = async ({ url, method, body }) => {
   return data;
 };
 
-const fetchUpload = async ({ url, body }) => {
+const fetchUpload = async ({ url, body, signal }) => {
   const res = await fetch(`${process.env.VUE_APP_API_URL}${url}`, {
     method: 'POST',
     mode: 'cors',
     credentials: 'include',
     body,
+    signal,
   });
   return await res.json();
 };

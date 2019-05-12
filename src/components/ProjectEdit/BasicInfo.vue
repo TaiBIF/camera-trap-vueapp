@@ -283,7 +283,7 @@ import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
 
-import { uploadFile } from '@/service';
+import { uploadCoverImage } from '@/service';
 
 export default {
   data() {
@@ -345,10 +345,7 @@ export default {
         reader.readAsDataURL(file);
       }
 
-      const formData = new FormData();
-      formData.append('file', e.target.files[0]);
-
-      const data = await uploadFile('project-cover-image', formData);
+      const data = await uploadCoverImage(e.target.files[0]);
       this.changeProps('coverImageFile', data.id);
     },
     removePreview() {
