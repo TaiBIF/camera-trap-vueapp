@@ -8,6 +8,7 @@ import {
   rollbackRevision,
   setAnnotations,
 } from '@/service';
+import { getLanguage } from '@/utils/i18n';
 
 // 計畫標注資訊，全放在 project 會過大
 
@@ -22,7 +23,10 @@ const getters = {
   annotations: state =>
     state.annotations.map(v => ({
       ...v,
-      species: idx(v, _ => _.species.id),
+      species: {
+        ...v.species,
+        title: v.species.title[getLanguage()],
+      },
     })),
   revision: state =>
     state.revision.map(v => ({

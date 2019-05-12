@@ -58,7 +58,7 @@ export default {
   },
   mounted() {},
   watch: {
-    selectedYear: function(year) {
+    selectedYear: function() {
       // TODO: fetch new data
     },
   },
@@ -77,7 +77,7 @@ export default {
       }
       this.selectedYear = year;
     },
-    submitErrorReport(data) {
+    submitErrorReport() {
       // TODO: wait for API,
       // TODO: close error report modal and show success modal
     },
