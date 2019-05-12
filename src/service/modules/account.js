@@ -41,4 +41,13 @@ const putMe = async ({ name, email, hotkeys }) => {
   return res;
 };
 
-export { login, logout, getMe, putMe };
+// https://cameratraptw.docs.apiary.io/#/reference/species/system-species/get-all-species/200?mc=reference%2Fspecies%2Fsystem-species%2Fget-all-species%2F200
+const getAllSpecies = async () => {
+  const res = await fetchWrap({
+    url: '/api/v1/species',
+    method: 'GET',
+  });
+  return res;
+};
+
+export { login, logout, getMe, putMe, getAllSpecies };

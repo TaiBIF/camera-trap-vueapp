@@ -85,10 +85,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(s, index) in speciesKeys" :key="`hotkey-${index}`">
+            <tr v-for="(sp, index) in speciesHotkeys" :key="`hotkey-${index}`">
               <td width="22%">
                 <v-select
-                  v-model="s.key"
+                  v-model="sp.species"
                   :options="speciesOptions"
                   :clearable="false"
                 />
@@ -97,7 +97,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  v-model="s.value"
+                  v-model="sp.hotkey"
                   maxlength="2"
                 />
               </td>
@@ -150,32 +150,43 @@ export default {
     return {
       name: '',
       email: '',
-      speciesKeys: [],
-      allSpeciesList: ['鼠', '牛', '虎', '兔'], // TODO: get list from api
+      speciesHotkeys: [],
     };
   },
   computed: {
-    ...account.mapGetters(['userName', 'userEmail', 'hotkeys']),
+    ...account.mapGetters(['userName', 'userEmail', 'hotkeys', 'species']),
     speciesOptions() {
-      return this.allSpeciesList.filter(
-        species => !this.speciesKeys.find(s => s.key === species),
-      );
+      return this.species
+        .filter(
+          ({ id }) =>
+            !this.speciesHotkeys.find(({ species }) => species.value === id),
+        )
+        .map(({ id, title }) => ({
+          label: title,
+          value: id,
+        }));
+    },
+    currentHotkeys() {
+      return this.hotkeys.map(({ species, hotkey }) => ({
+        species: species.id,
+        hotkey,
+      }));
     },
   },
   methods: {
-    ...account.mapActions(['updateProfile']),
+    ...account.mapActions(['updateProfile', 'loadSpecies']),
     handleCancel() {
       this.$router.push('/project/overview');
     },
     handleSubmit() {
-      const newHotkeys = this.speciesKeys.map(({ key, value }) => ({
-        speciesTitle: key,
-        hotkey: value,
+      const newHotkeys = this.speciesHotkeys.map(({ species, hotkey }) => ({
+        species: species.value,
+        hotkey,
       }));
       if (
         this.name !== this.userName ||
         this.email !== this.userEmail ||
-        !equals(this.hotkeys, newHotkeys)
+        !equals(this.currentHotkeys, newHotkeys)
       ) {
         this.updateProfile({
           name: this.name,
@@ -185,19 +196,31 @@ export default {
       }
     },
     resetHotkey() {
-      this.speciesKeys = this.allSpeciesList.map((species, index) => ({
-        key: species,
-        value: intToChar(index).toUpperCase(),
+      this.speciesHotkeys = this.species.map((species, index) => ({
+        species: {
+          label: species.title,
+          value: species.id,
+        },
+        hotkey: intToChar(index).toUpperCase(),
       }));
     },
     removeHotkey(index) {
-      this.speciesKeys.splice(index, 1);
+      this.speciesHotkeys.splice(index, 1);
     },
     addHotkey() {
-      this.speciesKeys.push({
-        key: '',
-        value: '',
+      this.speciesHotkeys.push({
+        species: '',
+        hotkey: '',
       });
+    },
+    cloneHotKeys() {
+      this.speciesHotkeys = this.hotkeys.map(({ species, hotkey }) => ({
+        species: {
+          label: species.title,
+          value: species.id,
+        },
+        hotkey,
+      }));
     },
   },
   watch: {
@@ -207,20 +230,13 @@ export default {
     userEmail: function() {
       this.email = this.userEmail;
     },
-    hotkeys: function() {
-      this.speciesKeys = this.hotkeys.map(({ speciesTitle, hotkey }) => ({
-        key: speciesTitle,
-        value: hotkey,
-      }));
-    },
+    hotkeys: 'cloneHotKeys',
   },
   mounted() {
+    this.loadSpecies();
     this.name = this.userName;
     this.email = this.userEmail;
-    this.speciesKeys = this.hotkeys.map(({ speciesTitle, hotkey }) => ({
-      key: speciesTitle,
-      value: hotkey,
-    }));
+    this.cloneHotKeys();
   },
 };
 </script>
