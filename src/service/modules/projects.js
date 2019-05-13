@@ -77,6 +77,29 @@ const putProjectSpecies = async (id, body) => {
   return res;
 };
 
+// https://cameratraptw.docs.apiary.io/#/reference/projects/camera-location-abnormality/camera-location-abnormality/200?mc=reference%2Fprojects%2Fcamera-location-abnormality%2Fcamera-location-abnormality%2F200
+const postCameraLocationAbnormality = async ({
+  projectId,
+  cameraLocation,
+  abnormalityStartDate,
+  abnormalityEndDate,
+  abnormalityType,
+  note,
+}) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/camera-location-abnormality`,
+    method: 'POST',
+    body: {
+      cameraLocation,
+      abnormalityStartDate,
+      abnormalityEndDate,
+      abnormalityType,
+      note,
+    },
+  });
+  return res;
+};
+
 export {
   getProjects,
   getProjectDetail,
@@ -86,4 +109,5 @@ export {
   postProjectMember,
   getProjectSpecies,
   putProjectSpecies,
+  postCameraLocationAbnormality,
 };
