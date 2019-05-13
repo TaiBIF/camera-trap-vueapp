@@ -25,7 +25,7 @@ const getters = {
       ...v,
       species: {
         ...v.species,
-        title: v.species.title[getLanguage()],
+        title: idx(v, _ => _.species.title[getLanguage()]),
       },
     })),
   revision: state =>
