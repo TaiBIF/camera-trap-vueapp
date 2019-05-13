@@ -76,6 +76,7 @@
             </div>
           </form>
         </div>
+        <div v-if="!!errorMessage" class="error">{{ errorMessage }}</div>
         <div class="modal-footer text-right">
           <a @click="$emit('close')" class="btn btn-default">取消</a>
           <button
@@ -108,6 +109,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    errorMessage: {
+      type: String,
+      default: '',
+    },
   },
   components: {
     DatePicker,
@@ -125,11 +130,11 @@ export default {
         note: '',
       },
       abnormalTypes: [
-        '相機故障（空拍過多',
-        '相機故障 (沒有影像)',
-        '相機失竊',
-        '相機電量耗損過快',
-        '其他',
+        { label: '相機故障（空拍過多)', value: 'empty-shots' },
+        { label: '相機故障（沒有影像)', value: 'no-photo' },
+        { label: '相機失竊', value: 'camera-theft' },
+        { label: '相機電量耗損過快', value: 'no-battery' },
+        { label: '其他', value: 'others' },
       ],
       cameraOptions: [], // put cameraOptions at data because it need to be reloaded when selectedArea change
     };
@@ -269,7 +274,15 @@ export default {
       }
     },
     submit() {
-      this.$emit('submit', this.form);
+      const { abnormalType, camera, startAt, endAt, note } = this.form;
+
+      this.$emit('submit', {
+        cameraLocation: camera.value,
+        abnormalityStartDate: new Date(startAt).toISOString(),
+        abnormalityEndDate: new Date(endAt).toISOString(),
+        abnormalityType: abnormalType.value,
+        note,
+      });
     },
   },
 };
@@ -283,5 +296,10 @@ export default {
   & > span {
     padding: 0 10px;
   }
+}
+.error {
+  padding: 5px;
+  text-align: right;
+  color: #d80c37;
 }
 </style>

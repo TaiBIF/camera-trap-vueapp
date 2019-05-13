@@ -23,13 +23,15 @@
     <area-bar-chart v-else :activeCameraId="activeCameraId" />
     <error-report-modal
       :open="showErrorReportModal"
-      @close="showErrorReportModal = false"
+      :errorMessage="submitErrorReportFailMessage"
+      @close="closeErrorReportModal"
       @submit="submitErrorReport"
     />
   </div>
 </template>
 
 <script>
+import { postCameraLocationAbnormality } from '@/service';
 import AreaBarChart from '@/pages/Project/ProjectInfo/charts/AreaBarChart.vue';
 import CameraBarChart from '@/pages/Project/ProjectInfo/charts/CameraBarChart.vue';
 import ErrorReportModal from '@/components/Modal/ErrorReportModal.vue';
@@ -54,6 +56,7 @@ export default {
       currentYear: currentYear,
       selectedYear: currentYear,
       showErrorReportModal: false,
+      submitErrorReportFailMessage: '',
     };
   },
   mounted() {},
@@ -63,6 +66,9 @@ export default {
     },
   },
   computed: {
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     selectedStudyAreaId: function() {
       return this.$route.params.selectedStudyAreaId;
     },
@@ -77,9 +83,20 @@ export default {
       }
       this.selectedYear = year;
     },
-    submitErrorReport() {
-      // TODO: wait for API,
-      // TODO: close error report modal and show success modal
+    closeErrorReportModal() {
+      this.showErrorReportModal = false;
+      this.submitErrorReportFailMessage = '';
+    },
+    async submitErrorReport(data) {
+      this.submitErrorReportFailMessage = '';
+      const res = await postCameraLocationAbnormality({
+        ...data,
+        projectId: this.projectId,
+      }).catch(() => {
+        this.submitErrorReportFailMessage =
+          '資料未送出，請再試一次。如持續發生請聯繫系統管理員。';
+      });
+      if (res) this.showErrorReportModal = false;
     },
   },
 };
