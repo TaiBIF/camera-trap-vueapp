@@ -28,8 +28,9 @@
         <a
           class="btn btn-green-border btn-sm float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
-          :href="exportCSVLink"
+          :href="canSearch ? exportCSVLink : undefined"
           target="_blank"
+          :disabled="!canSearch"
         >
           下載篩選結果
         </a>
@@ -137,7 +138,7 @@
                   @click="doSearch"
                   class="btn btn-sm btn-green"
                   :style="{ margin: '4px' }"
-                  :disabled="query.cameraLocations.length === 0"
+                  :disabled="!canSearch"
                 >
                   篩選
                 </a>
@@ -341,6 +342,9 @@ export default {
       return `${
         process.env.VUE_APP_API_URL
       }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
+    },
+    canSearch: function() {
+      return this.query.cameraLocations.length > 0;
     },
   },
   methods: {
