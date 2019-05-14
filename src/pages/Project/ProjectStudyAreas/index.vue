@@ -346,6 +346,7 @@ export default {
       query.cameraLocations.forEach(
         x => (queryString += '&cameraLocations=' + x),
       );
+      // TODO, make this API URL not hard coded
       return `${
         process.env.VUE_APP_API_URL
       }/api/v1/annotations.csv?${queryString}`;
