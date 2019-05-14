@@ -169,7 +169,7 @@ export default {
         cameraLocation: v.cameraLocation,
         filename: v.filename,
         time: v.time,
-        species: v.species.id,
+        species: v.species.title,
         ...v.fields.reduce((pre, current) => {
           pre[current.dataField] = current.value;
           return pre;
@@ -223,7 +223,7 @@ export default {
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
     },
-    setSpeciesTooltip(instance, td, row, col, prop, id) {
+    setSpeciesTooltip(instance, td, row, col, prop, title) {
       const resetTd = td => {
         td.innerHTML = '';
         delete td.dataset.tooltip;
@@ -232,26 +232,33 @@ export default {
 
       resetTd(td); // td 會共用，所以每次都要重置
 
-      if (id) {
-        // sp 有兩種取得來源
+      if (title) {
+        // sp 有多種取得來源
         // 1. 一般呈現使用 annotations
         // 2. 如果有編輯則使用 projectSpecies
+        // 3. 使用者自己輸入的物種名稱，全新不存在於計畫預設物種
         const sp = this.annotations[row].species.title
-          ? this.annotations[row].species
-          : R.find(R.propEq('id', id), this.projectSpecies);
+          ? this.annotations[row].species // #1 來源
+          : R.find(R.propEq('title', title), this.projectSpecies); // #2 來源
 
-        td.innerHTML = sp.title;
+        if (sp) {
+          // 如果 sp 存在才要用一般方式判斷
+          td.innerHTML = sp.title;
 
-        if (sp.code) {
-          // 如果有 code 則要顯示物種提示
-          td.dataset.tooltip = SpeciesTooltip[sp.code];
-        } else if (this.annotations[row].failures.length > 0) {
-          // 如果有錯誤則要顯示錯誤提示
-          if (this.annotations[row].failures.includes('new-species')) {
-            td.dataset.tooltip = failures['new-species'];
+          if (sp.code) {
+            // 如果有 code 則要顯示物種提示
+            td.dataset.tooltip = SpeciesTooltip[sp.code];
+          } else if (this.annotations[row].failures.length > 0) {
+            // 如果有錯誤則要顯示錯誤提示
+            if (this.annotations[row].failures.includes('new-species')) {
+              td.dataset.tooltip = failures['new-species'];
+            }
+            td.innerHTML += '<span class="alert-box">!</span>';
+            td.className = 'htInvalid';
           }
-          td.innerHTML += '<span class="alert-box">!</span>';
-          td.className = 'htInvalid';
+        } else {
+          // 如果 sp 不存在則表示是 #3 來源，則不須任何判斷直接顯示物種 title
+          td.innerHTML = title;
         }
       }
 
@@ -303,14 +310,10 @@ export default {
           renderer: this.setSpeciesTooltip,
           ...(this.isEdit
             ? {
-                type: 'key-value',
-                filter: false,
-                source: this.projectSpecies.map(({ id, title }) => ({
-                  id,
-                  title,
-                })),
-                keyProperty: 'id',
-                valueProperty: 'title',
+                type: 'autocomplete',
+                source: this.projectSpecies.map(({ title }) => title),
+                strict: false,
+                trimDropdown: false,
               }
             : {}),
         },
@@ -371,7 +374,7 @@ export default {
           )(this.annotations[row]);
 
           if (prop === 'species') {
-            annotation.species = newVal;
+            annotation.speciesTitle = newVal;
           } else {
             const targetIdx = R.findIndex(R.propEq('dataField', prop))(
               annotation.fields,
