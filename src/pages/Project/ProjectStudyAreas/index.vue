@@ -28,6 +28,8 @@
         <a
           class="btn btn-green-border btn-sm float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
+          :href="exportCSVLink"
+          target="_blank"
         >
           下載篩選結果
         </a>
@@ -323,6 +325,30 @@ export default {
           v => v.isLocked === true && v.lockUser.id !== this.userId,
         )
       );
+    },
+    exportCSVLink: function() {
+      const { query } = this;
+      const queryParams = {
+        studyAreaId: this.studyAreaId,
+        startTime: getTime(query.startDate, query.startTime).toISOString(),
+        endTime: getTime(query.endDate, query.endTime).toISOString(),
+        index: query.index,
+        size: query.size,
+      };
+      let queryString = Object.keys(queryParams)
+        .map(
+          key =>
+            encodeURIComponent(key) +
+            '=' +
+            encodeURIComponent(queryParams[key]),
+        )
+        .join('&');
+      query.cameraLocations.forEach(
+        x => (queryString += '&cameraLocations=' + x),
+      );
+      return `${
+        process.env.VUE_APP_API_URL
+      }/api/v1/annotations.csv?${queryString}`;
     },
   },
   methods: {
