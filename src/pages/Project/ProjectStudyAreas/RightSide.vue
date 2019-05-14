@@ -158,7 +158,7 @@ export default {
   },
   watch: {
     currentAnnotationIdx: function() {
-      this.getRevision(this.currentData.id);
+      this.currentData && this.getRevision(this.currentData.id);
     },
   },
   computed: {
@@ -171,7 +171,7 @@ export default {
       return this.annotations[this.currentAnnotationIdx];
     },
     currentImage() {
-      return this.currentData.file;
+      return this.currentData && this.currentData.file;
     },
     hasImage() {
       return idx(this.currentImage, _ => _.url);
