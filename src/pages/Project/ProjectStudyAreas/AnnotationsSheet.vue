@@ -224,8 +224,21 @@ export default {
       this.$emit('currentAnnotationIdx', row2);
     },
     setSpeciesTooltip(instance, td, row, col, prop, id) {
+      const resetTd = td => {
+        td.innerHTML = '';
+        delete td.dataset.tooltip;
+        td.className = '';
+      };
+
+      resetTd(td); // td 會共用，所以每次都要重置
+
       if (id) {
-        const sp = this.annotations[row].species;
+        // sp 有兩種取得來源
+        // 1. 一般呈現使用 annotations
+        // 2. 如果有編輯則使用 projectSpecies
+        const sp = this.annotations[row].species.title
+          ? this.annotations[row].species
+          : R.find(R.propEq('id', id), this.projectSpecies);
 
         td.innerHTML = sp.title;
 
