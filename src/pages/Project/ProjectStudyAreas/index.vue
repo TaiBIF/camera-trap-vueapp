@@ -202,6 +202,7 @@ import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationMo
 
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
+import queryString from 'query-string';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
@@ -330,26 +331,16 @@ export default {
       const { query } = this;
       const queryParams = {
         studyAreaId: this.studyAreaId,
+        cameraLocations: query.cameraLocations,
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime).toISOString(),
         index: query.index,
         size: query.size,
       };
-      let queryString = Object.keys(queryParams)
-        .map(
-          key =>
-            encodeURIComponent(key) +
-            '=' +
-            encodeURIComponent(queryParams[key]),
-        )
-        .join('&');
-      query.cameraLocations.forEach(
-        x => (queryString += '&cameraLocations=' + x),
-      );
       // TODO, make this API URL not hard coded
       return `${
         process.env.VUE_APP_API_URL
-      }/api/v1/annotations.csv?${queryString}`;
+      }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
     },
   },
   methods: {
