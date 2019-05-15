@@ -244,7 +244,8 @@ export default {
           ? this.annotations[row].species // #1 來源
           : R.find(R.propEq('title', title), this.projectSpecies); // #2 來源
 
-        if (sp) {
+        // 不明原因有時後 sp.title 會與 title 值不相同，造成資料還是顯示舊的 issue #125
+        if (sp && sp.title === title) {
           // 如果 sp 存在才要用一般方式判斷
           td.innerHTML = sp.title;
 
