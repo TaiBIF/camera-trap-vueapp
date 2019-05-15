@@ -186,7 +186,10 @@ export default {
         hotInstance.selectRows(val);
       }
     },
-    projectDataFields: 'setSheetHeader',
+    projectDataFields: function() {
+      this.setSheetHeader();
+      this.setSheetColumn();
+    },
   },
   computed: {
     ...annotations.mapState(['annotationsTotal']),
