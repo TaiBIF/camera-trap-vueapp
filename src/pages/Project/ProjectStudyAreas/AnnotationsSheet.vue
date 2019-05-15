@@ -368,14 +368,13 @@ export default {
     changeAnnotation(changes) {
       if (!!changes && this.isEdit === true) {
         changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
-          let annotation = R.pipe(
-            R.clone,
-            R.pick(['fields', 'species']),
-          )(this.annotations[row]);
+          let annotation = {
+            fields: R.clone(this.annotations[row].fields),
+            speciesTitle:
+              prop === 'species' ? newVal : this.annotations[row].species.title,
+          };
 
-          if (prop === 'species') {
-            annotation.speciesTitle = newVal;
-          } else {
+          if (prop !== 'species') {
             const targetIdx = R.findIndex(R.propEq('dataField', prop))(
               annotation.fields,
             );
@@ -391,6 +390,9 @@ export default {
               annotation.fields[targetIdx].value = newVal;
             }
           }
+
+          // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
+          annotation.fields = annotation.fields.filter(v => !!v.value);
 
           this.setAnnotations({
             annotationId: this.annotations[row].id,
