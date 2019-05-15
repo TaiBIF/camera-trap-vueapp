@@ -28,6 +28,9 @@
         <a
           class="btn btn-green-border btn-sm float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
+          :href="canSearch ? exportCSVLink : undefined"
+          target="_blank"
+          :disabled="!canSearch"
         >
           下載篩選結果
         </a>
@@ -135,7 +138,7 @@
                   @click="doSearch"
                   class="btn btn-sm btn-green"
                   :style="{ margin: '4px' }"
-                  :disabled="query.cameraLocations.length === 0"
+                  :disabled="!canSearch"
                 >
                   篩選
                 </a>
@@ -200,6 +203,7 @@ import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationMo
 
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
+import queryString from 'query-string';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const annotations = createNamespacedHelpers('annotations');
@@ -323,6 +327,24 @@ export default {
           v => v.isLocked === true && v.lockUser.id !== this.userId,
         )
       );
+    },
+    exportCSVLink: function() {
+      const { query } = this;
+      const queryParams = {
+        studyAreaId: this.studyAreaId,
+        cameraLocations: query.cameraLocations,
+        startTime: getTime(query.startDate, query.startTime).toISOString(),
+        endTime: getTime(query.endDate, query.endTime).toISOString(),
+        index: query.index,
+        size: query.size,
+      };
+      // TODO, make this API URL not hard coded
+      return `${
+        process.env.VUE_APP_API_URL
+      }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
+    },
+    canSearch: function() {
+      return this.query.cameraLocations.length > 0;
     },
   },
   methods: {
