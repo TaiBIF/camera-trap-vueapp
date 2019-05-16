@@ -7,7 +7,11 @@
         <h1 class="heading">成員權限說明</h1>
         <p>
           此處詳列系統各成員層級權限，若有疑問
-          <a class="text-green text-underline" href="mailto:cameratrap.taibif@gmail.com">請聯繫系統管理員</a>
+          <a
+            class="text-green text-underline"
+            href="mailto:cameratrap.taibif@gmail.com"
+            >請聯繫系統管理員</a
+          >
         </p>
       </div>
 
