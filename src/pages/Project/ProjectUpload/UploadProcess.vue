@@ -11,7 +11,7 @@
                 <th width="25%">檔案名稱</th>
                 <th>檔案大小</th>
                 <th>樣區</th>
-                <th width="25%">樣點</th>
+                <th width="25%">相機位置</th>
                 <th width="25%">上傳進度</th>
               </tr>
             </thead>
