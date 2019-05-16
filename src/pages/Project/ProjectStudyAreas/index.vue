@@ -398,6 +398,7 @@ export default {
     },
     async doSearch() {
       if (this.query.cameraLocations.length === 0) {
+        this.resetAnnotations();
         return;
       }
       const { query } = this;
