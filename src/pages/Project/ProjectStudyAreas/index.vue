@@ -106,6 +106,7 @@
                     :format="'YYYY-MM-DD'"
                     :first-day-of-week="1"
                     v-model="query.startDate"
+                    placeholder="請選擇日期"
                   ></date-picker>
                   <div class="input-group-append">
                     <i class="icon icon-calendar"></i>
@@ -123,6 +124,7 @@
                     :format="'YYYY-MM-DD'"
                     :first-day-of-week="1"
                     v-model="query.endDate"
+                    placeholder="請選擇日期"
                   ></date-picker>
                   <div class="input-group-append">
                     <i class="icon icon-calendar"></i>
