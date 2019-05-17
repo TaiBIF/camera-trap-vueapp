@@ -15,6 +15,12 @@ export default {
     'v-charts': VueHighcharts,
     ChartLegend,
   },
+  props: {
+    year: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       barOption: {

@@ -19,8 +19,12 @@
         相機異常回報
       </a>
     </div>
-    <camera-bar-chart v-if="selectedCameraId" />
-    <area-bar-chart v-else :activeCameraId="activeCameraId" />
+    <camera-bar-chart v-if="selectedCameraId" :year="selectedYear" />
+    <area-bar-chart
+      v-else
+      :activeCameraId="activeCameraId"
+      :year="selectedYear"
+    />
     <error-report-modal
       :open="showErrorReportModal"
       :errorMessage="submitErrorReportFailMessage"
@@ -31,11 +35,13 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import { postCameraLocationAbnormality } from '@/service';
 import AreaBarChart from '@/pages/Project/ProjectInfo/charts/AreaBarChart.vue';
 import CameraBarChart from '@/pages/Project/ProjectInfo/charts/CameraBarChart.vue';
 import ErrorReportModal from '@/components/Modal/ErrorReportModal.vue';
 
+const projects = createNamespacedHelpers('projects');
 const currentYear = new Date().getFullYear();
 
 export default {
@@ -59,11 +65,14 @@ export default {
       submitErrorReportFailMessage: '',
     };
   },
-  mounted() {},
+  mounted() {
+    this.loadRetrievealDataByCurrentSelected();
+  },
   watch: {
-    selectedYear: function() {
-      // TODO: fetch new data
-    },
+    selectedYear: 'loadRetrievealDataByCurrentSelected',
+    projectId: 'loadRetrievealDataByCurrentSelected',
+    selectedStudyAreaId: 'loadRetrievealDataByCurrentSelected',
+    selectedCameraId: 'loadRetrievealDataByCurrentSelected',
   },
   computed: {
     projectId: function() {
@@ -77,6 +86,18 @@ export default {
     },
   },
   methods: {
+    ...projects.mapActions(['loadRetrievalData']),
+    loadRetrievealDataByCurrentSelected() {
+      this.loadRetrievalData({
+        year: this.selectedYear,
+        projectId: this.projectId,
+        studyAreaId:
+          this.selectedStudyAreaId !== 'all'
+            ? this.selectedStudyAreaId
+            : undefined,
+        cameraLocationId: this.selectedCameraId,
+      });
+    },
     changeSelectedYear(year) {
       if (year > new Date().getFullYear()) {
         return;

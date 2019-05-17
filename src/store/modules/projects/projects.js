@@ -7,6 +7,9 @@ import {
   getProjectDetail,
   getProjectSpecies,
   getProjects,
+  getRetrievalDataByCameraLocation,
+  getRetrievalDataByProject,
+  getRetrievalDataByStudyArea,
   postProject,
   postProjectMember,
   putProject,
@@ -22,6 +25,7 @@ const state = {
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
+  retrievalData: {}, // 計畫資料辨識紀錄
 };
 
 const getters = {
@@ -86,6 +90,23 @@ const getters = {
     if (timeUpdated) return dateFormatYYYYMMDD(timeUpdated);
     return '';
   },
+  getReceivedRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      if (!item) return 0; // 無資料
+
+      const { dataCount, fileCount } = item || {};
+      if (dataCount === fileCount) return 1; // 當月資料完整
+      return 2; // 當月資料不完整
+      // TODO: status 3 相機撤除尚未導入
+    }),
+  getIdentifyRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      if (!item) return 0; // 無資料
+
+      const { dataCount, speciesCount } = item || {};
+      if (dataCount === speciesCount) return 1; // 當月資料已辨識
+      return 2; // 當月資料未完整
+    }),
 };
 
 const mutations = {
@@ -103,6 +124,23 @@ const mutations = {
   },
   setIdentifiedSpecies(state, data) {
     state.identifiedSpecies = data;
+  },
+  setRetrievalData(state, { year, data }) {
+    state.retrievalData = data.reduce(
+      (res, { cameraLocation, studyArea, data }) => {
+        const id = cameraLocation || studyArea;
+        const selectYearData = res[year] || {};
+
+        return {
+          ...res,
+          [year]: {
+            ...selectYearData,
+            [id]: data,
+          },
+        };
+      },
+      state.retrievalData,
+    );
   },
 };
 
@@ -172,6 +210,28 @@ const actions = {
   async loadIdentifiedSpecies({ commit }, projectId) {
     const data = await getIdentifiedSpecies(projectId);
     commit('setIdentifiedSpecies', data || {});
+  },
+  async loadRetrievalData(
+    { commit },
+    { year, projectId, studyAreaId, cameraLocationId },
+  ) {
+    let data = [];
+    if (cameraLocationId) {
+      data = await getRetrievalDataByCameraLocation({
+        year,
+        projectId,
+        cameraLocationId,
+      });
+    } else if (studyAreaId) {
+      data = await getRetrievalDataByStudyArea({
+        year,
+        projectId,
+        studyAreaId,
+      });
+    } else {
+      data = await getRetrievalDataByProject({ year, projectId });
+    }
+    commit('setRetrievalData', { year, data });
   },
 };
 
