@@ -210,6 +210,11 @@ export default {
     totalPage() {
       return Math.ceil(this.annotationsTotal / this.pageSize);
     },
+    //能否新增欄位
+    canRequestNewDataFields() {
+      // todo 規格書 4.5 (f) 只有計劃管理員會顯示
+      return true;
+    },
   },
   methods: {
     ...annotations.mapActions(['setAnnotations']),
@@ -270,9 +275,16 @@ export default {
     },
     // 除了必填的 header 以外還會有其他不同的自定義欄位
     setSheetHeader() {
-      this.HandsontableSetting.colHeaders = this.projectDataFields.map(
-        v => v.title,
-      );
+      this.HandsontableSetting.colHeaders = [
+        ...this.projectDataFields.map(v => v.title),
+      ];
+      this.canRequestNewDataFields &&
+        this.HandsontableSetting.colHeaders.push(
+          `<a
+            href="/project/${this.$route.params.projectId}/edit/setting"
+            style="color: #999;
+        "> <i class="fas fa-plus"></i> </a>`,
+        );
     },
     // 設定每個 column 要如何顯示
     setSheetColumn() {
@@ -368,6 +380,17 @@ export default {
         ...defaultColumn,
         ...CustomizationColumn,
       ];
+      this.canRequestNewDataFields &&
+        this.HandsontableSetting.columns.push({
+          // workaround
+          // 因為 handsontable 不能只加 header 沒有 column
+          // 為了要顯示 `+` 功能所以補上隱藏 column
+          readOnly: true,
+          renderer: (instance, td) => {
+            td.setAttribute('style', 'display:none;');
+            return td;
+          },
+        });
     },
     changeAnnotation(changes) {
       if (!!changes && this.isEdit === true) {
