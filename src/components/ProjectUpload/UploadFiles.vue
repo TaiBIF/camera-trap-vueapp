@@ -37,7 +37,7 @@
     <div class="text-center mt-2">
       <small class="text-center">
         單一檔案上傳大小制於 <b>2G</b> 以內，一次上傳中，檔案大小總合須小於
-        <b>5G</b>
+        <b>2G</b>
         <br />您可以上傳的檔案形式：內含資料檔（.csv）及其對應影像之壓縮檔
         (.zip)、影像資料壓縮檔 (.zip)、單一影像檔 及 單一資料檔（.csv）
       </small>
