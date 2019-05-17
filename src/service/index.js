@@ -6,3 +6,4 @@ export * from './modules/projects';
 export * from './modules/studyAreas';
 export * from './modules/upload';
 export * from './modules/dataFields';
+export * from './modules/forest';

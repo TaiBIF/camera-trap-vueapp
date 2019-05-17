@@ -5,7 +5,7 @@
       :zoom="zoom"
       :center="mapCenter"
       :options="options"
-      @update:bounds="centerUpdated"
+      @update:center="centerUpdated"
       @update:zoom="zoomUpdated"
     >
       <l-tile-layer :url="url" :attribution="attribution" />
@@ -54,11 +54,11 @@
         </l-marker>
       </l-layer-group>
       <l-layer-group
-        v-if="showWoods"
+        v-if="showForestBoundary"
         layer-type="overlay"
         name="Layer polyline"
       >
-        <!-- <l-polygon
+        <l-polygon
           v-for="item in forestBoundary"
           :key="item.id"
           :lat-lngs="item.points"
@@ -66,7 +66,7 @@
           :stroke="true"
           :fillOpacity="1"
           :color="'#FFAF00'"
-        /> -->
+        />
       </l-layer-group>
     </l-map>
     <div class="checkbox float-right mt-3 mb-0">
@@ -75,7 +75,7 @@
         name="show-woods"
         id="show-woods"
         value="1"
-        v-model="showWoods"
+        v-model="showForestBoundary"
       />
       <label for="show-woods">在地圖顯示林班地範圍</label>
     </div>
@@ -88,7 +88,7 @@ import {
   LLayerGroup,
   LMap,
   LMarker,
-  // LPolygon,
+  LPolygon,
   LTileLayer,
   LTooltip,
 } from 'vue2-leaflet';
@@ -98,6 +98,7 @@ import idx from 'idx';
 import 'leaflet/dist/leaflet.css';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const forest = createNamespacedHelpers('forest');
 
 const CameraIcon = L.icon({
   iconUrl: '/assets/common/marker-icon@2x.png',
@@ -136,8 +137,8 @@ const ErrorCameraIconSelect = L.icon({
 });
 
 const defaultZoom = {
-  area: 9,
-  camera: 15,
+  area: 8,
+  camera: 12,
 };
 
 export default {
@@ -146,7 +147,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    // LPolygon,
+    LPolygon,
     LCircle,
     LTooltip,
     LLayerGroup,
@@ -159,23 +160,28 @@ export default {
   },
   data() {
     return {
-      zoom: 9,
+      zoom: defaultZoom.area,
+      getForestBoundaryParam: { lng: 0, lat: 0 },
       options: {
         zoomControl: true,
       },
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-      showWoods: false,
+      showForestBoundary: false,
     };
   },
   watch: {
     mapMode(value) {
       this.zoom = defaultZoom[value];
     },
+    showForestBoundary() {
+      this.reloadForestBoundary();
+    },
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+    ...forest.mapGetters(['forestBoundary']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -227,8 +233,8 @@ export default {
           },
         );
       }
-      // studyArea level: calculate center base on all cameraLocation in this studyArea
       if (!this.selectedCameraId) {
+        // studyArea level: calculate center base on all cameraLocation in this studyArea
         return this.cameras.reduce(
           (res, { position }) => {
             const { lat, lng } = position;
@@ -253,6 +259,7 @@ export default {
     },
   },
   methods: {
+    ...forest.mapActions(['loadForestBoundary']),
     getMarkerIcon: function(id, failures) {
       if (failures > 0) {
         if (id === this.activeCameraId) {
@@ -264,9 +271,6 @@ export default {
         return CameraIconSelect;
       }
       return CameraIcon;
-    },
-    centerUpdated() {
-      // TODO: reload forest boundary
     },
     zoomUpdated(e) {
       this.zoom = e;
@@ -282,6 +286,20 @@ export default {
           this.selectedStudyAreaId
         }/receive/${cameraId}`,
       });
+    },
+    reloadForestBoundary(position) {
+      if (!this.showForestBoundary) return;
+      if (this.zoom < defaultZoom.area) return;
+
+      const { lat, lng } = position || this.mapCenter;
+      const { lat: qLat, lng: qLng } = this.getForestBoundaryParam;
+      if (Math.abs(lat - qLat) < 0.05 || Math.abs(lng - qLng) < 0.05) return;
+
+      this.getForestBoundaryParam = { lat, lng };
+      this.loadForestBoundary({ lat, lng });
+    },
+    centerUpdated({ lat, lng }) {
+      this.reloadForestBoundary({ lat, lng });
     },
   },
 };
