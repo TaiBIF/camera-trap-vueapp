@@ -250,8 +250,8 @@ export default {
       isLoading: false,
       isEdit: false,
       CameraModalOpen: false,
-      galleryShow: false,
-      historyShow: false,
+      galleryShow: true,
+      historyShow: true,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: Object.assign({}, defaultQuery),
     };
