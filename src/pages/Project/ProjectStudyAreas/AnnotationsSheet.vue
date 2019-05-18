@@ -125,6 +125,7 @@ export default {
     return {
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
+      currentMouseButton: -1,
       HandsontableSetting: {
         height: 500,
         outsideClickDeselects: false,
@@ -132,8 +133,21 @@ export default {
         colHeaders: [],
         columns: [],
         data: [],
-        afterSelectionEnd: this.changeAnnotationIdx,
+        afterOnCellMouseDown: this.afterOnCellMouseDown,
+        afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
+        contextMenu: [
+          {
+            name:
+              '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
+            disabled: () => {
+              return false;
+            },
+            callback: (key, selection) => {
+              console.log(key, selection);
+            },
+          },
+        ],
       },
     };
   },
@@ -232,6 +246,20 @@ export default {
         document.querySelector('.sheet-header').clientHeight;
 
       this.HandsontableSetting.height = sheetHeight;
+    },
+    // afterOnCellMouseDown(event, coords, td) {
+    afterOnCellMouseDown(event) {
+      this.currentMouseButton = event.button;
+    },
+    afterSelectionEnd(row, column, row2) {
+      // 0: Main button pressed, usually the left button or the un-initialized state
+      // 2: Secondary button pressed, usually the right button
+      if (this.currentMouseButton === 0) {
+        console.log('左鍵');
+      } else if (this.currentMouseButton === 2) {
+        console.log('右鍵');
+      }
+      this.changeAnnotationIdx(row, column, row2);
     },
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
