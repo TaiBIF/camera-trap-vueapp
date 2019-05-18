@@ -163,6 +163,7 @@
     <!-- 下方編輯頁面 -->
     <div class="sheet-container">
       <AnnotationsSheet
+        ref="sheet"
         :isEdit="isEdit"
         :galleryShow="galleryShow"
         :historyShow="historyShow"
@@ -177,6 +178,7 @@
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
+        @changeWidth="$refs.sheet.setSheetHeight()"
       />
     </div>
 
