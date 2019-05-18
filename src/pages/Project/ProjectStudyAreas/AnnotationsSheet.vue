@@ -108,6 +108,12 @@ const dataFields = createNamespacedHelpers('dataFields');
 const studyAreas = createNamespacedHelpers('studyAreas');
 const account = createNamespacedHelpers('account');
 
+const resetTd = td => {
+  td.innerHTML = '';
+  delete td.dataset.tooltip;
+  td.className = '';
+};
+
 export default {
   components: {
     HotTable,
@@ -174,6 +180,9 @@ export default {
     }, 500);
   },
   watch: {
+    continuousRange: function() {
+      this.$refs.sheet.hotInstance.render();
+    },
     isEdit: function(val) {
       this.setSheetHeight();
       this.setSheetColumn();
@@ -307,12 +316,6 @@ export default {
       this.$emit('currentAnnotationIdx', row2);
     },
     setSpeciesTooltip(instance, td, row, col, prop, title) {
-      const resetTd = td => {
-        td.innerHTML = '';
-        delete td.dataset.tooltip;
-        td.className = '';
-      };
-
       resetTd(td); // td 會共用，所以每次都要重置
 
       if (title) {
@@ -391,7 +394,29 @@ export default {
           data: 'time',
           readOnly: true,
           renderer: (instance, td, row, col, prop, value) => {
+            resetTd(td);
+
+            let className = [];
+            if (
+              this.continuousRange &&
+              row >= this.continuousRange[0] &&
+              row <= this.continuousRange[1]
+            ) {
+              className.push('is-continuoust');
+              className.push('period-x');
+
+              if (row === this.continuousRange[0]) {
+                td.dataset.tooltip = '連拍';
+                className.push('is-continuous-start');
+              }
+
+              if (row === this.continuousRange[1]) {
+                className.push('is-continuous-end');
+              }
+            }
+
             td.innerHTML = dateFormatYYYYMMDDHHmmss(value);
+            td.className = className.join(' ');
             return td;
           },
         },
