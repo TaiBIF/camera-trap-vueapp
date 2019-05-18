@@ -96,6 +96,7 @@ const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
 const studyAreas = createNamespacedHelpers('studyAreas');
+const account = createNamespacedHelpers('account');
 
 export default {
   components: {
@@ -195,7 +196,12 @@ export default {
     ...annotations.mapState(['annotationsTotal']),
     ...annotations.mapGetters(['annotations']),
     ...dataFields.mapGetters(['dataFields']),
-    ...projects.mapGetters(['projectDataFields', 'projectSpecies']),
+    ...projects.mapGetters([
+      'projectDataFields',
+      'projectSpecies',
+      'isProjectManager',
+    ]),
+    ...account.mapGetters(['userId', 'isAdministrator']),
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreaTitle']),
     //計算目前筆數範圍
@@ -212,8 +218,7 @@ export default {
     },
     //能否新增欄位
     canRequestNewDataFields() {
-      // todo 規格書 4.5 (f) 只有計劃管理員會顯示
-      return true;
+      return this.isAdministrator || this.isProjectManager(this.userId);
     },
   },
   methods: {
