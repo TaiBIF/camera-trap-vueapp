@@ -50,6 +50,27 @@ const getters = {
           description: v.description[getLanguage()],
         }))
       : [],
+  /*
+   * https://github.com/TaiBIF/camera-trap-api/wiki/role-permission
+   * https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#payload-6
+   * manager (計畫管理員)
+   * researcher (計畫研究員)
+   * executor (計畫執行者)
+   */
+  isProjectManager: state => userId => {
+    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+    const permission = projectMembers.find(({ user }) => user.id === userId);
+
+    if (permission && permission.role === 'manager') return true;
+    return false;
+  },
+  isProjectResearcher: state => userId => {
+    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+    const permission = projectMembers.find(({ user }) => user.id === userId);
+
+    if (permission && permission.role === 'researcher') return true;
+    return false;
+  },
 };
 
 const mutations = {
