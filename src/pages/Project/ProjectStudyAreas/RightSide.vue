@@ -210,6 +210,7 @@ export default {
     },
     dragEnd() {
       this.isDrag = false;
+      this.$emit('changeWidth');
     },
   },
 };

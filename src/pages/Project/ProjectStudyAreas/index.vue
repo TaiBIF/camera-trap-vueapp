@@ -163,6 +163,7 @@
     <!-- 下方編輯頁面 -->
     <div class="sheet-container">
       <AnnotationsSheet
+        ref="sheet"
         :isEdit="isEdit"
         :galleryShow="galleryShow"
         :historyShow="historyShow"
@@ -177,6 +178,7 @@
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
+        @changeWidth="$refs.sheet.setSheetHeight()"
       />
     </div>
 
@@ -250,8 +252,8 @@ export default {
       isLoading: false,
       isEdit: false,
       CameraModalOpen: false,
-      galleryShow: false,
-      historyShow: false,
+      galleryShow: true,
+      historyShow: true,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: Object.assign({}, defaultQuery),
     };
