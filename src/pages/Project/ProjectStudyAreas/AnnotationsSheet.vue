@@ -143,6 +143,7 @@ export default {
       isEnableContinuous: false,
       continuousMinute: 3,
       continuousStartRow: undefined,
+      continuousRecovor: [], //備份連拍編輯資料，讓解除連拍可以回覆
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       currentMouseButton: -1,
@@ -150,6 +151,10 @@ export default {
         height: 500,
         outsideClickDeselects: false,
         rowHeaders: true,
+        enterMoves: () => {
+          //連拍模式按下 enter 修改不能跳到下一行，不然連拍範圍會被改變
+          return { row: this.continuousRange ? 0 : 1, col: 0 };
+        },
         colHeaders: [],
         columns: [],
         data: [],
@@ -180,8 +185,11 @@ export default {
     }, 500);
   },
   watch: {
-    continuousRange: function() {
-      this.$refs.sheet.hotInstance.render();
+    continuousRange: function(newVal, oldVal) {
+      if (!R.equals(newVal, oldVal)) {
+        this.continuousRecovor = [];
+        this.$refs.sheet.hotInstance.render();
+      }
     },
     isEdit: function(val) {
       this.setSheetHeight();
@@ -496,44 +504,55 @@ export default {
         });
     },
     changeAnnotation(changes) {
-      const changeRequest = ({ row, prop, newVal }) => {
-          let annotation = {
-            fields: R.clone(this.annotations[row].fields),
-            speciesTitle:
-              prop === 'species' ? newVal : this.annotations[row].species.title,
-          };
-
-          if (prop !== 'species') {
-            const targetIdx = R.findIndex(R.propEq('dataField', prop))(
-              annotation.fields,
-            );
-
-            if (targetIdx === -1) {
-              // 不存在就新增
-              annotation.fields.push({
-                dataField: prop,
-                value: newVal,
-              });
-            } else {
-              // 存在則修改
-              annotation.fields[targetIdx].value = newVal;
-            }
-          }
-
-          // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
-          annotation.fields = annotation.fields.filter(v => !!v.value);
-
-          this.setAnnotations({
-            annotationId: this.annotations[row].id,
-            body: annotation,
-          });
-      };
-
       if (!!changes && this.isEdit === true) {
         changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
-          changeRequest({ row, prop, newVal });
+          if (
+            this.continuousRange &&
+            changes.length === 1 &&
+            row === this.continuousRange[0]
+          ) {
+            R.range(this.continuousRange[0], this.continuousRange[1] + 1).map(
+              v => {
+                this.changeRequest(v, prop, newVal);
+              },
+            );
+          } else {
+            this.changeRequest(row, prop, newVal);
+          }
         });
       }
+    },
+    changeRequest(row, prop, newVal) {
+      let annotation = {
+        fields: R.clone(this.annotations[row].fields),
+        speciesTitle:
+          prop === 'species' ? newVal : this.annotations[row].species.title,
+      };
+
+      if (prop !== 'species') {
+        const targetIdx = R.findIndex(R.propEq('dataField', prop))(
+          annotation.fields,
+        );
+
+        if (targetIdx === -1) {
+          // 不存在就新增
+          annotation.fields.push({
+            dataField: prop,
+            value: newVal,
+          });
+        } else {
+          // 存在則修改
+          annotation.fields[targetIdx].value = newVal;
+        }
+      }
+
+      // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
+      annotation.fields = annotation.fields.filter(v => !!v.value);
+
+      this.setAnnotations({
+        annotationId: this.annotations[row].id,
+        body: annotation,
+      });
     },
   },
 };
