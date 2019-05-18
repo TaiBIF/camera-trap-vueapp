@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ loading: retrievalLoadingStatus === 'loading' }">
     <div class="control">
       <button @click="changeSelectedYear(selectedYear - 1)">
         <i class="fa fa-3 fa-caret-left"></i>
@@ -75,6 +75,7 @@ export default {
     selectedCameraId: 'loadRetrievealDataByCurrentSelected',
   },
   computed: {
+    ...projects.mapGetters(['retrievalLoadingStatus']),
     projectId: function() {
       return this.$route.params.projectId;
     },

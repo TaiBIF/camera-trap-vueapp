@@ -93,6 +93,7 @@ const getters = {
     if (timeUpdated) return dateFormatYYYYMMDD(timeUpdated);
     return '';
   },
+  // TODO: prevent show loading screen if data already exist
   retrievalLoadingStatus: state =>
     idx(state, _ => _.retrievalData.loadingStatus),
   getReceivedRetrievalData: state => ({ year, id }) =>
