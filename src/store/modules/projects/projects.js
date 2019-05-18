@@ -79,6 +79,7 @@ const getters = {
     if (permission && permission.role === 'researcher') return true;
     return false;
   },
+  // TODO: prevent show loading screen if data already exist
   retrievalLoadingStatus: state =>
     idx(state, _ => _.retrievalData.loadingStatus),
   getReceivedRetrievalData: state => ({ year, id }) =>
