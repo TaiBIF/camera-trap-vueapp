@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import idx from 'idx';
 import produce from 'immer';
 
@@ -25,7 +26,9 @@ const state = {
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
-  retrievalData: {}, // 計畫資料辨識紀錄
+  retrievalData: {
+    loadingStatus: 'init', // init -> loading -> loaded
+  }, // 計畫資料辨識紀錄
 };
 
 const getters = {
@@ -90,6 +93,8 @@ const getters = {
     if (timeUpdated) return dateFormatYYYYMMDD(timeUpdated);
     return '';
   },
+  retrievalLoadingStatus: state =>
+    idx(state, _ => _.retrievalData.loadingStatus),
   getReceivedRetrievalData: state => ({ year, id }) =>
     (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
       if (!item) return 0; // 無資料
@@ -106,6 +111,18 @@ const getters = {
       const { dataCount, speciesCount } = item || {};
       if (dataCount === speciesCount) return 1; // 當月資料已辨識
       return 2; // 當月資料未完整
+    }),
+  getCameraRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      const { dataCount, fileCount, failures, lastData } = item || {};
+
+      return {
+        dataCount: dataCount || 0,
+        failures,
+        isDataComplete: dataCount === fileCount,
+        isCameraRemove: false, // TODO: 相機撤除尚未導入
+        lastUpdate: dateFormatYYYYMMDD(lastData),
+      };
     }),
 };
 
@@ -125,22 +142,23 @@ const mutations = {
   setIdentifiedSpecies(state, data) {
     state.identifiedSpecies = data;
   },
+  setRetrievalStatus(state, status) {
+    Vue.set(state.retrievalData, 'loadingStatus', status);
+  },
   setRetrievalData(state, { year, data }) {
-    state.retrievalData = data.reduce(
+    const selectedYearData = data.reduce(
       (res, { cameraLocation, studyArea, data }) => {
         const id = cameraLocation || studyArea;
-        const selectYearData = res[year] || {};
 
         return {
           ...res,
-          [year]: {
-            ...selectYearData,
-            [id]: data,
-          },
+          [id]: data,
         };
       },
-      state.retrievalData,
+      state.retrievalData[year] || {},
     );
+
+    Vue.set(state.retrievalData, year, selectedYearData);
   },
 };
 
@@ -215,6 +233,7 @@ const actions = {
     { commit },
     { year, projectId, studyAreaId, cameraLocationId },
   ) {
+    commit('setRetrievalStatus', 'loading');
     let data = [];
     if (cameraLocationId) {
       data = await getRetrievalDataByCameraLocation({
@@ -231,6 +250,7 @@ const actions = {
     } else {
       data = await getRetrievalDataByProject({ year, projectId });
     }
+    commit('setRetrievalStatus', 'loaded');
     commit('setRetrievalData', { year, data });
   },
 };
