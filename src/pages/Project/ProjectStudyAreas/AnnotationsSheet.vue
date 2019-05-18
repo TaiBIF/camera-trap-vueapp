@@ -5,6 +5,14 @@
       <div class="row">
         <div class="col-10 no-padding-right">
           <small class="text-gray">共 {{ annotationsTotal }} 筆資料</small>
+          <div class="divider"></div>
+          <continuous-button
+            v-if="isEdit"
+            :isEnable="isEnableContinuous"
+            :continuousMinute="continuousMinute"
+            @switch="isEnableContinuous = !isEnableContinuous"
+            @change="continuousMinute = $event"
+          />
         </div>
 
         <div class="col-2 text-right no-padding-left">
@@ -88,6 +96,7 @@ import * as R from 'ramda';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import { getLanguage } from '@/utils/i18n';
+import ContinuousButton from '@/components/ProjectStudyAreas/ContinuousButton';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
 import 'handsontable-key-value';
@@ -101,6 +110,7 @@ const account = createNamespacedHelpers('account');
 export default {
   components: {
     HotTable,
+    ContinuousButton,
   },
   props: {
     isEdit: {
@@ -123,6 +133,8 @@ export default {
 
   data() {
     return {
+      isEnableContinuous: false,
+      continuousMinute: 3,
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       currentMouseButton: -1,
@@ -160,9 +172,13 @@ export default {
     }, 500);
   },
   watch: {
-    isEdit: function() {
+    isEdit: function(val) {
       this.setSheetHeight();
       this.setSheetColumn();
+
+      if (val === false) {
+        this.isEnableContinuous = false;
+      }
     },
     currentPage: function() {
       this.$emit('changePage', {
