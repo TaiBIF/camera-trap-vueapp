@@ -92,6 +92,7 @@
 <script>
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
+import moment from 'moment';
 import * as R from 'ramda';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
@@ -133,8 +134,9 @@ export default {
 
   data() {
     return {
-      isEnableContinuous: false,
+      isEnableContinuous: true,
       continuousMinute: 3,
+      continuousStartRow: undefined,
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       currentMouseButton: -1,
@@ -178,6 +180,7 @@ export default {
 
       if (val === false) {
         this.isEnableContinuous = false;
+        this.continuousStartRow = undefined;
       }
     },
     currentPage: function() {
@@ -185,6 +188,7 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize,
       });
+      this.continuousStartRow = undefined;
     },
     pageSize: function() {
       this.currentPage = 1;
@@ -250,6 +254,27 @@ export default {
     canRequestNewDataFields() {
       return this.isAdministrator || this.isProjectManager(this.userId);
     },
+    continuousRange() {
+      if (this.continuousStartRow === undefined) {
+        return undefined;
+      }
+
+      const endTime = moment(
+        this.HandsontableSetting.data[this.continuousStartRow].time,
+      ).add(this.continuousMinute, 'minutes');
+
+      const targetIndex = this.HandsontableSetting.data
+        .map(v => v.time)
+        .slice(this.continuousStartRow)
+        .findIndex(v => moment(v).isAfter(endTime));
+
+      const endIndex =
+        targetIndex === -1 // -1 表示到最後一個都在範圍內
+          ? this.HandsontableSetting.data.length - 1
+          : this.continuousStartRow + targetIndex - 1;
+
+      return [this.continuousStartRow, endIndex];
+    },
   },
   methods: {
     ...annotations.mapActions(['setAnnotations']),
@@ -272,6 +297,7 @@ export default {
       // 2: Secondary button pressed, usually the right button
       if (this.currentMouseButton === 0) {
         console.log('左鍵');
+        this.continuousStartRow = row2;
       } else if (this.currentMouseButton === 2) {
         console.log('右鍵');
       }
