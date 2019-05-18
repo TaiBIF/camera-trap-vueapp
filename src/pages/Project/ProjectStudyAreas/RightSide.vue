@@ -206,6 +206,7 @@ export default {
     dragMove(e) {
       if (this.isDrag) {
         this.galleryWidth = window.innerWidth - e.pageX;
+        this.$emit('changeWidth');
       }
     },
     dragEnd() {
