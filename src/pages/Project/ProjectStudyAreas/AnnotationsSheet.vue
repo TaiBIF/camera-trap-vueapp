@@ -496,8 +496,7 @@ export default {
         });
     },
     changeAnnotation(changes) {
-      if (!!changes && this.isEdit === true) {
-        changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
+      const changeRequest = ({ row, prop, newVal }) => {
           let annotation = {
             fields: R.clone(this.annotations[row].fields),
             speciesTitle:
@@ -528,6 +527,11 @@ export default {
             annotationId: this.annotations[row].id,
             body: annotation,
           });
+      };
+
+      if (!!changes && this.isEdit === true) {
+        changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
+          changeRequest({ row, prop, newVal });
         });
       }
     },
