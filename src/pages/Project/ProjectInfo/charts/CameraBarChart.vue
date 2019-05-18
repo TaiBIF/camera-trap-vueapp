@@ -6,8 +6,11 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import ChartLegend from '@/pages/Project/ProjectInfo/charts/ChartLegend';
 import VueHighcharts from 'vue2-highcharts';
+
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'camera-bar-chart',
@@ -41,10 +44,12 @@ export default {
           useHTML: true,
           pointFormatter() {
             return `
-              <div class="tooltip ${this.errorNumber > 0 ? 'showError' : ''}">
+              <div class="tooltip">
                 <div>
                   <h5>${this.y} <small>筆</small></h5>
-                  <span>${this.errorNumber} 筆資料異常</span>
+                  <span class="${this.errorNumber > 0 && 'showError'}">${
+              this.errorNumber
+            } 筆資料異常</span>
                 </div>
                 <div>資料最新上傳日：${this.lastUploaded}</div>
               </div>
@@ -96,38 +101,41 @@ export default {
     }
   },
   computed: {
+    ...projects.mapGetters([
+      'getCameraRetrievalData',
+      'retrievalLoadingStatus',
+    ]),
     selectedCameraId: function() {
       return this.$route.params.selectedCameraId;
     },
   },
-  methods: {
-    changeSelectedYear(year) {
-      if (year > new Date().getFullYear()) {
-        return;
-      }
-      this.selectedYear = year;
+  watch: {
+    retrievalLoadingStatus: function(state) {
+      if (state === 'loaded') this.loadCameraChart();
     },
+  },
+  methods: {
     loadCameraChart() {
       const BarChartData = {
-        // TODO: data from API
-        data: [
-          { value: 20, error: 0, isRemove: false },
-          { value: 120, error: 10, isRemove: false },
-          { value: 220, error: 100, isRemove: false },
-          { value: 60, error: 0, isRemove: false },
-          { value: 30, error: 1, isRemove: false },
-          { value: 20, error: 0, isRemove: true },
-          { value: 80, error: 0, isRemove: false },
-          { value: 60, error: 1, isRemove: false },
-          { value: 90, error: 0, isRemove: false },
-          { value: 30, error: 0, isRemove: false },
-        ].map(({ value, error, isRemove }, i) => ({
-          name: i + 1 + '月',
-          y: value,
-          errorNumber: error,
-          lastUploaded: '2018/08/16',
-          color: error > 0 ? '#FEC9D4' : isRemove ? '#8C9CAB' : '#BFE08E', // TODO: share config with ChartLegend
-        })),
+        data: this.getCameraRetrievalData({
+          year: this.year,
+          id: this.selectedCameraId,
+        }).map(
+          (
+            { dataCount, failures, isCameraRemove, isDataComplete, lastUpdate },
+            index,
+          ) => ({
+            name: index + 1 + '月',
+            y: dataCount,
+            errorNumber: failures,
+            lastUploaded: lastUpdate,
+            color: isDataComplete
+              ? '#BFE08E'
+              : isCameraRemove
+              ? '#8C9CAB'
+              : '#FEC9D4', // TODO: share config with ChartLegend
+          }),
+        ),
       };
       const barCharts = this.$refs.barCharts;
       barCharts.removeSeries();
@@ -136,7 +144,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .tooltip {
   color: #fff;
   margin: 0;
@@ -153,16 +161,14 @@ export default {
   span {
     display: none;
   }
-  &.showError {
-    span {
-      display: inline-block;
-      padding: 5px;
-      margin-left: 5px;
-      color: #fff;
-      background-color: #db5158;
-      border-radius: 3px;
-      font-size: 10px;
-    }
+  span.showError {
+    display: inline-block;
+    padding: 5px;
+    margin-left: 5px;
+    color: #fff;
+    background-color: #db5158;
+    border-radius: 3px;
+    font-size: 10px;
   }
 }
 </style>
