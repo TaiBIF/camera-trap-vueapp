@@ -140,7 +140,7 @@ export default {
 
   data() {
     return {
-      isEnableContinuous: true,
+      isEnableContinuous: false,
       continuousMinute: 3,
       continuousStartRow: undefined,
       currentPage: 1, //目前在第幾頁
@@ -264,7 +264,10 @@ export default {
       return this.isAdministrator || this.isProjectManager(this.userId);
     },
     continuousRange() {
-      if (this.continuousStartRow === undefined) {
+      if (
+        this.isEnableContinuous === false ||
+        this.continuousStartRow === undefined
+      ) {
         return undefined;
       }
 
