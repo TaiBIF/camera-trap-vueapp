@@ -27,6 +27,7 @@ const state = {
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
   retrievalData: {
+    lastUpdate: '',
     loadingStatus: 'init', // init -> loading -> loaded
   }, // 計畫資料辨識紀錄
 };
@@ -96,6 +97,11 @@ const getters = {
   // TODO: prevent show loading screen if data already exist
   retrievalLoadingStatus: state =>
     idx(state, _ => _.retrievalData.loadingStatus),
+  retrievalDataLastUpdate: state => {
+    const lastUpdateTimeString = idx(state, _ => _.retrievalData.lastUpdate);
+    if (lastUpdateTimeString) return dateFormatYYYYMMDD(lastUpdateTimeString);
+    return '';
+  },
   getReceivedRetrievalData: state => ({ year, id }) =>
     (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
       if (!item) return 0; // 無資料
@@ -146,8 +152,11 @@ const mutations = {
   setRetrievalStatus(state, status) {
     Vue.set(state.retrievalData, 'loadingStatus', status);
   },
-  setRetrievalData(state, { year, data }) {
-    const selectedYearData = data.reduce(
+  setRetrievalLastUpdate(state, timeUpdated) {
+    Vue.set(state.retrievalData, 'lastUpdate', timeUpdated);
+  },
+  setRetrievalData(state, { year, items }) {
+    const selectedYearData = items.reduce(
       (res, { cameraLocation, studyArea, data }) => {
         const id = cameraLocation || studyArea;
 
@@ -235,24 +244,27 @@ const actions = {
     { year, projectId, studyAreaId, cameraLocationId },
   ) {
     commit('setRetrievalStatus', 'loading');
-    let data = [];
+    commit('setRetrievalLastUpdate', '');
+    let res = {};
     if (cameraLocationId) {
-      data = await getRetrievalDataByCameraLocation({
+      res = await getRetrievalDataByCameraLocation({
         year,
         projectId,
         cameraLocationId,
       });
     } else if (studyAreaId) {
-      data = await getRetrievalDataByStudyArea({
+      res = await getRetrievalDataByStudyArea({
         year,
         projectId,
         studyAreaId,
       });
     } else {
-      data = await getRetrievalDataByProject({ year, projectId });
+      res = await getRetrievalDataByProject({ year, projectId });
     }
+    const { items, timeUpdated } = res || {};
     commit('setRetrievalStatus', 'loaded');
-    commit('setRetrievalData', { year, data });
+    commit('setRetrievalLastUpdate', timeUpdated);
+    commit('setRetrievalData', { year, items });
   },
 };
 
