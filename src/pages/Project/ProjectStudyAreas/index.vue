@@ -1,6 +1,6 @@
 <template>
-  <div class="maintain page-sheet p-0">
-    <div class="search-container" v-bind:class="{ loading: isLoading }">
+  <div class="maintain page-sheet p-0" :class="{ loading: isLoading }">
+    <div class="search-container">
       <!-- Edit mode -->
       <div v-if="isEdit" class="edit-container">
         <div class="row">
