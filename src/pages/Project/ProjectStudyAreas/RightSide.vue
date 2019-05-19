@@ -31,42 +31,32 @@
       </div>
       <div class="gallery-body" v-else>
         <zoom-drag
+          v-if="currentMedia.type === 'annotation-image'"
           :row="currentMedia"
           :index="currentAnnotationIdx"
           :total="annotationsTotal"
           :imageInfo="mediaInfo"
         />
+        <video-player
+          v-else-if="currentMedia.type === 'annotation-video'"
+          ref="videoPlayer"
+          :options="playerOptions"
+          @ended="goNext"
+        >
+        </video-player>
         <div class="control">
           <span
             class="prev"
             v-tooltip.top="'上一張'"
             :disabled="true"
-            @click="
-              $emit(
-                'currentAnnotationIdx',
-                currentAnnotationIdx > 0
-                  ? currentAnnotationIdx - 1
-                  : currentAnnotationIdx,
-              )
-            "
+            @click="goPrev"
           >
             <i class="fa fa-caret-left"></i>
           </span>
           <span class="text">
             {{ mediaInfo }}
           </span>
-          <span
-            class="prev"
-            v-tooltip.top="'下一張'"
-            @click="
-              $emit(
-                'currentAnnotationIdx',
-                currentAnnotationIdx < annotations.length - 1
-                  ? currentAnnotationIdx + 1
-                  : currentAnnotationIdx,
-              )
-            "
-          >
+          <span class="prev" v-tooltip.top="'下一張'" @click="goNext">
             <i class="fa fa-caret-right"></i>
           </span>
         </div>
@@ -131,16 +121,20 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { videoPlayer } from 'vue-video-player';
 import idx from 'idx';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
+
+import 'video.js/dist/video-js.css';
 
 const annotations = createNamespacedHelpers('annotations');
 
 export default {
   components: {
     ZoomDrag,
+    videoPlayer,
   },
   props: {
     galleryShow: {
@@ -197,6 +191,19 @@ export default {
         this.currentData.time,
       )}`;
     },
+    playerOptions() {
+      return {
+        height: 328,
+        autoplay: true,
+        muted: true,
+        playbackRates: [0.7, 1.0, 1.5, 2.0],
+        sources: [
+          {
+            src: this.currentMedia.url,
+          },
+        ],
+      };
+    },
   },
   methods: {
     ...annotations.mapActions(['getRevision', 'rollbackRevision']),
@@ -212,6 +219,22 @@ export default {
     dragEnd() {
       this.isDrag = false;
       this.$emit('changeWidth');
+    },
+    goPrev() {
+      this.$emit(
+        'currentAnnotationIdx',
+        this.currentAnnotationIdx > 0
+          ? this.currentAnnotationIdx - 1
+          : this.currentAnnotationIdx,
+      );
+    },
+    goNext() {
+      this.$emit(
+        'currentAnnotationIdx',
+        this.currentAnnotationIdx < this.annotations.length - 1
+          ? this.currentAnnotationIdx + 1
+          : this.currentAnnotationIdx,
+      );
     },
   },
 };
