@@ -30,6 +30,8 @@ const getProjectCameraLocations = async (projectId, StudyAreaId) => {
 
 // POST /projects/{projectId}/study-areas/{studyAreaId}/camera-locations http://bit.ly/2UXxQGA
 const postProjectCameraLocations = async (projectId, StudyAreaId, body) => {
+  // @todo temporary manipulation for the mandatory geodeticDatum, frontend selectµion to be implemented.
+  body.geodeticDatum = body.geodeticDatum ? body.geodeticDatum : 'WGS84';
   const res = await fetchWrap({
     url: `/api/v1/projects/${projectId}/study-areas/${StudyAreaId}/camera-locations`,
     method: 'POST',
