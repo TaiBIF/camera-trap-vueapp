@@ -92,6 +92,7 @@
 <script>
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
+import idx from 'idx';
 import moment from 'moment';
 import * as R from 'ramda';
 
@@ -112,6 +113,17 @@ const resetTd = td => {
   td.innerHTML = '';
   delete td.dataset.tooltip;
   td.className = '';
+};
+
+const isHiddenContinuousMenu = (selected, recover, respectRecoverType) => {
+  const row = selected[0][0];
+
+  return (
+    selected.length !== 1 || // 選擇多格 or 同時選擇多個範圍(例如拖拉範圍選擇)
+    selected[0][0] !== selected[0][2] || // 這兩種情況表示選取不只一格
+    idx(recover, _ => _[row].newVal) === undefined || // 還沒有連拍編輯過
+    recover[row].isRecover === respectRecoverType // 判斷是否符合預期
+  );
 };
 
 export default {
@@ -143,7 +155,26 @@ export default {
       isEnableContinuous: false,
       continuousMinute: 3,
       continuousStartRow: undefined,
-      continuousRecovor: [], //備份連拍編輯資料，讓解除連拍可以回覆
+      //備份連拍編輯資料讓解除連拍可以回覆，主要改變有兩個階段
+      //  step1 當連拍範圍改變時，格式如下
+      //  {
+      //   '9': { // key 為 row
+      //     row: 9, // row
+      //     oldVal: { ...}// 原本的資料用來解除連拍恢復資料用，來源為 his.HandsontableSetting.data
+      //   },...
+      //  }
+      //
+      // step2 當連拍編輯之後，會新增 prop, newVal, isRecover
+      //  {
+      //   '9': {
+      //     row: 9,
+      //     oldVal: { ...},
+      //     prop: 'species', // 所修改的 prop
+      //     newVal: '1', // 修改的資料
+      //     isRecover: false, // 是否解除連拍過，true 解除過, false 未解除
+      //   },
+      // }
+      continuousRecover: {},
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       currentMouseButton: -1,
@@ -162,14 +193,38 @@ export default {
         afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
         contextMenu: [
+          'copy',
+          '---------',
           {
             name:
               '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
-            disabled: () => {
-              return false;
-            },
+            hidden: (vueInstance =>
+              function() {
+                return isHiddenContinuousMenu(
+                  this.getSelected(),
+                  vueInstance.continuousRecover,
+                  true, // true 表示已經解除過了，這時候就不能再次解除連結
+                );
+              })(this),
             callback: (key, selection) => {
-              console.log(key, selection);
+              selection.length === 1 &&
+                this.continuousRecoverRequest(selection[0].end.row);
+            },
+          },
+          {
+            name:
+              '<span class="icon"><i class="icon-link"></i></span><span class="text">重新建立連拍連結</span>',
+            hidden: (vueInstance =>
+              function() {
+                return isHiddenContinuousMenu(
+                  this.getSelected(),
+                  vueInstance.continuousRecover,
+                  false, // false 表示還沒解除，這時候就不能重建連拍
+                );
+              })(this),
+            callback: (key, selection) => {
+              selection.length === 1 &&
+                this.continuousRecoverRequest(selection[0].end.row);
             },
           },
         ],
@@ -187,8 +242,16 @@ export default {
   watch: {
     continuousRange: function(newVal, oldVal) {
       if (!R.equals(newVal, oldVal)) {
-        this.continuousRecovor = [];
         this.$refs.sheet.hotInstance.render();
+        this.continuousRecover = newVal //continuousRange 不為 undefined 才要備份資料
+          ? R.range(newVal[0], newVal[1] + 1).reduce((accumulator, row) => {
+              accumulator[row] = {
+                row,
+                oldVal: R.clone(this.HandsontableSetting.data[row]),
+              };
+              return accumulator;
+            }, {})
+          : {};
       }
     },
     isEdit: function(val) {
@@ -414,7 +477,6 @@ export default {
               row <= this.continuousRange[1]
             ) {
               className.push('is-continuoust');
-              className.push('period-x');
 
               if (row === this.continuousRange[0]) {
                 td.dataset.tooltip = '連拍';
@@ -423,6 +485,12 @@ export default {
 
               if (row === this.continuousRange[1]) {
                 className.push('is-continuous-end');
+              }
+
+              if (idx(this.continuousRecover, _ => _[row].isRecover) === true) {
+                className.push('is-continuous-apart');
+              } else {
+                className.push('period-x');
               }
             }
 
@@ -513,6 +581,12 @@ export default {
           ) {
             R.range(this.continuousRange[0], this.continuousRange[1] + 1).map(
               v => {
+                this.continuousRecover[v] = {
+                  ...this.continuousRecover[v],
+                  prop,
+                  newVal,
+                  isRecover: false,
+                };
                 this.changeRequest(v, prop, newVal);
               },
             );
@@ -521,6 +595,16 @@ export default {
           }
         });
       }
+    },
+    continuousRecoverRequest(row) {
+      const recover = this.continuousRecover[row];
+
+      this.changeRequest(
+        row,
+        recover.prop,
+        recover.isRecover ? recover.newVal : recover.oldVal[recover.prop],
+      );
+      this.continuousRecover[row].isRecover = !recover.isRecover;
     },
     changeRequest(row, prop, newVal) {
       let annotation = {
