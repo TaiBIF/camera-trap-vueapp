@@ -42,7 +42,8 @@
           class="vjs-custom-skin"
           ref="videoPlayer"
           :options="playerOptions"
-          @ended="goNext"
+          @ready="onPlayerReadied"
+          @ended="onPlayerEnded"
         >
         </video-player>
         <div class="control">
@@ -155,6 +156,7 @@ export default {
     return {
       galleryWidth: 450,
       isDrag: false,
+      playbackRate: 1,
     };
   },
   mounted() {
@@ -236,6 +238,13 @@ export default {
           ? this.currentAnnotationIdx + 1
           : this.currentAnnotationIdx,
       );
+    },
+    onPlayerReadied(e) {
+      e.playbackRate(this.playbackRate);
+    },
+    onPlayerEnded(e) {
+      this.playbackRate = e.playbackRate();
+      this.goNext();
     },
   },
 };
