@@ -5,6 +5,14 @@
       <div class="row">
         <div class="col-10 no-padding-right">
           <small class="text-gray">共 {{ annotationsTotal }} 筆資料</small>
+          <div class="divider"></div>
+          <continuous-button
+            v-if="isEdit"
+            :isEnable="isEnableContinuous"
+            :continuousMinute="continuousMinute"
+            @switch="isEnableContinuous = !isEnableContinuous"
+            @change="continuousMinute = $event"
+          />
         </div>
 
         <div class="col-2 text-right no-padding-left">
@@ -84,10 +92,13 @@
 <script>
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
+import idx from 'idx';
+import moment from 'moment';
 import * as R from 'ramda';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import { getLanguage } from '@/utils/i18n';
+import ContinuousButton from '@/components/ProjectStudyAreas/ContinuousButton';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
 import 'handsontable-key-value';
@@ -98,9 +109,27 @@ const dataFields = createNamespacedHelpers('dataFields');
 const studyAreas = createNamespacedHelpers('studyAreas');
 const account = createNamespacedHelpers('account');
 
+const resetTd = td => {
+  td.innerHTML = '';
+  delete td.dataset.tooltip;
+  td.className = '';
+};
+
+const isHiddenContinuousMenu = (selected, recover, respectRecoverType) => {
+  const row = selected[0][0];
+
+  return (
+    selected.length !== 1 || // 選擇多格 or 同時選擇多個範圍(例如拖拉範圍選擇)
+    selected[0][0] !== selected[0][2] || // 這兩種情況表示選取不只一格
+    idx(recover, _ => _[row].newVal) === undefined || // 還沒有連拍編輯過
+    recover[row].isRecover === respectRecoverType // 判斷是否符合預期
+  );
+};
+
 export default {
   components: {
     HotTable,
+    ContinuousButton,
   },
   props: {
     isEdit: {
@@ -123,17 +152,82 @@ export default {
 
   data() {
     return {
+      isEnableContinuous: false,
+      continuousMinute: 3,
+      continuousStartRow: undefined,
+      //備份連拍編輯資料讓解除連拍可以回覆，主要改變有兩個階段
+      //  step1 當連拍範圍改變時，格式如下
+      //  {
+      //   '9': { // key 為 row
+      //     row: 9, // row
+      //     oldVal: { ...}// 原本的資料用來解除連拍恢復資料用，來源為 his.HandsontableSetting.data
+      //   },...
+      //  }
+      //
+      // step2 當連拍編輯之後，會新增 prop, newVal, isRecover
+      //  {
+      //   '9': {
+      //     row: 9,
+      //     oldVal: { ...},
+      //     prop: 'species', // 所修改的 prop
+      //     newVal: '1', // 修改的資料
+      //     isRecover: false, // 是否解除連拍過，true 解除過, false 未解除
+      //   },
+      // }
+      continuousRecover: {},
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
+      currentMouseButton: -1,
       HandsontableSetting: {
         height: 500,
         outsideClickDeselects: false,
         rowHeaders: true,
+        enterMoves: () => {
+          //連拍模式按下 enter 修改不能跳到下一行，不然連拍範圍會被改變
+          return { row: this.continuousRange ? 0 : 1, col: 0 };
+        },
         colHeaders: [],
         columns: [],
         data: [],
-        afterSelectionEnd: this.changeAnnotationIdx,
+        afterOnCellMouseDown: this.afterOnCellMouseDown,
+        afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
+        contextMenu: [
+          'copy',
+          '---------',
+          {
+            name:
+              '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
+            hidden: (vueInstance =>
+              function() {
+                return isHiddenContinuousMenu(
+                  this.getSelected(),
+                  vueInstance.continuousRecover,
+                  true, // true 表示已經解除過了，這時候就不能再次解除連結
+                );
+              })(this),
+            callback: (key, selection) => {
+              selection.length === 1 &&
+                this.continuousRecoverRequest(selection[0].end.row);
+            },
+          },
+          {
+            name:
+              '<span class="icon"><i class="icon-link"></i></span><span class="text">重新建立連拍連結</span>',
+            hidden: (vueInstance =>
+              function() {
+                return isHiddenContinuousMenu(
+                  this.getSelected(),
+                  vueInstance.continuousRecover,
+                  false, // false 表示還沒解除，這時候就不能重建連拍
+                );
+              })(this),
+            callback: (key, selection) => {
+              selection.length === 1 &&
+                this.continuousRecoverRequest(selection[0].end.row);
+            },
+          },
+        ],
       },
     };
   },
@@ -146,15 +240,35 @@ export default {
     }, 500);
   },
   watch: {
-    isEdit: function() {
+    continuousRange: function(newVal, oldVal) {
+      if (!R.equals(newVal, oldVal)) {
+        this.$refs.sheet.hotInstance.render();
+        this.continuousRecover = newVal //continuousRange 不為 undefined 才要備份資料
+          ? R.range(newVal[0], newVal[1] + 1).reduce((accumulator, row) => {
+              accumulator[row] = {
+                row,
+                oldVal: R.clone(this.HandsontableSetting.data[row]),
+              };
+              return accumulator;
+            }, {})
+          : {};
+      }
+    },
+    isEdit: function(val) {
       this.setSheetHeight();
       this.setSheetColumn();
+
+      if (val === false) {
+        this.isEnableContinuous = false;
+        this.continuousStartRow = undefined;
+      }
     },
     currentPage: function() {
       this.$emit('changePage', {
         currentPage: this.currentPage,
         pageSize: this.pageSize,
       });
+      this.continuousStartRow = undefined;
     },
     pageSize: function() {
       this.currentPage = 1;
@@ -220,6 +334,30 @@ export default {
     canRequestNewDataFields() {
       return this.isAdministrator || this.isProjectManager(this.userId);
     },
+    continuousRange() {
+      if (
+        this.isEnableContinuous === false ||
+        this.continuousStartRow === undefined
+      ) {
+        return undefined;
+      }
+
+      const endTime = moment(
+        this.HandsontableSetting.data[this.continuousStartRow].time,
+      ).add(this.continuousMinute, 'minutes');
+
+      const targetIndex = this.HandsontableSetting.data
+        .map(v => v.time)
+        .slice(this.continuousStartRow)
+        .findIndex(v => moment(v).isAfter(endTime));
+
+      const endIndex =
+        targetIndex === -1 // -1 表示到最後一個都在範圍內
+          ? this.HandsontableSetting.data.length - 1
+          : this.continuousStartRow + targetIndex - 1;
+
+      return [this.continuousStartRow, endIndex];
+    },
   },
   methods: {
     ...annotations.mapActions(['setAnnotations']),
@@ -233,16 +371,23 @@ export default {
 
       this.HandsontableSetting.height = sheetHeight;
     },
+    afterOnCellMouseDown(event) {
+      this.currentMouseButton = event.button;
+    },
+    afterSelectionEnd(row, column, row2) {
+      // 0: Main button pressed, usually the left button or the un-initialized state
+      // 2: Secondary button pressed, usually the right button
+      if (this.currentMouseButton === 0) {
+        // 左鍵才要重新計算連拍範圍，右鍵有可能是要解除連拍
+        this.continuousStartRow = row2;
+      }
+
+      this.changeAnnotationIdx(row, column, row2);
+    },
     changeAnnotationIdx(row, column, row2) {
       this.$emit('currentAnnotationIdx', row2);
     },
     setSpeciesTooltip(instance, td, row, col, prop, title) {
-      const resetTd = td => {
-        td.innerHTML = '';
-        delete td.dataset.tooltip;
-        td.className = '';
-      };
-
       resetTd(td); // td 會共用，所以每次都要重置
 
       if (title) {
@@ -321,7 +466,34 @@ export default {
           data: 'time',
           readOnly: true,
           renderer: (instance, td, row, col, prop, value) => {
+            resetTd(td);
+
+            let className = [];
+            if (
+              this.continuousRange &&
+              row >= this.continuousRange[0] &&
+              row <= this.continuousRange[1]
+            ) {
+              className.push('is-continuoust');
+
+              if (row === this.continuousRange[0]) {
+                td.dataset.tooltip = '連拍';
+                className.push('is-continuous-start');
+              }
+
+              if (row === this.continuousRange[1]) {
+                className.push('is-continuous-end');
+              }
+
+              if (idx(this.continuousRecover, _ => _[row].isRecover) === true) {
+                className.push('is-continuous-apart');
+              } else {
+                className.push('period-x');
+              }
+            }
+
             td.innerHTML = dateFormatYYYYMMDDHHmmss(value);
+            td.className = className.join(' ');
             return td;
           },
         },
@@ -400,38 +572,69 @@ export default {
     changeAnnotation(changes) {
       if (!!changes && this.isEdit === true) {
         changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
-          let annotation = {
-            fields: R.clone(this.annotations[row].fields),
-            speciesTitle:
-              prop === 'species' ? newVal : this.annotations[row].species.title,
-          };
-
-          if (prop !== 'species') {
-            const targetIdx = R.findIndex(R.propEq('dataField', prop))(
-              annotation.fields,
+          if (
+            this.continuousRange &&
+            changes.length === 1 &&
+            row === this.continuousRange[0]
+          ) {
+            R.range(this.continuousRange[0], this.continuousRange[1] + 1).map(
+              v => {
+                this.continuousRecover[v] = {
+                  ...this.continuousRecover[v],
+                  prop,
+                  newVal,
+                  isRecover: false,
+                };
+                this.changeRequest(v, prop, newVal);
+              },
             );
-
-            if (targetIdx === -1) {
-              // 不存在就新增
-              annotation.fields.push({
-                dataField: prop,
-                value: newVal,
-              });
-            } else {
-              // 存在則修改
-              annotation.fields[targetIdx].value = newVal;
-            }
+          } else {
+            this.changeRequest(row, prop, newVal);
           }
-
-          // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
-          annotation.fields = annotation.fields.filter(v => !!v.value);
-
-          this.setAnnotations({
-            annotationId: this.annotations[row].id,
-            body: annotation,
-          });
         });
       }
+    },
+    continuousRecoverRequest(row) {
+      const recover = this.continuousRecover[row];
+
+      this.changeRequest(
+        row,
+        recover.prop,
+        recover.isRecover ? recover.newVal : recover.oldVal[recover.prop],
+      );
+      this.continuousRecover[row].isRecover = !recover.isRecover;
+    },
+    changeRequest(row, prop, newVal) {
+      let annotation = {
+        fields: R.clone(this.annotations[row].fields),
+        speciesTitle:
+          prop === 'species' ? newVal : this.annotations[row].species.title,
+      };
+
+      if (prop !== 'species') {
+        const targetIdx = R.findIndex(R.propEq('dataField', prop))(
+          annotation.fields,
+        );
+
+        if (targetIdx === -1) {
+          // 不存在就新增
+          annotation.fields.push({
+            dataField: prop,
+            value: newVal,
+          });
+        } else {
+          // 存在則修改
+          annotation.fields[targetIdx].value = newVal;
+        }
+      }
+
+      // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
+      annotation.fields = annotation.fields.filter(v => !!v.value);
+
+      this.setAnnotations({
+        annotationId: this.annotations[row].id,
+        body: annotation,
+      });
     },
   },
 };
