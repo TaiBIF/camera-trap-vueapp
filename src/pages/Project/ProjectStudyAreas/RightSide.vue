@@ -39,6 +39,7 @@
         />
         <video-player
           v-else-if="currentMedia.type === 'annotation-video'"
+          class="vjs-custom-skin"
           ref="videoPlayer"
           :options="playerOptions"
           @ended="goNext"
@@ -247,5 +248,14 @@ export default {
 
 .drag-bar:hover {
   background-color: #8ac731;
+}
+</style>
+
+<style lang="scss">
+.vjs-custom-skin > .video-js .vjs-big-play-button {
+  top: 50%;
+  left: 50%;
+  margin-left: -1.5em;
+  margin-top: -1em;
 }
 </style>
