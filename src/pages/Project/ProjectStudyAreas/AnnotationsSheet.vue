@@ -379,11 +379,10 @@ export default {
       // 0: Main button pressed, usually the left button or the un-initialized state
       // 2: Secondary button pressed, usually the right button
       if (this.currentMouseButton === 0) {
-        console.log('左鍵');
+        // 左鍵才要重新計算連拍範圍，右鍵有可能是要解除連拍
         this.continuousStartRow = row2;
-      } else if (this.currentMouseButton === 2) {
-        console.log('右鍵');
       }
+
       this.changeAnnotationIdx(row, column, row2);
     },
     changeAnnotationIdx(row, column, row2) {
