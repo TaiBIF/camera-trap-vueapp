@@ -136,10 +136,8 @@ const ErrorCameraIconSelect = L.icon({
   shadowAnchor: [33, 80],
 });
 
-const defaultZoom = {
-  area: 8,
-  camera: 12,
-};
+const defaultZoom = { area: 8, camera: 12 };
+const defaultPosition = { lng: 120.982024, lat: 23.973875 };
 
 export default {
   name: 'project-map',
@@ -161,7 +159,7 @@ export default {
   data() {
     return {
       zoom: defaultZoom.area,
-      getForestBoundaryParam: { lng: 0, lat: 0 },
+      getForestBoundaryParam: defaultPosition,
       options: {
         zoomControl: true,
       },
@@ -249,8 +247,9 @@ export default {
         );
       }
       // camera level: use current cameraLocation
-      const { position } =
-        this.cameras.find(({ id }) => id === this.selectedCameraId) || {};
+      const { position } = this.cameras.find(
+        ({ id }) => id === this.selectedCameraId,
+      ) || { position: defaultPosition };
 
       return {
         lat: position.lat,

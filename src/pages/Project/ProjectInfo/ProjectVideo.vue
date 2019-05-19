@@ -69,9 +69,8 @@
                 selectedCamera ? selectedCamera.name : selectedStudyArea.value
               }}
             </h1>
-            <!-- TODO: wait for API -->
             <small class="sub-heading text-gray"
-              >最後更新時間：2018/08/16</small
+              >最後更新時間： {{ retrievalDataLastUpdate }}</small
             >
           </div>
           <div
@@ -126,6 +125,7 @@ import ProjectChart from '@/pages/Project/ProjectInfo/ProjectChart.vue';
 import ProjectMap from '@/pages/Project/ProjectInfo/ProjectMap.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'project-video',
@@ -149,6 +149,7 @@ export default {
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+    ...projects.mapGetters(['retrievalDataLastUpdate']),
     projectId: function() {
       return this.$route.params.projectId;
     },
