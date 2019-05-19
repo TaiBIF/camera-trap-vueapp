@@ -371,7 +371,6 @@ export default {
 
       this.HandsontableSetting.height = sheetHeight;
     },
-    // afterOnCellMouseDown(event, coords, td) {
     afterOnCellMouseDown(event) {
       this.currentMouseButton = event.button;
     },
