@@ -1,8 +1,9 @@
 import idx from 'idx';
 import produce from 'immer';
 
-import { getLanguage } from '@/utils/i18n';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
+  getIdentifiedSpecies,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
@@ -12,6 +13,7 @@ import {
   putProjectMember,
   putProjectSpecies,
 } from '@/service';
+import { getLanguage } from '@/utils/i18n';
 
 // 計畫資料
 
@@ -19,6 +21,7 @@ const state = {
   projects: [],
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
+  identifiedSpecies: {}, // 已辨識物種
 };
 
 const getters = {
@@ -71,6 +74,18 @@ const getters = {
     if (permission && permission.role === 'researcher') return true;
     return false;
   },
+  identifiedSpecies: state => {
+    const records = idx(state, _ => _.identifiedSpecies.records) || [];
+    records.sort(({ count: countA }, { count: countB }) => countB - countA);
+
+    return records;
+  },
+  identifiedSpeciesLastUpdate: state => {
+    const timeUpdated = idx(state, _ => _.identifiedSpecies.timeUpdated);
+
+    if (timeUpdated) return dateFormatYYYYMMDD(timeUpdated);
+    return '';
+  },
 };
 
 const mutations = {
@@ -85,6 +100,9 @@ const mutations = {
   },
   setProjectSpecies(state, data) {
     state.projectSpecies = data;
+  },
+  setIdentifiedSpecies(state, data) {
+    state.identifiedSpecies = data;
   },
 };
 
@@ -150,6 +168,10 @@ const actions = {
     );
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
+  async loadIdentifiedSpecies({ commit }, projectId) {
+    const data = await getIdentifiedSpecies(projectId);
+    commit('setIdentifiedSpecies', data || {});
   },
 };
 
