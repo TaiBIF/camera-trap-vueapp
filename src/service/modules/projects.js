@@ -100,6 +100,14 @@ const postCameraLocationAbnormality = async ({
   return res;
 };
 
+const getIdentifiedSpecies = async projectId => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/image-species-group`,
+    method: 'GET',
+  });
+  return res;
+};
+
 export {
   getProjects,
   getProjectDetail,
@@ -110,4 +118,5 @@ export {
   getProjectSpecies,
   putProjectSpecies,
   postCameraLocationAbnormality,
+  getIdentifiedSpecies,
 };
