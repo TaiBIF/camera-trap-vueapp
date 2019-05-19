@@ -7,7 +7,7 @@
       class="photo-container"
       v-if="galleryShow && currentAnnotationIdx !== -1"
     >
-      <div class="gallery-body" v-if="!hasImage">
+      <div class="gallery-body" v-if="!hasMedia">
         <div class="empty-result">
           <img
             src="/assets/common/empty-site.png"
@@ -31,10 +31,10 @@
       </div>
       <div class="gallery-body" v-else>
         <zoom-drag
-          :row="currentImage"
+          :row="currentMedia"
           :index="currentAnnotationIdx"
           :total="annotationsTotal"
-          :imageInfo="imageInfo"
+          :imageInfo="mediaInfo"
         />
         <div class="control">
           <span
@@ -53,7 +53,7 @@
             <i class="fa fa-caret-left"></i>
           </span>
           <span class="text">
-            {{ imageInfo }}
+            {{ mediaInfo }}
           </span>
           <span
             class="prev"
@@ -186,13 +186,13 @@ export default {
     currentData() {
       return this.annotations[this.currentAnnotationIdx];
     },
-    currentImage() {
+    currentMedia() {
       return this.currentData && this.currentData.file;
     },
-    hasImage() {
-      return idx(this.currentImage, _ => _.url);
+    hasMedia() {
+      return idx(this.currentMedia, _ => _.url);
     },
-    imageInfo() {
+    mediaInfo() {
       return `${this.currentData.filename} | ${dateFormatYYYYMMDDHHmmss(
         this.currentData.time,
       )}`;
