@@ -1,6 +1,6 @@
 import fetchWrap from '@/utils/fetch';
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidstudy-areas
+// GET /projects/{projectId}/study-areas http://bit.ly/2DIvx4f
 const getProjectStudyAreas = async id => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${id}/study-areas`,
@@ -9,7 +9,7 @@ const getProjectStudyAreas = async id => {
   return res;
 };
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projectsprojectidstudy-areas
+// POST /projects/{projectId}/study-areas http://bit.ly/2IVnbu7
 const postProjectStudyAreas = async (id, body) => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${id}/study-areas`,
@@ -19,7 +19,7 @@ const postProjectStudyAreas = async (id, body) => {
   return res;
 };
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidcamera-locations
+// GET /projects/{projectId}/study-areas/{studyAreaId}/camera-locations http://bit.ly/2V8eUK0
 const getProjectCameraLocations = async (projectId, StudyAreaId) => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${projectId}/study-areas/${StudyAreaId}/camera-locations`,
@@ -28,7 +28,7 @@ const getProjectCameraLocations = async (projectId, StudyAreaId) => {
   return res;
 };
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectidstudy-areasstudyareaidcamera-locations
+// POST /projects/{projectId}/study-areas/{studyAreaId}/camera-locations http://bit.ly/2UXxQGA
 const postProjectCameraLocations = async (projectId, StudyAreaId, body) => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${projectId}/study-areas/${StudyAreaId}/camera-locations`,
@@ -38,7 +38,7 @@ const postProjectCameraLocations = async (projectId, StudyAreaId, body) => {
   return res;
 };
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#put-projectsprojectidcamera-locationscameralocationid
+// PUT /projects/{projectId}/camera-locations/{cameraLocationId} http://bit.ly/2HoimaO
 const putProjectCameraLocations = async (projectId, cameraLocationId, body) => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${projectId}/camera-locations/${cameraLocationId}`,
@@ -48,7 +48,7 @@ const putProjectCameraLocations = async (projectId, cameraLocationId, body) => {
   return res;
 };
 
-// https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#delete-projectsprojectidcamera-locationscameralocationid
+// DELETE /projects/{projectId}/camera-locations/{camera-locationId} http://bit.ly/2vt6MEK
 const deleteProjectCameraLocations = async (projectId, cameraLocationId) => {
   const res = await fetchWrap({
     url: `/api/v1/projects/${projectId}/camera-locations/${cameraLocationId}`,
