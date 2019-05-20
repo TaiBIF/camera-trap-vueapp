@@ -7,7 +7,7 @@
       class="photo-container"
       v-if="galleryShow && currentAnnotationIdx !== -1"
     >
-      <div class="gallery-body" v-if="!hasImage">
+      <div class="gallery-body" v-if="!hasMedia">
         <div class="empty-result">
           <img
             src="/assets/common/empty-site.png"
@@ -31,42 +31,34 @@
       </div>
       <div class="gallery-body" v-else>
         <zoom-drag
-          :row="currentImage"
+          v-if="currentMedia.type === 'annotation-image'"
+          :row="currentMedia"
           :index="currentAnnotationIdx"
           :total="annotationsTotal"
-          :imageInfo="imageInfo"
+          :imageInfo="mediaInfo"
         />
+        <video-player
+          v-else-if="currentMedia.type === 'annotation-video'"
+          class="vjs-custom-skin"
+          ref="videoPlayer"
+          :options="playerOptions"
+          @ready="onPlayerReadied"
+          @ended="onPlayerEnded"
+        >
+        </video-player>
         <div class="control">
           <span
             class="prev"
             v-tooltip.top="'上一張'"
             :disabled="true"
-            @click="
-              $emit(
-                'currentAnnotationIdx',
-                currentAnnotationIdx > 0
-                  ? currentAnnotationIdx - 1
-                  : currentAnnotationIdx,
-              )
-            "
+            @click="goPrev"
           >
             <i class="fa fa-caret-left"></i>
           </span>
           <span class="text">
-            {{ imageInfo }}
+            {{ mediaInfo }}
           </span>
-          <span
-            class="prev"
-            v-tooltip.top="'下一張'"
-            @click="
-              $emit(
-                'currentAnnotationIdx',
-                currentAnnotationIdx < annotations.length - 1
-                  ? currentAnnotationIdx + 1
-                  : currentAnnotationIdx,
-              )
-            "
-          >
+          <span class="prev" v-tooltip.top="'下一張'" @click="goNext">
             <i class="fa fa-caret-right"></i>
           </span>
         </div>
@@ -131,16 +123,20 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { videoPlayer } from 'vue-video-player';
 import idx from 'idx';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
+
+import 'video.js/dist/video-js.css';
 
 const annotations = createNamespacedHelpers('annotations');
 
 export default {
   components: {
     ZoomDrag,
+    videoPlayer,
   },
   props: {
     galleryShow: {
@@ -160,6 +156,7 @@ export default {
     return {
       galleryWidth: 450,
       isDrag: false,
+      playbackRate: 1,
     };
   },
   mounted() {
@@ -186,16 +183,29 @@ export default {
     currentData() {
       return this.annotations[this.currentAnnotationIdx];
     },
-    currentImage() {
+    currentMedia() {
       return this.currentData && this.currentData.file;
     },
-    hasImage() {
-      return idx(this.currentImage, _ => _.url);
+    hasMedia() {
+      return idx(this.currentMedia, _ => _.url);
     },
-    imageInfo() {
+    mediaInfo() {
       return `${this.currentData.filename} | ${dateFormatYYYYMMDDHHmmss(
         this.currentData.time,
       )}`;
+    },
+    playerOptions() {
+      return {
+        width: this.galleryWidth - 20,
+        autoplay: true,
+        muted: true,
+        playbackRates: [0.7, 1.0, 1.5, 2.0],
+        sources: [
+          {
+            src: this.currentMedia.url,
+          },
+        ],
+      };
     },
   },
   methods: {
@@ -213,6 +223,29 @@ export default {
       this.isDrag = false;
       this.$emit('changeWidth');
     },
+    goPrev() {
+      this.$emit(
+        'currentAnnotationIdx',
+        this.currentAnnotationIdx > 0
+          ? this.currentAnnotationIdx - 1
+          : this.currentAnnotationIdx,
+      );
+    },
+    goNext() {
+      this.$emit(
+        'currentAnnotationIdx',
+        this.currentAnnotationIdx < this.annotations.length - 1
+          ? this.currentAnnotationIdx + 1
+          : this.currentAnnotationIdx,
+      );
+    },
+    onPlayerReadied(e) {
+      e.playbackRate(this.playbackRate);
+    },
+    onPlayerEnded(e) {
+      this.playbackRate = e.playbackRate();
+      this.goNext();
+    },
   },
 };
 </script>
@@ -224,5 +257,14 @@ export default {
 
 .drag-bar:hover {
   background-color: #8ac731;
+}
+</style>
+
+<style lang="scss">
+.vjs-custom-skin > .video-js .vjs-big-play-button {
+  top: 50%;
+  left: 50%;
+  margin-left: -1.5em;
+  margin-top: -1em;
 }
 </style>
