@@ -122,17 +122,22 @@ export default new Router({
       path: '/upload-history',
       component: () => import('@/pages/UploadHistory/index.vue'),
     },
+    // 篩選及下載
     {
       path: '/download',
       component: () => import('@/pages/Download/index.vue'),
       children: [
         {
+          path: '/',
+          redirect: 'search',
+        },
+        {
           path: 'search',
           component: () => import('@/pages/Download/Search.vue'),
         },
         {
-          path: 'result',
-          component: () => import('@/pages/Download/Result.vue'),
+          path: 'results',
+          component: () => import('@/pages/Download/Results.vue'),
         },
         {
           path: 'calculate',
