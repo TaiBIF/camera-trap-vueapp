@@ -13,10 +13,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in uploadSessions.items" :key="`trow-${row.id}`">
+        <tr v-for="row in uploadSessions.items" :key="`${row.id}`">
           <td>{{ dateFormatYYYYMMDDHHmmss(row.createTime) }}</td>
           <td>
-            <span class="icon" e v-if="row.file.type === 'annotation-image'">
+            <span class="icon" v-if="row.file.type === 'annotation-image'">
               <i class="icon-photo"></i>
             </span>
             <span class="icon" v-if="row.file.type === 'annotation-csv'">
@@ -55,7 +55,7 @@
               <span class="icon"><i class="icon-upload-fail"></i></span>
               <a
                 @click="
-                  showUploadSessionsErrorModal = true;
+                  showInfoModal = true;
                   errorType = row.errorType;
                 "
                 class="text-danger text-underline"
@@ -64,7 +64,12 @@
               >
             </div>
 
-            <div v-if="row.state == 'success'" class="float-left">
+            <div
+              v-if="
+                row.state === 'success' && row.file.type === 'annotation-csv'
+              "
+              class="float-left"
+            >
               <a
                 :href="`/project/${row.project.id}/upload`"
                 class="link text-underline mr-2"
@@ -73,7 +78,7 @@
                 補上傳影像檔
               </a>
             </div>
-            <div v-if="row.state == 'success'" class="float-left">
+            <div v-if="row.state === 'success'" class="float-right">
               <a
                 :href="
                   `/project/${row.project.id}/study-areas/${
@@ -90,26 +95,55 @@
         </tr>
       </tbody>
     </table>
-    <UploadSessionsErrorModal
-      :open="showUploadSessionsErrorModal"
-      @close="handleCloseUploadSessionsErrorModal"
-      :errorType="errorType"
-    />
+
+    <info-modal
+      v-if="!!showInfoModal"
+      :open="!!showInfoModal"
+      @close="showInfoModal = false"
+    >
+      <img
+        src="/assets/common/error-img.png"
+        width="221"
+        srcset="/assets/common/error-img@2x.png"
+      />
+      <h1 class="text-green">
+        上傳錯誤訊息
+      </h1>
+      <p class="text-gray">
+        <span v-if="errorType === 'lost-exif-time'">
+          無法從 exif 中取得時間資訊
+        </span>
+        <span v-else-if="errorType === 'inconsistent-quantity'">
+          圖片數量與 csv 的資料數量不一致
+        </span>
+        <span v-else-if="errorType === 'images-and-csv-not-match'">
+          圖片與 csv 的資料不一致
+        </span>
+        <span v-else-if="errorType === 'permission-denied'">
+          沒有權限
+        </span>
+        <span v-else-if="errorType === 'others'">
+          其他錯誤
+        </span>
+      </p></info-modal
+    >
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
-import UploadSessionsErrorModal from '@/components/Modal/UploadSessionsErrorModal';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 
 const uploadSessions = createNamespacedHelpers('uploadSessions');
 
 export default {
-  components: { UploadSessionsErrorModal },
+  components: {
+    InfoModal,
+  },
   data() {
     return {
-      showUploadSessionsErrorModal: false,
+      showInfoModal: false,
       errorType: '',
     };
   },
@@ -123,9 +157,6 @@ export default {
     ...uploadSessions.mapActions(['getUploadSessions']),
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
-    },
-    handleCloseUploadSessionsErrorModal() {
-      this.showUploadSessionsErrorModal = false;
     },
   },
 };
