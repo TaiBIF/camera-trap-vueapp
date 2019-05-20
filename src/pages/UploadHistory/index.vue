@@ -65,7 +65,9 @@
             </div>
 
             <div
-              v-if="row.state == 'success' && row.file.type == 'annotation-csv'"
+              v-if="
+                row.state === 'success' && row.file.type === 'annotation-csv'
+              "
               class="float-left"
             >
               <a
@@ -76,7 +78,7 @@
                 補上傳影像檔
               </a>
             </div>
-            <div v-if="row.state == 'success'" class="float-left">
+            <div v-if="row.state === 'success'" class="float-right">
               <a
                 :href="
                   `/project/${row.project.id}/study-areas/${
