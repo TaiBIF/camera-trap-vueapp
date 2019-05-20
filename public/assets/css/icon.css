@@ -15,7 +15,7 @@
   vertical-align: middle;
 }
 
-.btn-grayscale .icon-continous {
+.btn-grayscale .icon-continuous {
   background-image: url('../../assets/icons-sa4ae1ae68a.png');
   background-position: 0 -264px;
   background-repeat: no-repeat;
@@ -25,7 +25,7 @@
   width: 24px;
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-  .btn-grayscale .icon-continous {
+  .btn-grayscale .icon-continuous {
     background-repeat: no-repeat;
     background-image: url('../../assets/icons-2x-sb27373e813.png');
     background-size: 53px 1401px;

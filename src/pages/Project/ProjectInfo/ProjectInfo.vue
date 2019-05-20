@@ -112,7 +112,6 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
-import { isAllowManageProject } from '@/utils/roles';
 
 const projects = createNamespacedHelpers('projects');
 const account = createNamespacedHelpers('account');
@@ -125,7 +124,7 @@ export default {
     };
   },
   computed: {
-    ...projects.mapGetters(['projectDetail']),
+    ...projects.mapGetters(['projectDetail', 'isProjectManager']),
     ...account.mapGetters(['userId', 'isAdministrator']),
     projectId: function() {
       return this.$route.params.projectId;
@@ -144,15 +143,7 @@ export default {
       return areas.map(({ title }) => title).join('、');
     },
     showManageLink() {
-      if (this.isAdministrator) {
-        return true;
-      }
-      const members = this.projectDetail.members || [];
-      const projectMember = members.find(({ user }) => user.id === this.userId);
-      if (!projectMember) {
-        return false;
-      }
-      return isAllowManageProject(projectMember.role);
+      return this.isAdministrator || this.isProjectManager(this.userId);
     },
     downloadCsvLink() {
       return `${process.env.VUE_APP_API_URL}/api/v1/projects/${

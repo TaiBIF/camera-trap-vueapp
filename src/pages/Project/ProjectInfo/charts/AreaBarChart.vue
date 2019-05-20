@@ -47,6 +47,7 @@ import { createNamespacedHelpers } from 'vuex';
 import ChartLegend from '@/pages/Project/ProjectInfo/charts/ChartLegend';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'area-bar-chart',
@@ -58,9 +59,17 @@ export default {
       type: String,
       default: '',
     },
+    year: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+    ...projects.mapGetters([
+      'getReceivedRetrievalData',
+      'getIdentifyRetrievalData',
+    ]),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -79,8 +88,8 @@ export default {
           path: children && children.length > 0 ? children[0].id : id,
           result:
             this.chartType === 'receive'
-              ? [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
-              : [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2], // TODO: get from API
+              ? this.getReceivedRetrievalData({ year: this.year, id })
+              : this.getIdentifyRetrievalData({ year: this.year, id }),
         }));
       } else {
         // single area: list all cameras in this area
@@ -90,8 +99,8 @@ export default {
           path: id,
           result:
             this.chartType === 'receive'
-              ? [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
-              : [2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0], // TODO: get from API
+              ? this.getReceivedRetrievalData({ year: this.year, id })
+              : this.getIdentifyRetrievalData({ year: this.year, id }),
         }));
       }
     },

@@ -76,7 +76,10 @@ export default {
       this.tempDataFields = this.projectDataFields;
     },
     async requestField(payload) {
-      await this.postDataFields(payload);
+      await this.postDataFields({
+        ...payload,
+        project: this.projectId,
+      });
     },
     async doSubmit() {
       this.setLoading(true);

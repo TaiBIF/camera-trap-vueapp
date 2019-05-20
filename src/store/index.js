@@ -4,10 +4,11 @@ import Vuex from 'vuex';
 import account from '@/store/modules/account';
 import config from '@/store/modules/config';
 import dataFields from '@/store/modules/dataFields';
+import forest from '@/store/modules/forest';
 import notifications from '@/store/modules/notifications';
-import upload from '@/store/modules/upload';
-
 import projects from '@/store/modules/projects';
+import upload from '@/store/modules/upload';
+import uploadSessions from '@/store/modules/uploadSessions';
 
 Vue.use(Vuex);
 
@@ -20,6 +21,8 @@ export default new Vuex.Store({
     notifications,
     upload,
     dataFields,
+    forest,
+    uploadSessions,
     ...projects,
   },
   strict: debug,

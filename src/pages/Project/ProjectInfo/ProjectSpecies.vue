@@ -10,17 +10,20 @@
       </div>
       <div class="col-6">
         <h3>
-          本計畫已辨識物種 <big>{{ species.length }}</big> 種
+          本計畫已辨識物種 <big>{{ identifiedSpecies.length }}</big> 種
         </h3>
-        <small class="sub-heading text-gray" v-if="speciesGroup.modified"
-          >最後更新時間：{{ dateFormatYYYYMMDD(speciesGroup.modified) }}</small
+        <small class="sub-heading text-gray"
+          >最後更新時間：{{ identifiedSpeciesLastUpdate }}</small
         >
         <hr />
         <div class="row">
           <div class="col-5">
             <div
               class="speices-item"
-              v-for="(specie, id) in species.slice(0, DEFAULT_DISPLAY_CATEGORY)"
+              v-for="(specie, id) in identifiedSpecies.slice(
+                0,
+                DEFAULT_DISPLAY_CATEGORY,
+              )"
               :key="`speices-item-${id}`"
             >
               <span
@@ -28,11 +31,14 @@
                 :style="{ backgroundColor: chartColors[id] }"
               ></span>
               <span class="text"
-                >{{ specie.name }} {{ getPercentage(specie.y) }}</span
+                >{{ specie.species }} {{ getPercentage(specie.count) }}</span
               >
             </div>
           </div>
-          <div v-if="species.length > DEFAULT_DISPLAY_CATEGORY" class="col-7">
+          <div
+            v-if="identifiedSpecies.length > DEFAULT_DISPLAY_CATEGORY"
+            class="col-7"
+          >
             <div class="speices-item">
               <span
                 class="circle"
@@ -44,14 +50,14 @@
                 其他
                 <div
                   class="text-gray"
-                  v-for="(specie, id) in species.slice(
+                  v-for="(specie, id) in identifiedSpecies.slice(
                     DEFAULT_DISPLAY_CATEGORY,
-                    species.length,
+                    identifiedSpecies.length,
                   )"
                   :key="`speices-item-${id}`"
                 >
                   <div class="sub-item">
-                    {{ specie.name }} {{ getPercentage(specie.y) }}
+                    {{ specie.species }} {{ getPercentage(specie.count) }}
                   </div>
                 </div>
               </span>
@@ -64,8 +70,10 @@
 </template>
 
 <script>
-import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import { createNamespacedHelpers } from 'vuex';
 import VueHighcharts from 'vue2-highcharts';
+
+const projects = createNamespacedHelpers('projects');
 
 const chartColors = [
   '#5DB897',
@@ -126,63 +134,51 @@ export default {
         },
         series: null,
       },
-      // TODO: get from store
-      speciesGroup: {
-        modified: '2019-01-01T00:00:00.000Z',
-      },
-      // TODO: get from store
-      species: [],
     };
   },
   computed: {
+    ...projects.mapGetters([
+      'identifiedSpecies',
+      'identifiedSpeciesLastUpdate',
+    ]),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     totalSpeciesPhotos: function() {
-      return this.species.reduce((sum, { y }) => sum + y, 0);
+      return this.identifiedSpecies.reduce((sum, { count }) => sum + count, 0);
     },
   },
   mounted() {
-    // TODO: load data through API
-    setTimeout(() => {
-      this.species = [
-        { name: 'Specie A', y: 65 },
-        { name: 'Specie B', y: 35 },
-        { name: 'Specie C', y: 15 },
-        { name: 'Specie D', y: 5 },
-        { name: 'Specie E', y: 2 },
-        { name: 'Specie F', y: 2 },
-        { name: 'Specie G1', y: 1 },
-        { name: 'Specie G2', y: 1 },
-        { name: 'Specie G3', y: 1 },
-        { name: 'Specie G4', y: 1 },
-      ];
-    }, 500);
+    this.loadIdentifiedSpecies(this.projectId);
   },
   watch: {
-    species: 'loadPieChart',
+    identifiedSpecies: 'loadPieChart',
   },
   methods: {
-    dateFormatYYYYMMDD(dateString) {
-      return dateFormatYYYYMMDD(dateString);
-    },
     getPercentage(num) {
       return `${(100 * (num / this.totalSpeciesPhotos)).toFixed(1)} %`;
     },
-    loadPieChart(species) {
-      if (!species.length) {
+    ...projects.mapActions(['loadIdentifiedSpecies']),
+    loadPieChart(identifiedSpecies) {
+      if (!identifiedSpecies.length) {
         return;
       }
 
       const chartData = [];
-      this.species.forEach((specie, i) => {
+      this.identifiedSpecies.forEach((specie, i) => {
         if (i < this.DEFAULT_DISPLAY_CATEGORY) {
-          chartData.push(specie);
+          chartData.push({
+            name: specie.species,
+            y: specie.count,
+          });
         } else {
           if (!chartData[this.DEFAULT_DISPLAY_CATEGORY]) {
             chartData[this.DEFAULT_DISPLAY_CATEGORY] = {
               name: '其他',
-              y: specie.y,
+              y: specie.count,
             };
           } else {
-            chartData[this.DEFAULT_DISPLAY_CATEGORY].y += specie.y;
+            chartData[this.DEFAULT_DISPLAY_CATEGORY].count += specie.count;
           }
         }
       });

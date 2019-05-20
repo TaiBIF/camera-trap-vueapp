@@ -27,7 +27,7 @@
         <div class="message is-alert" v-if="overTotalLimited">
           <div class="alert-box float-left">!</div>
           <div class="text">
-            全部上傳的檔案已超過上限 5GB，建議您可以分次上傳
+            全部上傳的檔案已超過上限 2GB，建議您可以分次上傳
           </div>
         </div>
 
