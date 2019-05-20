@@ -64,7 +64,10 @@
               >
             </div>
 
-            <div v-if="row.state == 'success'" class="float-left">
+            <div
+              v-if="row.state == 'success' && row.file.type == 'annotation-csv'"
+              class="float-left"
+            >
               <a
                 :href="`/project/${row.project.id}/upload`"
                 class="link text-underline mr-2"
