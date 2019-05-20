@@ -1,6 +1,6 @@
 <template>
-  <div class="maintain page-sheet p-0">
-    <div class="search-container" v-bind:class="{ loading: isLoading }">
+  <div class="maintain page-sheet p-0" :class="{ loading: isLoading }">
+    <div class="search-container">
       <!-- Edit mode -->
       <div v-if="isEdit" class="edit-container">
         <div class="row">
@@ -106,6 +106,7 @@
                     :format="'YYYY-MM-DD'"
                     :first-day-of-week="1"
                     v-model="query.startDate"
+                    placeholder="請選擇日期"
                   ></date-picker>
                   <div class="input-group-append">
                     <i class="icon icon-calendar"></i>
@@ -123,6 +124,7 @@
                     :format="'YYYY-MM-DD'"
                     :first-day-of-week="1"
                     v-model="query.endDate"
+                    placeholder="請選擇日期"
                   ></date-picker>
                   <div class="input-group-append">
                     <i class="icon icon-calendar"></i>
@@ -161,6 +163,7 @@
     <!-- 下方編輯頁面 -->
     <div class="sheet-container">
       <AnnotationsSheet
+        ref="sheet"
         :isEdit="isEdit"
         :galleryShow="galleryShow"
         :historyShow="historyShow"
@@ -175,6 +178,7 @@
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
+        @changeWidth="$refs.sheet.setSheetHeight()"
       />
     </div>
 
@@ -248,8 +252,8 @@ export default {
       isLoading: false,
       isEdit: false,
       CameraModalOpen: false,
-      galleryShow: false,
-      historyShow: false,
+      galleryShow: true,
+      historyShow: true,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: Object.assign({}, defaultQuery),
     };
@@ -398,6 +402,7 @@ export default {
     },
     async doSearch() {
       if (this.query.cameraLocations.length === 0) {
+        this.resetAnnotations();
         return;
       }
       const { query } = this;

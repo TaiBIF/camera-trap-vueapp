@@ -21,6 +21,12 @@ const getters = {
         title: idx(species, _ => _.title[getLanguage()]) || '',
       },
     })),
+  /*
+   * https://github.com/TaiBIF/camera-trap-api/wiki/role-permission
+   * https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-me
+   * administrator (系統管理員)
+   * general-account (一般使用者, 權限依計畫內 role 設定)
+   */
   isAdministrator: state =>
     idx(state, _ => _.profile.permission) === 'administrator',
   species: state =>

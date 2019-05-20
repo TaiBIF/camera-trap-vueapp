@@ -1,17 +1,23 @@
+import Vue from 'vue';
 import idx from 'idx';
 import produce from 'immer';
 
-import { getLanguage } from '@/utils/i18n';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
+  getIdentifiedSpecies,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
+  getRetrievalDataByCameraLocation,
+  getRetrievalDataByProject,
+  getRetrievalDataByStudyArea,
   postProject,
   postProjectMember,
   putProject,
   putProjectMember,
   putProjectSpecies,
 } from '@/service';
+import { getLanguage } from '@/utils/i18n';
 
 // 計畫資料
 
@@ -19,6 +25,11 @@ const state = {
   projects: [],
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
+  identifiedSpecies: {}, // 已辨識物種
+  retrievalData: {
+    lastUpdate: '',
+    loadingStatus: 'init', // init -> loading -> loaded
+  }, // 計畫資料辨識紀錄
 };
 
 const getters = {
@@ -50,6 +61,76 @@ const getters = {
           description: v.description[getLanguage()],
         }))
       : [],
+  /*
+   * https://github.com/TaiBIF/camera-trap-api/wiki/role-permission
+   * https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#payload-6
+   * manager (計畫管理員)
+   * researcher (計畫研究員)
+   * executor (計畫執行者)
+   */
+  isProjectManager: state => userId => {
+    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+    const permission = projectMembers.find(({ user }) => user.id === userId);
+
+    if (permission && permission.role === 'manager') return true;
+    return false;
+  },
+  isProjectResearcher: state => userId => {
+    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+    const permission = projectMembers.find(({ user }) => user.id === userId);
+
+    if (permission && permission.role === 'researcher') return true;
+    return false;
+  },
+  identifiedSpecies: state => {
+    const records = idx(state, _ => _.identifiedSpecies.records) || [];
+    records.sort(({ count: countA }, { count: countB }) => countB - countA);
+
+    return records;
+  },
+  identifiedSpeciesLastUpdate: state => {
+    const timeUpdated = idx(state, _ => _.identifiedSpecies.timeUpdated);
+
+    if (timeUpdated) return dateFormatYYYYMMDD(timeUpdated);
+    return '';
+  },
+  // TODO: prevent show loading screen if data already exist
+  retrievalLoadingStatus: state =>
+    idx(state, _ => _.retrievalData.loadingStatus),
+  retrievalDataLastUpdate: state => {
+    const lastUpdateTimeString = idx(state, _ => _.retrievalData.lastUpdate);
+    if (lastUpdateTimeString) return dateFormatYYYYMMDD(lastUpdateTimeString);
+    return '';
+  },
+  getReceivedRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      if (!item) return 0; // 無資料
+
+      const { dataCount, fileCount } = item || {};
+      if (dataCount === fileCount) return 1; // 當月資料完整
+      return 2; // 當月資料不完整
+      // TODO: status 3 相機撤除尚未導入
+    }),
+  getIdentifyRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      if (!item) return 0; // 無資料
+
+      const { dataCount, speciesCount } = item || {};
+      if (dataCount === speciesCount) return 1; // 當月資料已辨識
+      return 2; // 當月資料未完整
+    }),
+  getCameraRetrievalData: state => ({ year, id }) =>
+    (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
+      const { dataCount, fileCount, failures, lastData } = item || {};
+
+      return {
+        dataCount: dataCount || 0,
+        failures,
+        isDataComplete: dataCount === fileCount,
+        isCameraRemove: false, // TODO: 相機撤除尚未導入
+        lastUpdate: dateFormatYYYYMMDD(lastData),
+      };
+    }),
 };
 
 const mutations = {
@@ -64,6 +145,30 @@ const mutations = {
   },
   setProjectSpecies(state, data) {
     state.projectSpecies = data;
+  },
+  setIdentifiedSpecies(state, data) {
+    state.identifiedSpecies = data;
+  },
+  setRetrievalStatus(state, status) {
+    Vue.set(state.retrievalData, 'loadingStatus', status);
+  },
+  setRetrievalLastUpdate(state, timeUpdated) {
+    Vue.set(state.retrievalData, 'lastUpdate', timeUpdated);
+  },
+  setRetrievalData(state, { year, items }) {
+    const selectedYearData = items.reduce(
+      (res, { cameraLocation, studyArea, data }) => {
+        const id = cameraLocation || studyArea;
+
+        return {
+          ...res,
+          [id]: data,
+        };
+      },
+      state.retrievalData[year] || {},
+    );
+
+    Vue.set(state.retrievalData, year, selectedYearData);
   },
 };
 
@@ -129,6 +234,37 @@ const actions = {
     );
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
+  },
+  async loadIdentifiedSpecies({ commit }, projectId) {
+    const data = await getIdentifiedSpecies(projectId);
+    commit('setIdentifiedSpecies', data || {});
+  },
+  async loadRetrievalData(
+    { commit },
+    { year, projectId, studyAreaId, cameraLocationId },
+  ) {
+    commit('setRetrievalStatus', 'loading');
+    commit('setRetrievalLastUpdate', '');
+    let res = {};
+    if (cameraLocationId) {
+      res = await getRetrievalDataByCameraLocation({
+        year,
+        projectId,
+        cameraLocationId,
+      });
+    } else if (studyAreaId) {
+      res = await getRetrievalDataByStudyArea({
+        year,
+        projectId,
+        studyAreaId,
+      });
+    } else {
+      res = await getRetrievalDataByProject({ year, projectId });
+    }
+    const { items, timeUpdated } = res || {};
+    commit('setRetrievalStatus', 'loaded');
+    commit('setRetrievalLastUpdate', timeUpdated);
+    commit('setRetrievalData', { year, items });
   },
 };
 

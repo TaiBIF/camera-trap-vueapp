@@ -121,6 +121,11 @@
         </table>
       </div>
     </div>
+    <div
+      class="drag-bar"
+      @mousedown="dragStart"
+      v-tooltip.right="'拖曳拉大影像檢視範圍'"
+    ></div>
   </div>
 </template>
 
@@ -154,11 +159,22 @@ export default {
   data() {
     return {
       galleryWidth: 450,
+      isDrag: false,
     };
+  },
+  mounted() {
+    // 拖拉側欄照片區塊大小
+    document.body.addEventListener('mousemove', e => {
+      this.dragMove(e);
+    });
+
+    document.body.addEventListener('mouseup', e => {
+      if (e.which === 1) this.dragEnd(e);
+    });
   },
   watch: {
     currentAnnotationIdx: function() {
-      this.getRevision(this.currentData.id);
+      this.currentData && this.getRevision(this.currentData.id);
     },
   },
   computed: {
@@ -171,7 +187,7 @@ export default {
       return this.annotations[this.currentAnnotationIdx];
     },
     currentImage() {
-      return this.currentData.file;
+      return this.currentData && this.currentData.file;
     },
     hasImage() {
       return idx(this.currentImage, _ => _.url);
@@ -184,6 +200,29 @@ export default {
   },
   methods: {
     ...annotations.mapActions(['getRevision', 'rollbackRevision']),
+    dragStart() {
+      this.isDrag = true;
+    },
+    dragMove(e) {
+      if (this.isDrag) {
+        this.galleryWidth = window.innerWidth - e.pageX;
+        this.$emit('changeWidth');
+      }
+    },
+    dragEnd() {
+      this.isDrag = false;
+      this.$emit('changeWidth');
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+  background-color: #f3f2f2;
+}
+
+.drag-bar:hover {
+  background-color: #8ac731;
+}
+</style>
