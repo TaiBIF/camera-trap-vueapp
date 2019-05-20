@@ -196,7 +196,7 @@ export default {
     },
     playerOptions() {
       return {
-        height: 328,
+        width: this.galleryWidth - 20,
         autoplay: true,
         muted: true,
         playbackRates: [0.7, 1.0, 1.5, 2.0],
