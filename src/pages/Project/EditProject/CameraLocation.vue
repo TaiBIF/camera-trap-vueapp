@@ -303,6 +303,9 @@ export default {
           })),
         });
         this.errorMessage = '';
+        this.$router.push({
+          path: `/project/${this.projectId}/edit/member`,
+        });
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }

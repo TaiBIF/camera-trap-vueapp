@@ -53,7 +53,9 @@ export default {
     async submitProject() {
       this.setLoading(true);
       await this.putProject({ id: this.projectId, body: this.temp });
+      // TODO: API error handle
       this.setLoading(false);
+      this.$router.push({ path: `/project/${this.projectId}/edit/setting` });
     },
   },
 };

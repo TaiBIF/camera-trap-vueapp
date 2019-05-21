@@ -84,7 +84,7 @@
         @click.stop.prevent="doSubmit()"
         class="btn btn-orange"
       >
-        儲存
+        儲存設定
       </button>
     </div>
 
@@ -191,6 +191,9 @@ export default {
           members: this.members,
         });
         this.errorMessage = '';
+        this.$router.push({
+          path: `/project/${this.projectId}/edit/license`,
+        });
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }

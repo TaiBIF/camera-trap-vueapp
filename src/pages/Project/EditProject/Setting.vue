@@ -96,7 +96,11 @@ export default {
           dataFields: this.tempDataFields,
         },
       });
+      // TODO: API error handle
       this.setLoading(false);
+      this.$router.push({
+        path: `/project/${this.projectId}/edit/camera-location`,
+      });
     },
   },
 };
