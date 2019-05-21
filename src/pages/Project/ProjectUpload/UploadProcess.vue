@@ -62,23 +62,20 @@
                       取消
                     </a>
 
-                    <!-- <a
-                      v-if="file.state === -1"
-                      class="link text-danger text-underline"
-                      >錯誤：{{ file.errorMessage }}</a
-                    >
                     <a
-                      v-if="file.state === 1 || file.state === 2"
-                      :href="
-                        `/index.html#/project/${$route.params.projectId}/site/${
-                          fileList[f_id].site
-                        }/${fileList[f_id].subsite}?camera=${
-                          fileList[f_id].fullCameraLocationMd5
-                        }&upload_session_id=${uploadSessions[f_id]}`
+                      v-if="file.uploadStatus === uploadStatus.uploadError"
+                      @click="
+                        showInfoModal = true;
+                        uploadErrorType = 'data-error';
                       "
+                      class="link text-danger text-underline"
+                      >檢視錯誤</a
+                    >
+                    <!--<a
+                      v-if="file.uploadStatus === uploadStatus.success"
                       class="link text-green text-underline"
                       >查看</a
-                    > -->
+                    >-->
                   </div>
                   <div
                     v-if="file.uploadStatus === uploadStatus.waiting"
@@ -111,6 +108,59 @@
         </div>
       </div>
     </div>
+
+    <info-modal
+      v-if="!!showInfoModal"
+      :open="!!showInfoModal"
+      @close="showInfoModal = false"
+    >
+      <div v-if="uploadErrorType === 'file-error'">
+        <div class="image">
+          <img
+            src="/assets/upinfo/file-error.png"
+            width="221"
+            srcset="/assets/upinfo/file-error@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          上傳檔案內容與計畫設定不符
+        </h1>
+        <p class="text-gray">
+          請確認資料檔案時間範圍、樣區、相機位置等資訊，是否符合計畫設定。
+        </p>
+      </div>
+      <div v-else-if="uploadErrorType === 'column-error'">
+        <div class="image">
+          <img
+            src="/assets/upinfo/column-error.png"
+            width="221"
+            srcset="/assets/upinfo/column-error@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          資料欄位不合系統規定
+        </h1>
+        <p class="text-gray">
+          請檢查資料欄位之名稱、格式及順序，是否符合欄位規範。詳細欄位規範請參考<a>欄位規範說明</a>。
+        </p>
+      </div>
+      <div v-else-if="uploadErrorType === 'data-error'">
+        <div class="image">
+          <img
+            src="/assets/upinfo/data-error.png"
+            width="221"
+            srcset="/assets/upinfo/data-error@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          資料檔案與影像檔不對應
+        </h1>
+        <p class="text-gray">
+          請檢查壓縮檔中的資料檔案與影像檔案是否為對應之檔案。詳細檔案規範請參考
+          <a>上傳格式說明</a>。
+        </p>
+      </div>
+    </info-modal>
   </div>
 </template>
 
@@ -119,11 +169,28 @@ import { createNamespacedHelpers } from 'vuex';
 import filesize from 'filesize';
 
 import { uploadAnnotation } from '@/service';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 import uploadStatus from '@/constant/uploadStatus.js';
-
 const studyAreas = createNamespacedHelpers('studyAreas');
 
+/* TODO(moogoo) 需確認錯誤訊息 (API 回傳跟前端顯示文字的對應)
+
+  - Line: 69 要改uploadErrorType
+  - need uploadSession 的 id ?
+
+  ref: API (upload-session-error-type.js)
+
+  lostExifTime: 'lost-exif-time', // 無法從 exif 中取得時間資訊
+  inconsistentQuantity: 'inconsistent-quantity', // 圖片數量與 csv 的資料數量不一致
+  imagesAndCsvNotMatch: 'images-and-csv-not-match', // 圖片與 csv 的資料不一致
+  permissionDenied: 'permission-denied', // 沒有權限
+  others: 'others', // 其他錯誤
+
+*/
 export default {
+  components: {
+    InfoModal,
+  },
   props: {
     fileList: {
       type: Array,
@@ -134,6 +201,8 @@ export default {
     return {
       uploadStatus,
       currentFetchController: undefined,
+      showInfoModal: false,
+      uploadErrorType: '',
     };
   },
   mounted() {

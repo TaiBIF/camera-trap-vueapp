@@ -4,7 +4,11 @@
       <div class="modal-content">
         <div class="modal-body">
           <slot />
-          <a @click="$emit('close')" class="btn btn-default">我知道了</a>
+          <div class="action">
+            <a @click="$emit('close')" class="btn btn-orange btn-block"
+              >我知道了</a
+            >
+          </div>
         </div>
       </div>
     </div>
