@@ -178,6 +178,62 @@ export default {
       currentPage: 1, //目前在第幾頁
       pageSize: 50, //一頁顯示的筆數
       currentMouseButton: -1,
+      contextMenu: [
+        {
+          name:
+            '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
+          hidden: (vueInstance =>
+            function() {
+              return isHiddenContinuousMenu(
+                this.getSelected(),
+                vueInstance.continuousRecover,
+                true, // true 表示已經解除過了，這時候就不能再次解除連結
+              );
+            })(this),
+          callback: (key, selection) => {
+            selection.length === 1 &&
+              this.continuousRecoverRequest(selection[0].end.row);
+          },
+        },
+        {
+          name:
+            '<span class="icon"><i class="icon-link"></i></span><span class="text">重新建立連拍連結</span>',
+          hidden: (vueInstance =>
+            function() {
+              return isHiddenContinuousMenu(
+                this.getSelected(),
+                vueInstance.continuousRecover,
+                false, // false 表示還沒解除，這時候就不能重建連拍
+              );
+            })(this),
+          callback: (key, selection) => {
+            selection.length === 1 &&
+              this.continuousRecoverRequest(selection[0].end.row);
+          },
+        },
+        '---------',
+        'cut',
+        'copy',
+        {
+          name: '貼上 請使用鍵盤 ctrl+v 或 cmd+v',
+          disabled: true,
+        },
+        '---------',
+        {
+          name: '復原',
+          disabled: true,
+        },
+        {
+          name: '重做',
+          disabled: true,
+        },
+        '---------',
+        {
+          name: '複製一列並貼上',
+          disabled: true,
+        },
+        'remove_row',
+      ],
       HandsontableSetting: {
         height: 500,
         outsideClickDeselects: false,
@@ -193,62 +249,7 @@ export default {
         afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
         afterRemoveRow: this.removeAnnotationRow,
-        contextMenu: [
-          {
-            name:
-              '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
-            hidden: (vueInstance =>
-              function() {
-                return isHiddenContinuousMenu(
-                  this.getSelected(),
-                  vueInstance.continuousRecover,
-                  true, // true 表示已經解除過了，這時候就不能再次解除連結
-                );
-              })(this),
-            callback: (key, selection) => {
-              selection.length === 1 &&
-                this.continuousRecoverRequest(selection[0].end.row);
-            },
-          },
-          {
-            name:
-              '<span class="icon"><i class="icon-link"></i></span><span class="text">重新建立連拍連結</span>',
-            hidden: (vueInstance =>
-              function() {
-                return isHiddenContinuousMenu(
-                  this.getSelected(),
-                  vueInstance.continuousRecover,
-                  false, // false 表示還沒解除，這時候就不能重建連拍
-                );
-              })(this),
-            callback: (key, selection) => {
-              selection.length === 1 &&
-                this.continuousRecoverRequest(selection[0].end.row);
-            },
-          },
-          '---------',
-          'cut',
-          'copy',
-          {
-            name: '貼上 請使用鍵盤 ctrl+v 或 cmd+v',
-            disabled: true,
-          },
-          '---------',
-          {
-            name: '復原',
-            disabled: true,
-          },
-          {
-            name: '重做',
-            disabled: true,
-          },
-          '---------',
-          {
-            name: '複製一列並貼上',
-            disabled: true,
-          },
-          'remove_row',
-        ],
+        contextMenu: undefined,
       },
     };
   },
@@ -283,6 +284,9 @@ export default {
         this.isEnableContinuous = false;
         this.continuousStartRow = undefined;
       }
+
+      this.HandsontableSetting.contextMenu =
+        val === true ? this.contextMenu : undefined;
     },
     currentPage: function() {
       this.$emit('changePage', {
