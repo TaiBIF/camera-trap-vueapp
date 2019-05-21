@@ -3,6 +3,7 @@ import idx from 'idx';
 
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import {
+  deleteAnnotations,
   getAnnotations,
   getRevision,
   rollbackRevision,
@@ -53,6 +54,12 @@ const mutations = {
     const idx = state.annotations.findIndex(v => v.id === annotation.id);
     Vue.set(state.annotations, idx, annotation);
   },
+  deleteAnnotations(state, annotationIds) {
+    state.annotations = state.annotations.filter(
+      ({ id }) => !annotationIds.includes(id),
+    );
+    state.annotationsTotal -= 1;
+  },
   setRevision(state, payload) {
     state.revision = payload;
   },
@@ -75,6 +82,10 @@ const actions = {
       value: v.value,
     }));
     commit('updateAnnotations', data);
+  },
+  async deleteAnnotations({ commit }, ids) {
+    await Promise.all(ids.map(id => deleteAnnotations(id)));
+    commit('deleteAnnotations', ids);
   },
   async getRevision({ commit }, annotationId) {
     const data = await getRevision(annotationId);
