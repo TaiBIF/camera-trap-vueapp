@@ -192,6 +192,7 @@ export default {
         afterOnCellMouseDown: this.afterOnCellMouseDown,
         afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
+        afterRemoveRow: this.removeAnnotationRow,
         contextMenu: [
           {
             name:
@@ -246,10 +247,7 @@ export default {
             name: '複製一列並貼上',
             disabled: true,
           },
-          {
-            name: '刪除列',
-            disabled: true,
-          },
+          'remove_row',
         ],
       },
     };
@@ -658,6 +656,9 @@ export default {
         annotationId: this.annotations[row].id,
         body: annotation,
       });
+    },
+    removeAnnotationRow(index, amount, physicalRows, source) {
+      console.log({ index, amount, physicalRows, source });
     },
   },
 };
