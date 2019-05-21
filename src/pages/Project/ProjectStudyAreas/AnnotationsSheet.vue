@@ -193,8 +193,6 @@ export default {
         afterSelectionEnd: this.afterSelectionEnd,
         afterChange: this.changeAnnotation,
         contextMenu: [
-          'copy',
-          '---------',
           {
             name:
               '<span class="icon"><i class="icon-unlink"></i></span><span class="text">解除連拍連結</span>',
@@ -226,6 +224,31 @@ export default {
               selection.length === 1 &&
                 this.continuousRecoverRequest(selection[0].end.row);
             },
+          },
+          '---------',
+          'cut',
+          'copy',
+          {
+            name: '貼上 請使用鍵盤 ctrl+v 或 cmd+v',
+            disabled: true,
+          },
+          '---------',
+          {
+            name: '復原',
+            disabled: true,
+          },
+          {
+            name: '重做',
+            disabled: true,
+          },
+          '---------',
+          {
+            name: '複製一列並貼上',
+            disabled: true,
+          },
+          {
+            name: '刪除列',
+            disabled: true,
           },
         ],
       },
