@@ -155,11 +155,23 @@ export default {
         if (file.uploadStatus !== uploadStatus.cancel) {
           this.setFileType(index, uploadStatus.uploading);
           try {
+            const fileExtension = file.name.split('.').pop();
+            let annotationType = '';
+            if (/csv/i.test(fileExtension)) {
+              annotationType = 'annotation-csv';
+            } else if (/zip/i.test(fileExtension)) {
+              annotationType = 'annotation-zip';
+            } else if (/jpg|png/i.test(fileExtension)) {
+              annotationType = 'annotation-image';
+            } else if (/avi|mp4|mov|m4v/i.test(fileExtension)) {
+              annotationType = 'annotation-video';
+            }
             this.currentFetchController = new AbortController();
             await uploadAnnotation(
               file.cameraLocationId,
               file,
               this.currentFetchController.signal,
+              annotationType,
             );
             this.setFileType(index, uploadStatus.success);
           } catch (error) {
