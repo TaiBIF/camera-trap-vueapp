@@ -78,7 +78,7 @@
       </div>
     </div>
     <div class="action">
-      <div @click="$router.back()" class="btn btn-default">取消</div>
+      <div @click="handleClickCancel" class="btn btn-default">取消</div>
       <button
         type="submit"
         @click.stop.prevent="doSubmit()"
@@ -161,6 +161,9 @@ export default {
           role: memberRole.find(m => m.key === v.role),
           editable: v.role !== 'manager',
         }));
+    },
+    handleClickCancel() {
+      this.$router.push({ path: `/project/${this.projectId}` });
     },
     async postMember() {
       try {
