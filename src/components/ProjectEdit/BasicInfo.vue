@@ -263,17 +263,7 @@
           </div>
         </div>
       </div>
-
-      <div class="action">
-        <div @click="handleClickCancel" class="btn btn-default">取消</div>
-        <button
-          type="submit"
-          @click.stop.prevent="doDone()"
-          class="btn btn-orange"
-        >
-          {{ doneBtnText }}
-        </button>
-      </div>
+      <ActionBtns @cancel="handleClickCancel" @submit="doDone" :error="error" />
     </form>
   </div>
 </template>
@@ -284,6 +274,7 @@ import moment from 'moment';
 import vSelect from 'vue-select';
 
 import { uploadCoverImage } from '@/service';
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 
 export default {
   data() {
@@ -294,13 +285,17 @@ export default {
   components: {
     vSelect,
     DatePicker,
+    ActionBtns,
   },
   props: {
-    doneBtnText: String,
     project: Object,
     areas: {
       type: Array,
       default: () => [],
+    },
+    error: {
+      type: Object,
+      default: undefined,
     },
   },
   computed: {

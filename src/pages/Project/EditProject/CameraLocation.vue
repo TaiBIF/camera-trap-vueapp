@@ -1,8 +1,5 @@
 <template>
   <div>
-    <p v-if="errorMessage" :style="{ color: 'red' }">
-      錯誤訊息: {{ errorMessage }}
-    </p>
     <div class="panel">
       <div class="panel-heading">
         <h4>相機位置管理</h4>
@@ -68,17 +65,7 @@
         </div>
       </div>
     </div>
-
-    <div class="action">
-      <div @click="handleClickCancel" class="btn btn-default">取消</div>
-      <button
-        type="submit"
-        @click.stop.prevent="doSubmit()"
-        class="btn btn-orange"
-      >
-        儲存設定
-      </button>
-    </div>
+    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
   </div>
 </template>
 
@@ -89,6 +76,7 @@ import moment from 'moment';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { getProjectCameraLocationsByName } from '@/service';
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -97,10 +85,11 @@ export default {
   components: {
     StudyAreaSidebar,
     HotTable,
+    ActionBtns,
   },
   data: function() {
     return {
-      errorMessage: undefined,
+      error: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
       newCameraLocation: {},
@@ -278,9 +267,9 @@ export default {
           id: this.projectId,
           area: { title, parent },
         });
-        this.errorMessage = '';
+        this.error = undefined;
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
       this.setLoading(false);
     },
@@ -302,12 +291,12 @@ export default {
               : undefined),
           })),
         });
-        this.errorMessage = '';
+        this.error = undefined;
         this.$router.push({
           path: `/project/${this.projectId}/edit/member`,
         });
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
     },
   },

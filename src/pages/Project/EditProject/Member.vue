@@ -41,9 +41,6 @@
               </div>
             </div>
           </form>
-          <p v-if="errorMessage" :style="{ color: 'red' }">
-            錯誤訊息: {{ errorMessage }}
-          </p>
         </div>
         <table class="table mt-2">
           <thead>
@@ -77,16 +74,7 @@
         </table>
       </div>
     </div>
-    <div class="action">
-      <div @click="handleClickCancel" class="btn btn-default">取消</div>
-      <button
-        type="submit"
-        @click.stop.prevent="doSubmit()"
-        class="btn btn-orange"
-      >
-        儲存設定
-      </button>
-    </div>
+    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
 
     <double-check-modal
       v-if="!!removeMemberTarget"
@@ -113,6 +101,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import vSelect from 'vue-select';
 
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
 import memberRole from '@/constant/memberRole.js';
 
@@ -122,7 +111,7 @@ export default {
   data: function() {
     return {
       memberRole,
-      errorMessage: undefined,
+      error: undefined,
       members: [],
       newMember: {
         user: '',
@@ -171,13 +160,13 @@ export default {
           id: this.projectId,
           body: this.newMember,
         });
-        this.errorMessage = '';
+        this.error = undefined;
         this.newMember = {
           user: '',
           role: null,
         };
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
     },
     async deleteMember(userId) {
@@ -190,12 +179,12 @@ export default {
           projectId: this.projectId,
           members: this.members,
         });
-        this.errorMessage = '';
+        this.error = undefined;
         this.$router.push({
           path: `/project/${this.projectId}/edit/license`,
         });
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
     },
   },

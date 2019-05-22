@@ -2,8 +2,8 @@
   <div>
     <CcInfo
       :project="temp"
-      doneBtnText="儲存設定"
       :areas="projectAreas"
+      :error="error"
       @change="change"
       @done="submitProject"
     />
@@ -22,6 +22,7 @@ export default {
   data: function() {
     return {
       temp: {},
+      error: undefined,
     };
   },
   props: {
@@ -52,10 +53,16 @@ export default {
     },
     async submitProject() {
       this.setLoading(true);
-      await this.putProject({ id: this.projectId, body: this.temp });
-      // TODO: API error handle
+      this.error = undefined;
+      await this.putProject({ id: 'this.projectId', body: this.temp }).catch(
+        e => {
+          this.error = e;
+        },
+      );
       this.setLoading(false);
-      this.$router.push({ path: `/project/${this.projectId}` });
+      if (!this.error) {
+        this.$router.push({ path: `/project/${this.projectId}` });
+      }
     },
   },
 };
