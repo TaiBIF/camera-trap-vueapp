@@ -155,15 +155,16 @@ export default {
         if (file.uploadStatus !== uploadStatus.cancel) {
           this.setFileType(index, uploadStatus.uploading);
           try {
-            const fileExtension = file.name.split('.').pop();
             let annotationType = '';
-            if (/csv/i.test(fileExtension)) {
+            if (file.type === 'text/csv') {
               annotationType = 'annotation-csv';
-            } else if (/zip/i.test(fileExtension)) {
+            } else if (file.type === 'application/zip') {
               annotationType = 'annotation-zip';
-            } else if (/jpg|png/i.test(fileExtension)) {
+            } else if ('image/jpeg,image/png'.includes(file.type)) {
               annotationType = 'annotation-image';
-            } else if (/avi|mp4|mov|m4v/i.test(fileExtension)) {
+            } else if (
+              'video/quicktime,video/mp4,video/mpeg'.includes(file.type)
+            ) {
               annotationType = 'annotation-video';
             }
             this.currentFetchController = new AbortController();
