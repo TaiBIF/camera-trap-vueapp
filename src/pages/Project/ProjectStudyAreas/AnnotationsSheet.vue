@@ -230,7 +230,17 @@ export default {
         '---------',
         {
           name: '複製一列並貼上',
-          disabled: true,
+          disabled: function() {
+            const selected = this.getSelected();
+
+            // 選擇多格 or 同時選擇多個範圍(例如拖拉範圍選擇)
+            // 這兩種情況表示選取不只一格
+            return selected.length !== 1 || selected[0][0] !== selected[0][2];
+          },
+          callback: (key, selection) => {
+            const row = selection[0].start.row;
+            this.cloneAnnotations(row);
+          },
         },
         {
           name: '刪除列',
@@ -396,7 +406,11 @@ export default {
     },
   },
   methods: {
-    ...annotations.mapActions(['setAnnotations', 'deleteAnnotations']),
+    ...annotations.mapActions([
+      'setAnnotations',
+      'deleteAnnotations',
+      'cloneAnnotations',
+    ]),
     setSheetHeight() {
       const sheetHeight =
         window.innerHeight -

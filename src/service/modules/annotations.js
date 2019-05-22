@@ -26,6 +26,15 @@ const deleteAnnotations = async annotationId => {
   return res;
 };
 
+const createAnnotations = async body => {
+  const res = await fetchWrap({
+    url: `/api/v1/annotations`,
+    method: 'POST',
+    body,
+  });
+  return res;
+};
+
 const getRevision = async annotationId => {
   const res = await fetchWrap({
     url: `/api/v1/annotations/${annotationId}/revisions`,
@@ -46,6 +55,7 @@ export {
   getAnnotations,
   setAnnotations,
   deleteAnnotations,
+  createAnnotations,
   getRevision,
   rollbackRevision,
 };

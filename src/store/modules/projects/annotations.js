@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import idx from 'idx';
 
-import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import {
+  createAnnotations,
   deleteAnnotations,
   getAnnotations,
   getRevision,
   rollbackRevision,
   setAnnotations,
 } from '@/service';
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import { getLanguage } from '@/utils/i18n';
 
 // 計畫標注資訊，全放在 project 會過大
@@ -86,6 +87,19 @@ const actions = {
   async deleteAnnotations({ commit }, ids) {
     await Promise.all(ids.map(id => deleteAnnotations(id)));
     commit('deleteAnnotations', ids);
+  },
+  async cloneAnnotations({ state, getters, dispatch }, annotationIdx) {
+    const annotation = getters.annotations[annotationIdx];
+    const payload = {
+      cameraLocation: annotation.cameraLocation,
+      filename: annotation.filename,
+      file: annotation.file.id,
+      time: annotation.time,
+      speciesTitle: annotation.species.title,
+      fields: annotation.fields.filter(v => !!v.value),
+    };
+    await createAnnotations(payload);
+    dispatch('getAnnotations', state.query);
   },
   async getRevision({ commit }, annotationId) {
     const data = await getRevision(annotationId);
