@@ -31,7 +31,7 @@ orbs:
         executor: aws/default
         steps:
           - restore_cache:
-              key: dist#{{ .Revision }}
+              key: dist-{{ .Branch }}-{{ .Revision }}
           - aws/install
           - aws/configure
           - run:
@@ -85,7 +85,7 @@ orbs:
               name: Create debug info
               command: node scripts/debug > dist/debug.json
           - save_cache:
-              key: dist#{{ .Revision }}
+              key: dist-{{ .Branch }}-{{ .Revision }}
               paths:
                 - dist
 
