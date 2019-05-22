@@ -78,7 +78,7 @@ orbs:
                 SCRIPT=build:staging
                 if [ $CIRCLE_BRANCH = prod ]
                 then
-                    SCRIPT=build:production
+                    SCRIPT=build
                 fi
                 npm run $SCRIPT
           - run:
