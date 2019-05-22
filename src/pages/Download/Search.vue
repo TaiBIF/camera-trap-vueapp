@@ -81,6 +81,18 @@
                 </a>
               </div>
             </div>
+            <div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label class="required">物種：</label>
+                  <v-select
+                    v-model="calcFormOptions.species"
+                    :options="speciesOptions"
+                    multiple
+                  ></v-select>
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -111,8 +123,34 @@ export default {
         childArea: '',
         cameraLocations: '',
         camera: '',
+        species: {
+          type: Array,
+          default: () => [],
+        },
       },
       cameraOptions: [],
+      calcForm: {
+        type: { label: '有效照片與目擊事件', value: 'basic-calculation' },
+        project: {
+          value: '',
+          label: '',
+        },
+        site: '',
+        subSite: 'NULL',
+        species: '',
+        fromDate: '',
+        fromTime: {
+          HH: '00',
+          mm: '00',
+        },
+        toDate: '',
+        toTime: {
+          HH: '00',
+          mm: '00',
+        },
+        effectiveTimeInterval: 30,
+        camera: [],
+      },
     };
   },
   mounted() {
@@ -179,6 +217,15 @@ export default {
   computed: {
     ...projects.mapState(['projects']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+
+    calcFormOptions() {
+      const { project } = this.calcForm;
+      const { speciesList } = project;
+
+      return {
+        species: speciesList,
+      };
+    },
     projectId: function() {
       return this.form.projectId;
     },
@@ -211,6 +258,38 @@ export default {
     },
     childAreaOptions() {
       return this.form.parentArea ? this.form.parentArea.children : [];
+    },
+    projectCameraOptions: function() {
+      /*
+      All camera locations of projects.
+      The first item of the result if for form.data[0]. The second item of the result if for form.data[1].
+      @returns {Array<{Array<{label: 'string', value: 'string'}>}>}
+      */
+      return this.form.data.map(data => {
+        return this.getProjectCameraOptions(
+          data.project && data.project.value,
+          data.site && data.site.value,
+          data.subSite && data.subSite.value,
+        );
+      });
+    },
+    projectSpecOptions: function() {
+      /*
+      All species of all projects.
+      @returns {Array<{label: 'string', value: 'string'}>}
+      */
+      const species = new Set();
+      this.Projects.forEach(project => {
+        (project.speciesList || []).forEach(spec => {
+          species.add(spec);
+        });
+      });
+      return Array.from(species).map(spec => {
+        return {
+          label: spec,
+          value: spec,
+        };
+      });
     },
     isFormRequiredMissing() {
       if (!this.form.parentArea || !this.form.camera) {
@@ -252,6 +331,36 @@ export default {
           studyAreaId: this.selectedStudyAreaId,
         });
       }
+    },
+    getProjectCameraOptions(projectId, site, subSite) {
+      /*
+      Get camera locations of the project.
+      @param projectId {string}
+      @param site {string}
+      @param subSite {string}
+      @returns {Array<{label: 'string', value: 'string'}}>}
+       */
+      for (let index = 0; index < this.Projects.length; index += 1) {
+        const project = this.Projects[index];
+        if (project._id === projectId) {
+          const locations = new Set();
+          project.cameraLocations.forEach(cameraLocation => {
+            if (
+              cameraLocation.site === site &&
+              cameraLocation.subSite === subSite
+            ) {
+              locations.add(cameraLocation.cameraLocation);
+            }
+          });
+          return Array.from(locations).map(location => {
+            return {
+              label: location,
+              value: location,
+            };
+          });
+        }
+      }
+      return [];
     },
     submit() {
       const { camera } = this.form;
