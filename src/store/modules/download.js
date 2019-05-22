@@ -12,7 +12,7 @@ const getters = {
 };
 
 const mutations = {
-  setsearchResults(state, payload) {
+  setSearchResults(state, payload) {
     state.searchResults = payload;
   },
 };
@@ -20,7 +20,7 @@ const mutations = {
 const actions = {
   async getSearchResults({ commit }) {
     const data = await getSearchResults();
-    commit('set', data);
+    commit('setSearchResults', data);
   },
 };
 
