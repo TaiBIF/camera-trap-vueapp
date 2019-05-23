@@ -97,6 +97,7 @@
                 </a>
               </div>
             </div>
+
             <div class="row">
               <div class="col-12">
                 <div class="form-group">
@@ -106,6 +107,58 @@
                     v-model="form.selectedSpecies"
                     multiple
                   />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group">
+                  <label>資料起始時間：</label>
+                  <div class="input-group-inline">
+                    <div class="input-group">
+                      <date-picker
+                        v-model="form.startDate"
+                        :placeholder="'2001-01-01'"
+                        :format="'YYYY-MM-DD'"
+                        :first-day-of-week="1"
+                      />
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2">
+                      <vue-timepicker
+                        v-model="form.startTime"
+                        format=""
+                      ></vue-timepicker>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="align-self-center">到</span>
+              <div class="col-4">
+                <div class="form-group">
+                  <label>資料結束時間：</label>
+                  <div class="input-group-inline">
+                    <div class="input-group">
+                      <date-picker
+                        v-model="form.endDate"
+                        :placeholder="'2018-12-31'"
+                        :format="'YYYY-MM-DD'"
+                        :first-day-of-week="1"
+                      />
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2">
+                      <vue-timepicker
+                        v-model="form.endTime"
+                        format=""
+                      ></vue-timepicker>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -125,7 +178,9 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import datePicker from 'vue2-datepicker';
 import vSelect from 'vue-select';
+import vueTimepicker from 'vue2-timepicker';
 
 const account = createNamespacedHelpers('account');
 const projects = createNamespacedHelpers('projects');
@@ -133,7 +188,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
   name: 'Search',
-  components: { vSelect },
+  components: { vSelect, vueTimepicker, datePicker },
   data() {
     return {
       isLoading: true,
@@ -157,6 +212,10 @@ export default {
             cameraLocations: [], // All camera locations of the selected study area.
           },
         ],
+        startDate: '',
+        startTime: { HH: '00', mm: '00' },
+        endDate: '',
+        endTime: { HH: '23', mm: '59' },
       },
     };
   },
