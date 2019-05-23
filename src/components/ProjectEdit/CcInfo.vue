@@ -183,7 +183,7 @@
       </div>
 
       <div class="action">
-        <div @click="$router.back()" class="btn btn-default">取消</div>
+        <div @click="handleClickCancel" class="btn btn-default">取消</div>
         <button
           type="submit"
           @click.stop.prevent="doDone()"
@@ -210,6 +210,9 @@ export default {
     DatePicker,
   },
   computed: {
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     isOverPublicLimit: function() {
       return (
         moment(this.project.startTime).add(5, 'years') <
@@ -226,6 +229,9 @@ export default {
     },
     changeProps(key, value) {
       this.$emit('change', Object.assign({}, this.project, { [key]: value }));
+    },
+    handleClickCancel() {
+      this.$router.push({ path: `/project/${this.projectId}` });
     },
     doDone() {
       if (!this.isOverPublicLimit && this.project.publishTime) {

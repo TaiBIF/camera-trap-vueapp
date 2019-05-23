@@ -14,7 +14,9 @@
       @change="dailyTestTime = $event"
     />
     <div class="action">
-      <div @click="$router.back()" class="btn btn-default">返回</div>
+      <div @click="handleClickCancel" class="btn btn-default">
+        取消
+      </div>
       <button
         type="submit"
         @click.stop.prevent="doSubmit()"
@@ -75,6 +77,9 @@ export default {
       this.dailyTestTime = idx(this.projectDetail, _ => _.dailyTestTime);
       this.tempDataFields = this.projectDataFields;
     },
+    handleClickCancel() {
+      this.$router.push({ path: `/project/${this.projectId}` });
+    },
     async requestField(payload) {
       await this.postDataFields({
         ...payload,
@@ -91,7 +96,11 @@ export default {
           dataFields: this.tempDataFields,
         },
       });
+      // TODO: API error handle
       this.setLoading(false);
+      this.$router.push({
+        path: `/project/${this.projectId}/edit/camera-location`,
+      });
     },
   },
 };

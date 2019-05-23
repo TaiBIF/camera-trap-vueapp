@@ -265,7 +265,7 @@
       </div>
 
       <div class="action">
-        <div @click="$router.back()" class="btn btn-default">取消</div>
+        <div @click="handleClickCancel" class="btn btn-default">取消</div>
         <button
           type="submit"
           @click.stop.prevent="doDone()"
@@ -304,6 +304,9 @@ export default {
     },
   },
   computed: {
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     isUploadTypeError() {
       if (!this.previewImg) {
         return false;
@@ -327,6 +330,9 @@ export default {
     },
   },
   methods: {
+    handleClickCancel() {
+      this.$router.push({ path: `/project/${this.projectId}` });
+    },
     async uploadCover(e) {
       if (e.target.files && e.target.files[0]) {
         let reader = new FileReader();

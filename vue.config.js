@@ -1,3 +1,4 @@
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const MarkdownIt = require('markdown-it');
 const md = new MarkdownIt();
 
@@ -22,6 +23,20 @@ module.exports = {
         },
       ],
     },
+    plugins: (() => {
+      const result = [];
+      if (['production', 'staging'].indexOf(process.env.VUE_APP_MODE) >= 0) {
+        result.push(
+          new CompressionWebpackPlugin({
+            filename: '[path]',
+            algorithm: 'gzip',
+            test: /\.js$/,
+            threshold: 0,
+          }),
+        );
+      }
+      return result;
+    })(),
   },
   devServer: {
     proxy: 'http://localhost:8888',
