@@ -97,6 +97,18 @@
                 </a>
               </div>
             </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <label>物種：</label>
+                  <v-select
+                    :options="speciesOptions"
+                    v-model="form.selectedSpecies"
+                    multiple
+                  />
+                </div>
+              </div>
+            </div>
 
             <div class="col-12 text-right action">
               <button type="reset" class="btn btn-green-border">
@@ -115,6 +127,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import vSelect from 'vue-select';
 
+const account = createNamespacedHelpers('account');
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
 
@@ -126,6 +139,7 @@ export default {
       isLoading: true,
       currentTab: 'search', // "search" | "calculate"
       form: {
+        selectedSpecies: [],
         items: [
           {
             selected: {
@@ -147,6 +161,7 @@ export default {
     };
   },
   computed: {
+    ...account.mapGetters(['species']),
     ...projects.mapState(['projects']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
 
@@ -155,15 +170,23 @@ export default {
       All projects.
       @returns {Array<{label: 'string', value: 'string'}>}
       */
-      return this.projects.map(project => {
-        return {
-          label: project.title,
-          value: project.id,
-        };
-      });
+      return this.projects.map(project => ({
+        label: project.title,
+        value: project.id,
+      }));
+    },
+    speciesOptions() {
+      /*
+      @returns {Array<{label: 'string', value: 'string'}>}
+      */
+      return this.species.map(x => ({
+        label: x.title,
+        value: x.id,
+      }));
     },
   },
   methods: {
+    ...account.mapActions(['loadSpecies']),
     ...projects.mapActions(['getAllProjects']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
@@ -261,7 +284,10 @@ export default {
     submitSearchForm() {},
   },
   async mounted() {
-    await this.getAllProjects({ size: 100, sort: 'title' });
+    await Promise.all([
+      this.getAllProjects({ size: 100, sort: 'title' }),
+      this.loadSpecies(),
+    ]);
     this.isLoading = false;
   },
 };
