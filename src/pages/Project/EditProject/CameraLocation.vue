@@ -99,6 +99,12 @@ export default {
     StudyAreaSidebar,
     HotTable,
   },
+  mounted() {
+    window.addEventListener('resize', this.updateSheetSize);
+  },
+  beforeDestroy() {
+    window.addEventListener('resize', this.updateSheetSize);
+  },
   data: function() {
     return {
       errorMessage: undefined,
@@ -108,11 +114,17 @@ export default {
       editCameraLocation: {},
       HandsontableSetting: {
         stretchH: 'all',
-        width: 650,
+        width: () => {
+          return (
+            document.querySelector('.panel').offsetWidth -
+            document.querySelector('.sidebar').offsetWidth
+          );
+        },
         height: () => {
-          return this.cameraLocations.length > 8
-            ? 405
-            : (this.cameraLocations.length + 1) * 45;
+          return Math.min(
+            this.cameraLocations.length * 42 + 43,
+            document.querySelector('.sidebar').offsetHeight - 100,
+          );
         },
         rowHeaders: true,
         colHeaders: [
@@ -258,7 +270,7 @@ export default {
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
           : undefined),
       }));
-      this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
+      this.updateSheetSize();
     },
   },
   computed: {
@@ -318,6 +330,10 @@ export default {
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }
+    },
+    updateSheetSize() {
+      this.$refs.sheet &&
+        this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
     },
   },
 };
