@@ -163,6 +163,66 @@
               </div>
             </div>
 
+            <div class="row">
+              <div class="col-12">
+                <hr />
+                <a class="link" @click="isAdvanceSearch = !isAdvanceSearch">
+                  <span class="text mr-2">進階篩選</span>
+                  <span class="icon">
+                    <i
+                      :class="
+                        isAdvanceSearch
+                          ? 'icon-chevron-up'
+                          : 'icon-chevron-down'
+                      "
+                    ></i>
+                  </span>
+                </a>
+              </div>
+            </div>
+            <div id="adv-block" v-if="isAdvanceSearch">
+              <div class="row">
+                <div
+                  v-for="(dataField, index) in dataFields"
+                  :key="dataField.id"
+                  :class="{
+                    'col-2': dataField.widgetType === 'select',
+                    'col-4': dataField.widgetType === 'text',
+                    'd-none': dataField.widgetType === 'time',
+                  }"
+                >
+                  <div
+                    v-if="dataField.widgetType === 'select'"
+                    class="form-group"
+                  >
+                    <label>{{ dataField.title }}：</label>
+                    <v-select
+                      v-model="form.fieldValues[index]"
+                      :options="convertDataFieldOptions(dataField.options)"
+                      :placeholder="`請選擇${dataField.title}`"
+                    />
+                  </div>
+                  <div
+                    v-if="dataField.widgetType === 'text'"
+                    class="form-group"
+                  >
+                    <label>
+                      <span class="text">{{ dataField.title }}：</span>
+                      <span class="icon">
+                        <i class="icon-info mt-1"></i>
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="form.fieldValues[index]"
+                      :placeholder="`請選擇${dataField.title}`"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="col-12 text-right action">
               <button type="reset" class="btn btn-green-border">
                 清空選項
@@ -178,11 +238,13 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { getLanguage } from '@/utils/i18n';
 import datePicker from 'vue2-datepicker';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
 
 const account = createNamespacedHelpers('account');
+const dataFields = createNamespacedHelpers('dataFields');
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
 
@@ -193,6 +255,7 @@ export default {
     return {
       isLoading: true,
       currentTab: 'search', // "search" | "calculate"
+      isAdvanceSearch: false,
       form: {
         selectedSpecies: [],
         items: [
@@ -216,11 +279,13 @@ export default {
         startTime: { HH: '00', mm: '00' },
         endDate: '',
         endTime: { HH: '23', mm: '59' },
+        fieldValues: [],
       },
     };
   },
   computed: {
     ...account.mapGetters(['species']),
+    ...dataFields.mapGetters(['dataFields']),
     ...projects.mapState(['projects']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
 
@@ -246,12 +311,22 @@ export default {
   },
   methods: {
     ...account.mapActions(['loadSpecies']),
+    ...dataFields.mapActions(['getAllDataFields']),
     ...projects.mapActions(['getAllProjects']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getAllProjectCameraLocations',
     ]),
 
+    convertDataFieldOptions(options) {
+      /*
+      @param options {Array<{id: "string", zh-TW: "label">}
+      */
+      return options.map(x => ({
+        label: x[getLanguage()],
+        value: x.id,
+      }));
+    },
     generateHandlerForProjectSelectorChange(index) {
       return () => {
         this.form.items[index].selected.studyArea = null;
@@ -352,6 +427,7 @@ export default {
   async mounted() {
     await Promise.all([
       this.getAllProjects({ size: 100, sort: 'title' }),
+      this.getAllDataFields({ filter: 'custom' }),
       this.loadSpecies(),
     ]);
     this.isLoading = false;
