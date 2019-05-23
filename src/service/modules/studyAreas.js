@@ -1,4 +1,5 @@
 import fetchWrap from '@/utils/fetch';
+import queryString from 'query-string';
 
 // GET /projects/{projectId}/study-areas http://bit.ly/2DIvx4f
 const getProjectStudyAreas = async id => {
@@ -26,6 +27,42 @@ const getProjectCameraLocations = async (projectId, StudyAreaId) => {
     method: 'GET',
   });
   return res;
+};
+
+const getAllProjectCameraLocations = async (
+  projectId,
+  studyAreaId,
+  query,
+  items = [],
+) => {
+  /*
+  Fetch all camera locations.
+  @param projectId {String}
+  @param studyAreaId {String}
+  @param query {Object}
+    index {Number} Please pass 0 or not for the first call.
+    size {Number}
+    sort {String}
+  @param items {Array<CameraLocation>} For recursive
+  @returns {Promise<Object>}
+   */
+  const result = await fetchWrap({
+    method: 'GET',
+    url: `/api/v1/projects/${projectId}/study-areas/${studyAreaId}/camera-locations?${queryString.stringify(
+      query,
+    )}`,
+  });
+  result.items.forEach(x => items.push(x));
+  const hasNext = (result.index + 1) * result.size < result.total;
+  if (hasNext) {
+    await getAllProjectCameraLocations(
+      projectId,
+      studyAreaId,
+      { ...query, index: result.index + 1 },
+      items,
+    );
+  }
+  return { ...result, items };
 };
 
 // POST /projects/{projectId}/study-areas/{studyAreaId}/camera-locations http://bit.ly/2UXxQGA
@@ -88,6 +125,7 @@ const unlockProjectCameraLocations = async (projectId, cameraLocationId) => {
 
 export {
   getProjectStudyAreas,
+  getAllProjectCameraLocations,
   postProjectStudyAreas,
   getProjectCameraLocations,
   postProjectCameraLocations,

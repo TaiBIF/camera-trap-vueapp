@@ -249,7 +249,7 @@ export default {
     ...projects.mapActions(['getAllProjects']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
-      'getProjectCameraLocations',
+      'getAllProjectCameraLocations',
     ]),
 
     generateHandlerForProjectSelectorChange(index) {
@@ -297,7 +297,7 @@ export default {
           label: x.title,
           value: x.id,
         }));
-        await this.getProjectCameraLocations({
+        await this.getAllProjectCameraLocations({
           projectId: form.selected.project.value,
           studyAreaId: form.selected.studyArea.value,
         });
@@ -307,7 +307,11 @@ export default {
           value: x.id,
         }));
       } else if (changed === 'subStudyArea') {
-        await this.getProjectCameraLocations({
+        if (!form.selected.subStudyArea) {
+          return;
+        }
+
+        await this.getAllProjectCameraLocations({
           projectId: form.selected.project.value,
           studyAreaId: form.selected.subStudyArea
             ? form.selected.subStudyArea.value
@@ -321,6 +325,9 @@ export default {
       }
     },
     addFormItem() {
+      /*
+      The user click the new data source button.
+       */
       this.form.items.push({
         selected: {
           project: null,

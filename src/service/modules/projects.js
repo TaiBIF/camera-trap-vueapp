@@ -17,7 +17,7 @@ const getAllProjects = async (query, items = []) => {
     index {Number} Please pass 0 or not for the first call.
     size {Number}
     sort {String}
-  @param items {Array<Project>}
+  @param items {Array<Project>} For recursive
   @returns {Promise<Object>}
    */
   const result = await fetchWrap({
