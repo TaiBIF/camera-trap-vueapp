@@ -55,10 +55,11 @@
             <div class="sheet-container">
               <hot-table
                 id="sheet"
+                ref="sheet"
                 licenseKey="non-commercial-and-evaluation"
                 language="zh-TW"
                 :settings="HandsontableSetting"
-              ></hot-table>
+              />
               <a class="text-green btn btn-link" @click="addNewCameraLoation">
                 <span class="icon"><i class="icon-add-green"></i></span>
                 <span class="text">新增相機位置</span>
@@ -106,6 +107,13 @@ export default {
       newCameraLocation: {},
       editCameraLocation: {},
       HandsontableSetting: {
+        stretchH: 'all',
+        width: 650,
+        height: () => {
+          return this.cameraLocations.length > 8
+            ? 405
+            : (this.cameraLocations.length + 1) * 45;
+        },
         rowHeaders: true,
         colHeaders: [
           // 'URL',
@@ -250,6 +258,7 @@ export default {
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
           : undefined),
       }));
+      this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
     },
   },
   computed: {
