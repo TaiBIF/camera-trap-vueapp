@@ -43,8 +43,15 @@
               <div class="row">
                 <div class="col-12 text-right">
                   <div class="form-group-inline">
-                    <label for="">座標大地基準：</label>
-                    WGS84
+                    <label id="geodetic-label">座標大地基準：</label>
+                    <v-select
+                      id="geodetic-select"
+                      v-model="geodeticDatum"
+                      :options="geodeticDatumEnum"
+                      :clearable="false"
+                      placeholder="請選擇座標系"
+                    ></v-select>
+
                     <span class="icon-note">
                       <i class="icon-info"></i>
                     </span>
@@ -76,6 +83,7 @@
         type="submit"
         @click.stop.prevent="doSubmit()"
         class="btn btn-orange"
+        :disabled="!canSubmit"
       >
         儲存設定
       </button>
@@ -87,17 +95,20 @@
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
+import vSelect from 'vue-select';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { getProjectCameraLocationsByName } from '@/service';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const geodeticDatumEnum = ['WGS84', 'TWD97'];
 
 export default {
   components: {
     StudyAreaSidebar,
     HotTable,
+    vSelect,
   },
   mounted() {
     window.addEventListener('resize', this.updateSheetSize);
@@ -107,9 +118,11 @@ export default {
   },
   data: function() {
     return {
+      geodeticDatumEnum,
       errorMessage: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
+      geodeticDatum: undefined,
       HandsontableSetting: {
         stretchH: 'all',
         width: () => {
@@ -247,6 +260,7 @@ export default {
       this.updateSheetSize();
     },
     currentStudyAreaId: function(val) {
+      this.geodeticDatum = undefined;
       this.currentCameraLocationId = '';
       this.getProjectCameraLocations({
         projectId: this.projectId,
@@ -261,6 +275,17 @@ export default {
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
           : undefined),
       }));
+
+      // 設定座標係預設值
+      const allGeodetic = this.HandsontableSetting.data.map(
+        v => v.geodeticDatum,
+      );
+      allGeodetic.length > 0 &&
+        this.geodeticDatumEnum.forEach(geo => {
+          if (allGeodetic.every(v => v === geo)) {
+            this.geodeticDatum = geo;
+          }
+        });
     },
   },
   computed: {
@@ -268,6 +293,9 @@ export default {
     ...studyAreas.mapState(['cameraLocations']),
     projectId: function() {
       return this.$route.params.projectId;
+    },
+    canSubmit() {
+      return this.geodeticDatumEnum.includes(this.geodeticDatum);
     },
   },
   methods: {
@@ -311,6 +339,7 @@ export default {
             ...(v.settingTime
               ? { settingTime: moment(v.settingTime).toISOString() }
               : undefined),
+            geodeticDatum: this.geodeticDatum,
           })),
         });
         this.errorMessage = '';
@@ -336,5 +365,13 @@ export default {
     border-right: 1px red solid;
     padding-right: 1rem;
   }
+}
+
+#geodetic-label {
+  align-self: center !important;
+}
+
+#geodetic-select {
+  width: 150px;
 }
 </style>
