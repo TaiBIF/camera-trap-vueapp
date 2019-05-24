@@ -54,7 +54,7 @@ export default {
     async submitProject() {
       this.setLoading(true);
       this.error = undefined;
-      await this.putProject({ id: 'this.projectId', body: this.temp }).catch(
+      await this.putProject({ id: this.projectId, body: this.temp }).catch(
         e => {
           this.error = e;
         },
