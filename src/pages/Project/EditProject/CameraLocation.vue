@@ -65,7 +65,12 @@
         </div>
       </div>
     </div>
-    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
+    <ActionBtns
+      @cancel="handleClickCancel"
+      @submit="doSubmit"
+      :error="error"
+      :disabledSubmit="!currentStudyAreaId"
+    />
   </div>
 </template>
 
