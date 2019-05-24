@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-bind:class="{ loading: isLoading }">
+  <div class="maintain page-sheet p-0" :class="{ loading: isLoading }">
     <div class="search-container">
       <div class="col-12 pt-2">
         <router-link to="/download/search">
@@ -78,6 +78,27 @@
         </div>
       </div>
     </div>
+
+    <div class="sheet-container">
+      <AnnotationsSheet
+        ref="sheet"
+        :isEdit="isEdit"
+        :galleryShow="galleryShow"
+        :historyShow="historyShow"
+        :currentAnnotationIdx="currentAnnotationIdx"
+        @changePage="setPagination"
+        @galleryShow="galleryShow = $event"
+        @historyShow="historyShow = $event"
+        @currentAnnotationIdx="currentAnnotationIdx = $event"
+      />
+      <right-side
+        :galleryShow="galleryShow"
+        :historyShow="historyShow"
+        :currentAnnotationIdx="currentAnnotationIdx"
+        @currentAnnotationIdx="currentAnnotationIdx = $event"
+        @changeWidth="$refs.sheet.setSheetHeight()"
+      />
+    </div>
   </div>
 </template>
 
@@ -86,21 +107,37 @@ import { createNamespacedHelpers } from 'vuex';
 import { generateUrl } from '@/utils/fetch';
 import { getCameraLocation } from '@/service';
 import { getLanguage } from '@/utils/i18n';
+import AnnotationsSheet from '@/pages/Project/ProjectStudyAreas/AnnotationsSheet';
+import RightSide from '@/pages/Project/ProjectStudyAreas/RightSide.vue';
 import moment from 'moment';
 import queryString from 'query-string';
 
 const account = createNamespacedHelpers('account');
+const annotations = createNamespacedHelpers('annotations');
 const dataFields = createNamespacedHelpers('dataFields');
+const projects = createNamespacedHelpers('projects');
+const studyAreas = createNamespacedHelpers('studyAreas');
 
 export default {
+  components: {
+    AnnotationsSheet,
+    RightSide,
+  },
   data() {
     return {
       isLoading: true,
       projects: [], // Camera locations grouped by the project.
+
+      isEdit: false,
+      galleryShow: true,
+      historyShow: true,
+      currentAnnotationIdx: -1,
+      query: Object.assign({}, this.$route.query),
     };
   },
   computed: {
     ...account.mapGetters(['species']),
+    ...annotations.mapGetters(['annotations']),
     ...dataFields.mapGetters(['dataFields']),
 
     startTime() {
@@ -169,6 +206,36 @@ export default {
   methods: {
     ...account.mapActions(['loadSpecies']),
     ...dataFields.mapActions(['getAllDataFields']),
+    ...annotations.mapActions(['getAnnotations']),
+    ...annotations.mapMutations(['resetAnnotations']),
+    ...studyAreas.mapMutations(['setCameraLocations', 'setStudyAreas']),
+    ...projects.mapMutations(['setProjectDetail']),
+
+    // AnnotationsSheet
+    setPagination(val) {
+      this.query.index = val.currentPage - 1;
+      this.query.size = val.pageSize;
+      this.doSearch();
+    },
+    async doSearch() {
+      if (this.query.cameraLocations.length === 0) {
+        this.resetAnnotations();
+        return;
+      }
+      const { query } = this;
+
+      this.isLoading = true;
+      this.currentAnnotationIdx = -1;
+
+      await this.getAnnotations({
+        cameraLocations: query.cameraLocations,
+        startTime: query.startTime,
+        endTime: query.endTime,
+        index: query.index,
+        size: query.size,
+      });
+      this.isLoading = false;
+    },
   },
   async mounted() {
     let cameraLocationIds;
@@ -185,10 +252,21 @@ export default {
       const [cameraLocations] = await Promise.all([
         Promise.all(tasks),
         this.loadSpecies(),
-        this.getAllDataFields({ filter: 'custom' }),
+        this.getAllDataFields(),
       ]);
+      this.setProjectDetail({
+        dataFields: this.dataFields.map(x => ({
+          ...x,
+          title: { 'zh-TW': x.title },
+        })),
+      });
+      this.setCameraLocations(cameraLocations);
+      const studyAreas = [];
       cameraLocations.forEach(cameraLocation => {
-        let project = this.projects.find(x => x.id === cameraLocation.project.id);
+        // Group by the project.
+        let project = this.projects.find(
+          x => x.id === cameraLocation.project.id,
+        );
         if (project) {
           project.cameraLocations.push(cameraLocation);
         } else {
@@ -196,7 +274,37 @@ export default {
           project.cameraLocations = [cameraLocation];
           this.projects.push(project);
         }
+
+        // Set study areas.
+        if (cameraLocation.studyArea.parent) {
+          let parent = studyAreas.find(
+            x => x.id === cameraLocation.studyArea.parent.id,
+          );
+          if (parent) {
+            if (
+              !parent.children.find(x => x.id === cameraLocation.studyArea.id)
+            ) {
+              parent.children.push(cameraLocation.studyArea);
+            }
+          } else {
+            parent = cameraLocation.studyArea.parent;
+            parent.children = [cameraLocation.studyArea];
+            studyAreas.push(parent);
+          }
+        } else {
+          let parent = studyAreas.find(
+            x => x.id === cameraLocation.studyArea.id,
+          );
+          if (!parent) {
+            parent = cameraLocation.studyArea;
+            parent.children = [];
+            studyAreas.push(parent);
+          }
+        }
       });
+      this.setStudyAreas(studyAreas);
+
+      await this.getAnnotations(this.$route.query);
       this.isLoading = false;
     } catch (error) {
       this.isLoading = false;
@@ -205,3 +313,14 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.maintain {
+  width: 100%;
+}
+.empty-result {
+  text-align: center;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+</style>

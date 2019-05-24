@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1 class="text-green">資料篩選與下載</h1>
-    <div class="tab" v-bind:class="{ loading: isLoading }">
+    <div class="tab" :class="{ loading: isLoading }">
       <ul class="nav-tab">
         <li class="tab-item" :class="{ active: currentTab === 'search' }">
           <a role="button" @click="currentTab = 'search'">資料篩選</a>
