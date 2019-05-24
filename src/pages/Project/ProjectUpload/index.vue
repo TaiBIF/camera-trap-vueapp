@@ -14,7 +14,7 @@
       </ul>
 
       <div class="text-right" v-show="fileList.length === 0">
-        <a @click="modalOpen('trialModalOpen')" class="link text-green">
+        <a @click="trialModalOpen = true" class="link text-green">
           檢閱詳細上傳說明
         </a>
       </div>

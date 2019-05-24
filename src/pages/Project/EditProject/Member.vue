@@ -78,13 +78,13 @@
       </div>
     </div>
     <div class="action">
-      <div @click="$router.back()" class="btn btn-default">取消</div>
+      <div @click="handleClickCancel" class="btn btn-default">取消</div>
       <button
         type="submit"
         @click.stop.prevent="doSubmit()"
         class="btn btn-orange"
       >
-        儲存
+        儲存設定
       </button>
     </div>
 
@@ -162,6 +162,9 @@ export default {
           editable: v.role !== 'manager',
         }));
     },
+    handleClickCancel() {
+      this.$router.push({ path: `/project/${this.projectId}` });
+    },
     async postMember() {
       try {
         await this.postProjectMember({
@@ -188,6 +191,9 @@ export default {
           members: this.members,
         });
         this.errorMessage = '';
+        this.$router.push({
+          path: `/project/${this.projectId}/edit/license`,
+        });
       } catch (e) {
         this.errorMessage = JSON.stringify(e);
       }
