@@ -110,8 +110,6 @@ export default {
       errorMessage: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
-      newCameraLocation: {},
-      editCameraLocation: {},
       HandsontableSetting: {
         stretchH: 'all',
         width: () => {
@@ -254,13 +252,6 @@ export default {
         projectId: this.projectId,
         studyAreaId: val,
       });
-    },
-    currentCameraLocationId: function(val) {
-      const obj = this.cameraLocations.find(v => v.id === val);
-      Object.assign(this.editCameraLocation, obj);
-      this.editCameraLocation.settingTime = moment(
-        this.editCameraLocation.settingTime,
-      ).format('YYYY-MM-DD');
     },
     cameraLocations: function(val) {
       this.HandsontableSetting.data = val.map(v => ({
