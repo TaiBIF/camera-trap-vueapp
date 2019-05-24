@@ -461,12 +461,17 @@ export default {
     },
   },
   async mounted() {
-    await Promise.all([
-      this.getAllProjects({ size: 100, sort: 'title' }),
-      this.getAllDataFields({ filter: 'custom' }),
-      this.loadSpecies(),
-    ]);
-    this.isLoading = false;
+    try {
+      await Promise.all([
+        this.getAllProjects({ size: 100, sort: 'title' }),
+        this.getAllDataFields({ filter: 'custom' }),
+        this.loadSpecies(),
+      ]);
+      this.isLoading = false;
+    } catch (error) {
+      this.isLoading = false;
+      throw error;
+    }
   },
 };
 </script>
