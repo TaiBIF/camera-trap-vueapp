@@ -115,14 +115,11 @@ export default {
       HandsontableSetting: {
         stretchH: 'all',
         width: () => {
-          return (
-            document.querySelector('.panel').offsetWidth -
-            document.querySelector('.sidebar').offsetWidth
-          );
+          return document.querySelector('.panel').offsetWidth - 300;
         },
         height: () => {
           return Math.min(
-            this.cameraLocations.length * 42 + 43,
+            this.HandsontableSetting.data.length * 42 + 43,
             document.querySelector('.sidebar').offsetHeight - 100,
           );
         },
@@ -248,6 +245,9 @@ export default {
     setLoading: Function,
   },
   watch: {
+    'HandsontableSetting.data': function() {
+      this.updateSheetSize();
+    },
     currentStudyAreaId: function(val) {
       this.currentCameraLocationId = '';
       this.getProjectCameraLocations({
@@ -270,7 +270,6 @@ export default {
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
           : undefined),
       }));
-      this.updateSheetSize();
     },
   },
   computed: {
