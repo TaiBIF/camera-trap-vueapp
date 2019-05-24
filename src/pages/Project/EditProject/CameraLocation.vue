@@ -49,10 +49,15 @@
                       v-model="geodeticDatum"
                       :options="geodeticDatumEnum"
                       :clearable="false"
-                      placeholder="請選擇座標系"
+                      placeholder="請選擇"
                     ></v-select>
-
-                    <span class="icon-note">
+                    <span
+                      class="icon-note"
+                      v-tooltip.right="{
+                        content:
+                          '為準確呈現圖籍，請指明相機位置座標的大地基準。單一樣區內所有相機位置必須一致，因此更改設定會全部覆寫喔。',
+                      }"
+                    >
                       <i class="icon-info"></i>
                     </span>
                   </div>
@@ -372,6 +377,6 @@ export default {
 }
 
 #geodetic-select {
-  width: 150px;
+  width: 120px;
 }
 </style>
