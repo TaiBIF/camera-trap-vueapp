@@ -82,7 +82,7 @@ export default {
       this.setLoading(true);
       this.error = undefined;
       await this.putProject({
-        id: 'this.projectId',
+        id: this.projectId,
         body: {
           ...this.projectDetail,
           dailyTestTime: this.dailyTestTime,

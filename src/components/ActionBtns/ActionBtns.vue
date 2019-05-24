@@ -31,7 +31,7 @@ export default {
     },
     submitBtnContext: {
       type: String,
-      default: '儲存設定xxxx',
+      default: '儲存設定',
     },
     error: {
       type: Object,
