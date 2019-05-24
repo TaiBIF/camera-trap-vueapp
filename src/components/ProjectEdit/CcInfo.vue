@@ -181,33 +181,34 @@
           </div>
         </div>
       </div>
-
-      <div class="action">
-        <div @click="handleClickCancel" class="btn btn-default">取消</div>
-        <button
-          type="submit"
-          @click.stop.prevent="doDone()"
-          class="btn btn-orange"
-          :disabled="isOverPublicLimit || !this.project.publishTime"
-        >
-          {{ doneBtnText }}
-        </button>
-      </div>
+      <ActionBtns
+        @cancel="handleClickCancel"
+        @submit="doDone"
+        :error="error"
+        :disabledSubmit="isOverPublicLimit || !project.publishTime"
+        :submitBtnContext="doneBtnText"
+      />
     </form>
   </div>
 </template>
 
 <script>
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 
 export default {
   props: {
-    doneBtnText: String,
     project: Object,
+    error: Object,
+    doneBtnText: {
+      type: String,
+      default: '儲存設定',
+    },
   },
   components: {
     DatePicker,
+    ActionBtns,
   },
   computed: {
     projectId: function() {
