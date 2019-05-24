@@ -80,7 +80,7 @@
     <div class="version-container" v-if="historyShow">
       <div class="version-header">
         <a
-          @click="changeMode('historyShow', false)"
+          @click="$emit('historyShow', !historyShow)"
           class="close mt-1 float-right"
         >
           <i class="icon-remove-sm"></i>

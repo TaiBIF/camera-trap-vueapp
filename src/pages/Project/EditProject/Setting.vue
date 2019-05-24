@@ -13,18 +13,7 @@
       :dailyTestTime="dailyTestTime"
       @change="dailyTestTime = $event"
     />
-    <div class="action">
-      <div @click="handleClickCancel" class="btn btn-default">
-        取消
-      </div>
-      <button
-        type="submit"
-        @click.stop.prevent="doSubmit()"
-        class="btn btn-orange"
-      >
-        儲存設定
-      </button>
-    </div>
+    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
   </div>
 </template>
 
@@ -32,6 +21,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import idx from 'idx';
 
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import CameraTestTime from './CameraTestTime.vue';
 import DataFields from './DataFields.vue';
 import DataFieldsTemplate from './DataFieldsTemplate.vue';
@@ -44,11 +34,13 @@ export default {
     DataFields,
     DataFieldsTemplate,
     CameraTestTime,
+    ActionBtns,
   },
   data() {
     return {
       dailyTestTime: undefined,
       tempDataFields: [],
+      error: undefined,
     };
   },
   props: {
@@ -88,6 +80,7 @@ export default {
     },
     async doSubmit() {
       this.setLoading(true);
+      this.error = undefined;
       await this.putProject({
         id: this.projectId,
         body: {
@@ -95,12 +88,15 @@ export default {
           dailyTestTime: this.dailyTestTime,
           dataFields: this.tempDataFields,
         },
+      }).catch(e => {
+        this.error = e;
       });
-      // TODO: API error handle
       this.setLoading(false);
-      this.$router.push({
-        path: `/project/${this.projectId}/edit/camera-location`,
-      });
+      if (!this.error) {
+        this.$router.push({
+          path: `/project/${this.projectId}/edit/camera-location`,
+        });
+      }
     },
   },
 };
