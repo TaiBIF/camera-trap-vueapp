@@ -151,10 +151,11 @@
     </form>
 
       </div><!-- end panel-body -->
-      </div><!-- end panel -->
+    </div><!-- end panel -->
     <div class="sheet-container">
       <CalculationSheet
         ref="sheet"
+        :calculatorData="calculator"
         />
     </div>
   </div>

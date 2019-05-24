@@ -1,7 +1,7 @@
 import { getCalculateOI, getCalculateLTD } from '@/service';
 
 const state = {
-  calculator: [],
+  calculator: {},
 };
 
 const mutations = {
