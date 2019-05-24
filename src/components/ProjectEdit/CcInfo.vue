@@ -185,7 +185,7 @@
         @cancel="handleClickCancel"
         @submit="doDone"
         :error="error"
-        :disabledSubmit="isOverPublicLimit || !this.project.publishTime"
+        :disabledSubmit="isOverPublicLimit || !project.publishTime"
         :submitBtnContext="doneBtnText"
       />
     </form>
