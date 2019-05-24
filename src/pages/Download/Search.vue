@@ -119,8 +119,8 @@
                     <div class="input-group">
                       <date-picker
                         v-model="form.startDate"
-                        :placeholder="'2001-01-01'"
-                        :format="'YYYY-MM-DD'"
+                        placeholder="2001-01-01"
+                        format="YYYY-MM-DD"
                         :first-day-of-week="1"
                       />
                       <div class="input-group-append">
@@ -144,8 +144,8 @@
                     <div class="input-group">
                       <date-picker
                         v-model="form.endDate"
-                        :placeholder="'2018-12-31'"
-                        :format="'YYYY-MM-DD'"
+                        placeholder="2018-12-31"
+                        format="YYYY-MM-DD"
                         :first-day-of-week="1"
                       />
                       <div class="input-group-append">
@@ -422,7 +422,43 @@ export default {
     removeFormItem(index) {
       this.form.items.splice(index, 1);
     },
-    submitSearchForm() {},
+    submitSearchForm() {
+      const query = {
+        cameraLocations: this.form.items.map(
+          x => x.selected.cameraLocation.value,
+        ),
+        species: this.form.selectedSpecies.map(x => x.value),
+      };
+      if (this.form.startDate) {
+        const time = new Date(this.form.startDate);
+        time.setHours(+this.form.startTime.HH);
+        time.setMinutes(+this.form.startTime.mm);
+        query.startTime = time.toISOString();
+      }
+      if (this.form.endDate) {
+        const time = new Date(this.form.endDate);
+        time.setHours(+this.form.endTime.HH);
+        time.setMinutes(+this.form.endTime.mm);
+        query.endTime = time.toISOString();
+      }
+      if (this.form.fieldValues.length) {
+        const fields = {};
+        this.dataFields.forEach((dataField, index) => {
+          if (this.form.fieldValues[index]) {
+            switch (dataField.widgetType) {
+              case 'select':
+                fields[dataField.id] = this.form.fieldValues[index].value;
+                break;
+              case 'text':
+                fields[dataField.id] = this.form.fieldValues[index];
+                break;
+            }
+          }
+        });
+        query.fields = JSON.stringify(fields);
+      }
+      this.$router.push({ path: '/download/results', query });
+    },
   },
   async mounted() {
     await Promise.all([
