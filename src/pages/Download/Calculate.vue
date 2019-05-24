@@ -50,11 +50,11 @@
                   />
               </div>
             </div>
-            <div class="col-4">
+            <!--div class="col-4">
               <div class="form-group">
                 <label for="">子樣區：</label>
               </div>
-            </div>
+            </div-->
             <div class="col-4">
               <div class="form-group">
                 <label for="">相機位置：</label>
@@ -133,7 +133,7 @@
           <div class="form-group">
             <label for="">有效照片判定間隔：</label>
             <v-select
-              v-model="effectiveTimeInterval"
+              v-model="validTimeInterval"
               :options="[2,5,10,30,60]"
               :placeholder="'請選擇有效時間判定間隔'"
               ></v-select>
@@ -141,7 +141,7 @@
           <div class="form-group">
             <label for="">目擊事件判定間隔：</label>
             <v-select
-              v-model="seeEvent"
+              v-model="eventTimeInterval"
               :options="[2,5,10,30,60]"
               :placeholder="'請選擇目擊事件判斷間隔'"
               ></v-select>
@@ -162,12 +162,15 @@
 <script>
 import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
+import vSelect from 'vue-select';
+import moment from 'moment';
 import { createNamespacedHelpers } from 'vuex';
 import { getProjectCameraLocations } from '@/service';
-import vSelect from 'vue-select';
+import CalculationSheet from './CalculationSheet';
+
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
-import CalculationSheet from './CalculationSheet';
+const calculator = createNamespacedHelpers('calculator');
 
 const getTime = (day, time) => {
   return moment(day)
@@ -184,6 +187,7 @@ export default {
   },
   data: function() {
     return {
+      isLoading: true,
       currentStudyArea: undefined,
       currentProject: undefined,
       currentCameraLocation: undefined,
@@ -198,8 +202,8 @@ export default {
         HH: "10",
         mm: "00",
       },
-      effectiveTimeInterval: undefined,
-      seeEvent: undefined
+      validTimeInterval: undefined,
+      eventTimeInterval: undefined,
     };
   },
   mounted() {
@@ -211,16 +215,24 @@ export default {
       'getProjectStudyAreas',
       'getProjectCameraLocations',
     ]),
+    ...calculator.mapActions(['getCalculateOI', 'getCalculateLTD']),
     handleStudyAreaChange() {
       this.studyAreas.getProjectCameraLocations();
     },
-    submitCalculate() {
-       //return this.$router.push({
-       // path: '/project/overview',
-      //});
+    async submitCalculate() {
+      this.isLoading = true;
+      await this.getCalculateOI({
+        cameraLocation: this.currentCameraLocation.value,
+        startTime: getTime(this.startDate, this.startTime).toISOString(),
+        endTime: getTime(this.endDate, this.endTime).toISOString(),
+        species: this.species.value,
+        validTimeInterval: this.validTimeInterval,
+        eventTimeInterval: this.eventTimeInterval,
+      });
+      this.isLoading = false;
     },
   },
-  watch: {
+    watch: {
     currentStudyArea: function() {
       this.getProjectCameraLocations({
         projectId: this.currentProject.value,
@@ -235,6 +247,7 @@ export default {
   computed: {
     ...projects.mapState(['projects', 'projectSpecies']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+    ...calculator.mapState(['calculator']),
     projectOptions() {
       return this.projects.map(({ title, id }) => ({
         label: title,

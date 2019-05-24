@@ -9,6 +9,7 @@ import notifications from '@/store/modules/notifications';
 import projects from '@/store/modules/projects';
 import upload from '@/store/modules/upload';
 import uploadSessions from '@/store/modules/uploadSessions';
+import calculator from '@/store/modules/calculator';
 
 Vue.use(Vuex);
 
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     dataFields,
     forest,
     uploadSessions,
+    calculator,
     ...projects,
   },
   strict: debug,
