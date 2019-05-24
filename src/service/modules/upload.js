@@ -26,11 +26,16 @@ const uploadCoverImage = async file => {
   return data;
 };
 
-const uploadAnnotation = async (cameraLocationId, file, signal) => {
+const uploadAnnotation = async (
+  cameraLocationId,
+  file,
+  signal,
+  annotationType,
+) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const url = `/api/v1/files?type=project-cover-image&cameraLocation=${cameraLocationId}`;
+  const url = `/api/v1/files?type=${annotationType}&cameraLocation=${cameraLocationId}`;
   const data = await fetchUpload({
     url,
     body: formData,
