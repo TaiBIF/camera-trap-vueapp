@@ -263,7 +263,12 @@
           </div>
         </div>
       </div>
-      <ActionBtns @cancel="handleClickCancel" @submit="doDone" :error="error" />
+      <ActionBtns
+        @cancel="handleClickCancel"
+        @submit="doDone"
+        :error="error"
+        :submitBtnContext="doneBtnText"
+      />
     </form>
   </div>
 </template>
@@ -296,6 +301,10 @@ export default {
     error: {
       type: Object,
       default: undefined,
+    },
+    doneBtnText: {
+      type: String,
+      default: '儲存設定',
     },
   },
   computed: {

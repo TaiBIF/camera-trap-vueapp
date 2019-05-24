@@ -123,6 +123,7 @@ export default {
   components: {
     DoubleCheckModal,
     vSelect,
+    ActionBtns,
   },
   mounted() {
     this.updateMember(this.projectDetail.members);

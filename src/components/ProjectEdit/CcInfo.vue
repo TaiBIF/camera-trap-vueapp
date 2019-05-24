@@ -186,6 +186,7 @@
         @submit="doDone"
         :error="error"
         :disabledSubmit="isOverPublicLimit || !this.project.publishTime"
+        :submitBtnContext="doneBtnText"
       />
     </form>
   </div>
@@ -200,6 +201,10 @@ export default {
   props: {
     project: Object,
     error: Object,
+    doneBtnText: {
+      type: String,
+      default: '儲存設定',
+    },
   },
   components: {
     DatePicker,
