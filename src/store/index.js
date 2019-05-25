@@ -4,7 +4,6 @@ import Vuex from 'vuex';
 import account from '@/store/modules/account';
 import config from '@/store/modules/config';
 import dataFields from '@/store/modules/dataFields';
-import download from '@/store/modules/download';
 import forest from '@/store/modules/forest';
 import notifications from '@/store/modules/notifications';
 import projects from '@/store/modules/projects';
@@ -20,7 +19,6 @@ export default new Vuex.Store({
     account,
     config,
     dataFields,
-    download,
     forest,
     notifications,
     ...projects,
