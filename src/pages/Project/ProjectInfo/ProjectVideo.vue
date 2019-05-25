@@ -80,15 +80,15 @@
             <div class="btn-group">
               <router-link
                 class="btn btn-border-gray"
-                :class="{ active: $route.params.type === 'receive' }"
-                :to="generateVideoPath('receive')"
+                :class="{ active: $route.params.type === 'retrieved' }"
+                :to="generateVideoPath('retrieved')"
               >
                 影像回收狀況
               </router-link>
               <router-link
                 class="btn btn-border-gray"
-                :class="{ active: $route.params.type === 'identify' }"
-                :to="generateVideoPath('identify')"
+                :class="{ active: $route.params.type === 'identified' }"
+                :to="generateVideoPath('identified')"
               >
                 影像辨識進度
               </router-link>
@@ -162,7 +162,7 @@ export default {
     backToAreaLink: function() {
       return `/project/${this.projectId}/info/video/${
         this.selectedStudyAreaId
-      }/receive`;
+      }/retrieved`;
     },
     allAreas: function() {
       return this.studyAreas.reduce(
@@ -252,7 +252,7 @@ export default {
         this.$router.push({
           path: `/project/${this.projectId}/info/video/${
             studyArea.path
-          }/receive`,
+          }/retrieved`,
         });
       }
     },

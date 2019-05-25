@@ -276,14 +276,14 @@ export default {
     },
     selectArea(path) {
       this.$router.push({
-        path: `/project/${this.projectId}/info/video/${path}/receive`,
+        path: `/project/${this.projectId}/info/video/${path}/retrieved`,
       });
     },
     selectCamera(cameraId) {
       this.$router.push({
         path: `/project/${this.projectId}/info/video/${
           this.selectedStudyAreaId
-        }/receive/${cameraId}`,
+        }/retrieved/${cameraId}`,
       });
     },
     reloadForestBoundary(position) {

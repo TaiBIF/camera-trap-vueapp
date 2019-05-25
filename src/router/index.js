@@ -38,7 +38,7 @@ export default new Router({
               children: [
                 {
                   path: '/',
-                  redirect: 'video/all/receive',
+                  redirect: 'video/all/retrieved',
                   name: 'projectInfo',
                 },
                 {
