@@ -281,6 +281,12 @@ export default {
       this.setSheetColumn();
       window.onresize = () => this.setSheetHeight();
     }, 500);
+    window.onbeforeunload = () => {
+      return this.isEdit ? '是否要離開此頁面' : undefined;
+    };
+  },
+  beforeDestroy() {
+    window.onbeforeunload = null;
   },
   watch: {
     continuousRange: function(newVal, oldVal) {
