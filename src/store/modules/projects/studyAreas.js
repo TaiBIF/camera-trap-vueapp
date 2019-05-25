@@ -4,6 +4,7 @@ import * as R from 'ramda';
 
 import {
   deleteProjectCameraLocations,
+  getAllProjectCameraLocations,
   getProjectCameraLocations,
   getProjectStudyAreas,
   lockProjectCameraLocations,
@@ -84,6 +85,17 @@ const actions = {
   },
   async getProjectCameraLocations({ commit }, { projectId, studyAreaId }) {
     const data = await getProjectCameraLocations(projectId, studyAreaId);
+    commit('setCameraLocations', idx(data, _ => _.items) || []);
+  },
+  async getAllProjectCameraLocations(
+    { commit },
+    { projectId, studyAreaId, query },
+  ) {
+    const data = await getAllProjectCameraLocations(
+      projectId,
+      studyAreaId,
+      query,
+    );
     commit('setCameraLocations', idx(data, _ => _.items) || []);
   },
   async modifyProjectCameraLocations(

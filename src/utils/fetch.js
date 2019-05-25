@@ -1,7 +1,9 @@
 import idx from 'idx';
 
+const generateUrl = url => `${process.env.VUE_APP_API_URL}${url}`;
+
 const fetchWrap = async ({ url, method, body }) => {
-  const res = await fetch(`${process.env.VUE_APP_API_URL}${url}`, {
+  const res = await fetch(`${generateUrl(url)}`, {
     method,
     mode: 'cors',
     credentials: 'include',
@@ -28,7 +30,7 @@ const fetchWrap = async ({ url, method, body }) => {
 };
 
 const fetchUpload = async ({ url, body, signal }) => {
-  const res = await fetch(`${process.env.VUE_APP_API_URL}${url}`, {
+  const res = await fetch(`${generateUrl(url)}`, {
     method: 'POST',
     mode: 'cors',
     credentials: 'include',
@@ -39,4 +41,4 @@ const fetchUpload = async ({ url, body, signal }) => {
 };
 
 export default fetchWrap;
-export { fetchUpload };
+export { fetchUpload, generateUrl };

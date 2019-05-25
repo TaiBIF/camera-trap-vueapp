@@ -4,6 +4,7 @@ import produce from 'immer';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
+  getAllProjects,
   getIdentifiedSpecies,
   getProjectDetail,
   getProjectSpecies,
@@ -175,6 +176,10 @@ const mutations = {
 const actions = {
   async getProjects({ commit }) {
     const data = await getProjects();
+    commit('setProjects', idx(data, _ => _.items) || []);
+  },
+  async getAllProjects({ commit }, query) {
+    const data = await getAllProjects(query);
     commit('setProjects', idx(data, _ => _.items) || []);
   },
   async getProjectDetail({ commit }, id) {
