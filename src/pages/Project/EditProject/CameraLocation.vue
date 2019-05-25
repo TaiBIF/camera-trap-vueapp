@@ -112,7 +112,7 @@ export default {
     window.addEventListener('resize', this.updateSheetSize);
   },
   beforeDestroy() {
-    window.addEventListener('resize', this.updateSheetSize);
+    window.removeEventListener('resize', this.updateSheetSize);
   },
   data: function() {
     return {
