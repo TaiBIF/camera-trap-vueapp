@@ -1,4 +1,7 @@
 import moment from 'moment';
+import 'moment-timezone';
+
+moment.tz.setDefault('Etc/GMT');
 
 export const getTodayDate = () => moment(Date.now());
 
@@ -13,3 +16,7 @@ export const dateFormatYYYYMMDD = dateTimeString =>
 
 export const dateFormatYYYYMMDDHHmmss = dateTimeString =>
   moment(dateTimeString).format('YYYY-MM-DD HH:mm:ss');
+
+export const dateFormatYYYY = dateTimeString => {
+  return moment(dateTimeString).format('YYYY');
+};

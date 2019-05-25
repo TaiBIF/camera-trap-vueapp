@@ -28,7 +28,11 @@ const getters = {
           isRead,
           dataField: {},
           sender: {},
-          uploadSession: {},
+          uploadSession: {
+            project: {},
+            studyArea: {},
+            cameraLocation: {},
+          },
         };
 
         if (dataField) {
