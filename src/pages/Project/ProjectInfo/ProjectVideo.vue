@@ -250,9 +250,12 @@ export default {
       );
       if (studyArea) {
         this.$router.push({
-          path: `/project/${this.projectId}/info/video/${
-            studyArea.path
-          }/retrieved`,
+          name: 'projectVideo',
+          params: {
+            projectId: this.projectId,
+            selectedStudyAreaId: studyArea.path,
+            type: 'retrieved',
+          },
         });
       }
     },

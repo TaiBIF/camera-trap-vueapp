@@ -104,19 +104,19 @@ export default {
   },
   methods: {
     clickRow(path) {
-      if (this.selectedStudyAreaId === 'all') {
-        this.$router.push({
-          path: `/project/${this.projectId}/info/video/${path}/${
-            this.chartType
-          }`,
-        });
-      } else {
-        this.$router.push({
-          path: `/project/${this.projectId}/info/video/${
-            this.selectedStudyAreaId
-          }/${this.chartType}/${path}`,
-        });
+      const params = {
+        projectId: this.projectId,
+        selectedStudyAreaId: path,
+        type: this.chartType,
+      };
+      if (this.selectedStudyAreaId !== 'all') {
+        params.selectedStudyAreaId = this.selectedStudyAreaId;
+        params.selectedCameraId = path;
       }
+      this.$router.push({
+        name: 'projectVideo',
+        params,
+      });
     },
   },
 };

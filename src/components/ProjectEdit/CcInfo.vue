@@ -232,7 +232,16 @@ export default {
       this.$emit('change', Object.assign({}, this.project, { [key]: value }));
     },
     handleClickCancel() {
-      this.$router.push({ path: `/project/${this.projectId}` });
+      if (this.projectId) {
+        this.$router.push({
+          name: 'projectInfo',
+          params: {
+            projectId: this.projectId,
+          },
+        });
+      } else {
+        this.$router.push({ name: 'projecOverview' });
+      }
     },
     doDone() {
       if (!this.isOverPublicLimit && this.project.publishTime) {

@@ -263,7 +263,12 @@ export default {
       this.currentStudyAreaId = id;
     },
     handleClickCancel() {
-      this.$router.push({ path: `/project/${this.projectId}` });
+      this.$router.push({
+        name: 'projectInfo',
+        params: {
+          projectId: this.projectId,
+        },
+      });
     },
     async addStudyArea(title, parent) {
       this.setLoading(true);
@@ -298,7 +303,10 @@ export default {
         });
         this.error = undefined;
         this.$router.push({
-          path: `/project/${this.projectId}/edit/member`,
+          name: 'projectMember',
+          params: {
+            projectId: this.projectId,
+          },
         });
       } catch (e) {
         this.error = e;

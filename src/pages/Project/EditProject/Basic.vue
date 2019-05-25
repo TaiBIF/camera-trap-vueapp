@@ -62,7 +62,12 @@ export default {
       });
       this.setLoading(false);
       if (!this.error) {
-        this.$router.push({ path: `/project/${this.projectId}/edit/setting` });
+        this.$router.push({
+          name: 'projectSetting',
+          params: {
+            projectId: this.projectId,
+          },
+        });
       }
     },
   },

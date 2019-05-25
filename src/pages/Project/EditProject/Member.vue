@@ -153,7 +153,12 @@ export default {
         }));
     },
     handleClickCancel() {
-      this.$router.push({ path: `/project/${this.projectId}` });
+      this.$router.push({
+        name: 'projectInfo',
+        params: {
+          projectId: this.projectId,
+        },
+      });
     },
     async postMember() {
       try {
@@ -182,7 +187,10 @@ export default {
         });
         this.error = undefined;
         this.$router.push({
-          path: `/project/${this.projectId}/edit/license`,
+          name: 'projectLicense',
+          params: {
+            projectId: this.projectId,
+          },
         });
       } catch (e) {
         this.error = e;
