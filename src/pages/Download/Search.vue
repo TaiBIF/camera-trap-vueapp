@@ -253,6 +253,192 @@
             </div>
           </form>
         </div>
+
+        <div class="tab-pane" :class="{ active: currentTab === 'calculate' }">
+          <form class="form" @submit.stop.prevent="submitCalculateForm()">
+            <div class="green-block">
+              <div class="row">
+                <div class="col-6 offset-3">
+                  <div class="form-group row mb-0">
+                    <label class="col-3 text-right required">計算項目：</label>
+                    <div class="col-9">
+                      <v-select
+                        v-model="form.selectedCalculateType"
+                        :options="[
+                          { label: '有效照片與目擊事件', value: 'oi' },
+                          { label: '初測延遲', value: 'ltd' },
+                        ]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <h5 class="mb-3">
+              基本欄位
+              <span class="text-gray">
+                ( 請選擇單一相機位置及物種進行計算 )
+              </span>
+            </h5>
+            <div class="gray-block">
+              <div class="form-content">
+                <div class="row">
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label class="required">計畫名稱：</label>
+                      <v-select
+                        v-model="form.items[0].selected.project"
+                        :options="projectOptions"
+                        placeholder="請選擇計畫名稱"
+                        :on-change="generateHandlerForProjectSelectorChange(0)"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label class="required">樣區：</label>
+                      <v-select
+                        :disabled="!form.items[0].options.studyAreas.length"
+                        :options="form.items[0].options.studyAreas"
+                        :on-change="
+                          generateHandlerForStudyAreaSelectorChange(0)
+                        "
+                        v-model="form.items[0].selected.studyArea"
+                        placeholder="請選擇樣區"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label>子樣區：</label>
+                      <v-select
+                        :disabled="!form.items[0].options.subStudyAreas.length"
+                        :options="form.items[0].options.subStudyAreas"
+                        :on-change="
+                          generateHandlerForSubStudyAreaSelectorChange(0)
+                        "
+                        v-model="form.items[0].selected.subStudyArea"
+                        placeholder="請選擇子樣區"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label class="required">相機位置：</label>
+                      <v-select
+                        :disabled="
+                          !form.items[0].options.cameraLocations.length
+                        "
+                        v-model="form.items[0].selected.cameraLocation"
+                        :options="form.items[0].options.cameraLocations"
+                        placeholder="請選擇相機位置"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group">
+                  <label class="required">物種：</label>
+                  <v-select
+                    :options="speciesOptions"
+                    v-model="form.selectedSpecies[0]"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group">
+                  <label>資料起始時間：</label>
+                  <div class="input-group-inline">
+                    <div class="input-group">
+                      <date-picker
+                        v-model="form.startDate"
+                        placeholder="2018-09-20"
+                        format="YYYY-MM-DD"
+                        :first-day-of-week="1"
+                      />
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2">
+                      <vue-timepicker v-model="form.startTime" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="align-self-center">到</span>
+              <div class="col-4">
+                <div class="form-group">
+                  <label>資料結束時間：</label>
+                  <div class="input-group-inline">
+                    <div class="input-group">
+                      <date-picker
+                        v-model="form.endDate"
+                        placeholder="2018-09-20"
+                        format="YYYY-MM-DD"
+                        :first-day-of-week="1"
+                      />
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2">
+                      <vue-timepicker v-model="form.endTime" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+            <h5>計算條件</h5>
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group">
+                  <label class="required">有效時間判定間隔(分鐘)：</label>
+                  <v-select
+                    v-model="form.selectedValidTimeInterval"
+                    :options="timeIntervalOptions"
+                    placeholder="請選擇有效時間判定間隔"
+                  ></v-select>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group">
+                  <label class="required">目擊事件判斷間隔：</label>
+                  <v-select
+                    v-model="form.selectedEventTimeInterval"
+                    :options="timeIntervalOptions"
+                    placeholder="請選擇目擊事件判斷間隔"
+                  ></v-select>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 text-right action">
+              <button type="reset" class="btn btn-green-border">
+                清空選項
+              </button>
+              <button
+                :disabled="
+                  !form.items[0].selected.cameraLocation ||
+                    !form.selectedSpecies[0]
+                "
+                type="submit"
+                class="btn btn-orange"
+              >
+                計算
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -278,8 +464,18 @@ export default {
       isLoading: true,
       currentTab: 'search', // "search" | "calculate"
       isAdvanceSearch: false,
+      timeIntervalOptions: [
+        { label: 2, value: 2 * 60 * 1000 },
+        { label: 5, value: 5 * 60 * 1000 },
+        { label: 10, value: 10 * 60 * 1000 },
+        { label: 30, value: 30 * 60 * 1000 },
+        { label: 60, value: 60 * 60 * 1000 },
+      ],
       form: {
+        selectedCalculateType: { label: '有效照片與目擊事件', value: 'oi' },
         selectedSpecies: [],
+        selectedValidTimeInterval: { label: 2, value: 2 * 60 * 1000 },
+        selectedEventTimeInterval: { label: 2, value: 2 * 60 * 1000 },
         items: [
           {
             selected: {
@@ -500,6 +696,28 @@ export default {
         query.timeRangeEnd = endTime.getTime() + 59999;
       }
       this.$router.push({ path: '/download/results', query });
+    },
+    submitCalculateForm() {
+      const query = {
+        calculateType: this.form.selectedCalculateType.value,
+        cameraLocations: this.form.items[0].selected.cameraLocation.value,
+        species: this.form.selectedSpecies[0].value,
+        validTimeInterval: this.form.selectedValidTimeInterval.value,
+        eventTimeInterval: this.form.selectedEventTimeInterval.value,
+      };
+      if (this.form.startDate) {
+        const time = new Date(this.form.startDate);
+        time.setHours(+this.form.startTime.HH);
+        time.setMinutes(+this.form.startTime.mm);
+        query.startTime = time.toISOString();
+      }
+      if (this.form.endDate) {
+        const time = new Date(this.form.endDate);
+        time.setHours(+this.form.endTime.HH);
+        time.setMinutes(+this.form.endTime.mm);
+        query.endTime = time.toISOString();
+      }
+      this.$router.push({ path: '/download/calculate', query });
     },
   },
   async mounted() {
