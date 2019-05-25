@@ -87,11 +87,7 @@
       </div>
     </div>
 
-    <info-modal
-      v-if="showIdleModal"
-      :open="showIdleModal"
-      @close="showIdleModal = false"
-    >
+    <info-modal :open="showIdleModal" @close="showIdleModal = false">
       <p class="text-gray">
         您已閒置30分鐘，系統已自動跳出編輯模式。
       </p>
