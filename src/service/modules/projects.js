@@ -1,4 +1,5 @@
 import fetchWrap from '@/utils/fetch';
+import queryString from 'query-string';
 
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projects
 const getProjects = async () => {
@@ -7,6 +8,28 @@ const getProjects = async () => {
     method: 'GET',
   });
   return res;
+};
+
+const getAllProjects = async (query, items = []) => {
+  /*
+  Fetch all projects.
+  @param query {Object}
+    index {Number} Please pass 0 or not for the first call.
+    size {Number}
+    sort {String}
+  @param items {Array<Project>} For recursive
+  @returns {Promise<Object>}
+   */
+  const result = await fetchWrap({
+    method: 'GET',
+    url: `/api/v1/projects?${queryString.stringify(query)}`,
+  });
+  result.items.forEach(x => items.push(x));
+  const hasNext = (result.index + 1) * result.size < result.total;
+  if (hasNext) {
+    await getAllProjects({ ...query, index: result.index + 1 }, items);
+  }
+  return { ...result, items };
 };
 
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projectsprojectid
@@ -143,6 +166,7 @@ const getRetrievalDataByCameraLocation = async ({
 
 export {
   getProjects,
+  getAllProjects,
   getProjectDetail,
   postProject,
   putProjectMember,

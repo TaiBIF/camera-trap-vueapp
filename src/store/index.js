@@ -18,12 +18,12 @@ export default new Vuex.Store({
   modules: {
     account,
     config,
-    notifications,
-    upload,
     dataFields,
     forest,
-    uploadSessions,
+    notifications,
     ...projects,
+    upload,
+    uploadSessions,
   },
   strict: debug,
 });

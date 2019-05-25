@@ -1,6 +1,6 @@
 import idx from 'idx';
 
-import { getDataFields, postDataFields } from '@/service';
+import { getAllDataFields, getDataFields, postDataFields } from '@/service';
 import { getLanguage } from '@/utils/i18n';
 
 const state = {
@@ -25,6 +25,10 @@ const mutations = {
 const actions = {
   async getDataFields({ commit }) {
     const data = await getDataFields();
+    commit('setDataFields', idx(data, _ => _.items) || []);
+  },
+  async getAllDataFields({ commit }, query) {
+    const data = await getAllDataFields(query);
     commit('setDataFields', idx(data, _ => _.items) || []);
   },
   async postDataFields(_, newField) {

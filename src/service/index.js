@@ -1,5 +1,6 @@
 export * from './modules/account';
 export * from './modules/annotations';
+export * from './modules/cameraLocation';
 export * from './modules/config';
 export * from './modules/notifications';
 export * from './modules/projects';
