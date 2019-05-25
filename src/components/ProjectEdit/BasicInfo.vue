@@ -335,7 +335,11 @@ export default {
   },
   methods: {
     handleClickCancel() {
-      this.$router.push({ path: `/project/${this.projectId}` });
+      if (this.projectId) {
+        this.$router.push({ path: `/project/${this.projectId}` });
+      } else {
+        this.$router.push({ path: '/project/overview' });
+      }
     },
     async uploadCover(e) {
       if (e.target.files && e.target.files[0]) {
