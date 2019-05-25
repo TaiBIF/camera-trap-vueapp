@@ -75,6 +75,15 @@
               </div>
             </div>
           </div>
+
+          <div class="col-4">
+            <div class="item long-label">
+              <label>拍攝時段：</label>
+              <div class="content">
+                {{ timeRangeStart }} ~ {{ timeRangeEnd }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -151,6 +160,14 @@ export default {
         return '';
       }
       return moment(this.$route.query.endTime).format('YYYY/MM/DD');
+    },
+    timeRangeStart() {
+      const time = new Date(+this.$route.query.timeRangeStart);
+      return moment(time).format('HH:mm');
+    },
+    timeRangeEnd() {
+      const time = new Date(+this.$route.query.timeRangeEnd);
+      return moment(time).format('HH:mm');
     },
     selectedFields() {
       /*

@@ -221,13 +221,35 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-group">
+                    <label>拍攝時段：</label>
+                    <div class="input-group-inline">
+                      <div class="input-group">
+                        <vue-timepicker v-model="form.timeRangeStart" />
+                      </div>
+                      <div class="text px-2">到</div>
+                      <div class="input-group">
+                        <vue-timepicker v-model="form.timeRangeEnd" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="col-12 text-right action">
               <button type="reset" class="btn btn-green-border">
                 清空選項
               </button>
-              <button type="submit" class="btn btn-orange">篩選</button>
+              <button
+                :disabled="!form.items[0].selected.cameraLocation"
+                type="submit"
+                class="btn btn-orange"
+              >
+                篩選
+              </button>
             </div>
           </form>
         </div>
@@ -280,6 +302,8 @@ export default {
         endDate: '',
         endTime: { HH: '23', mm: '59' },
         fieldValues: [],
+        timeRangeStart: { HH: '00', mm: '00' },
+        timeRangeEnd: { HH: '23', mm: '59' },
       },
     };
   },
@@ -456,6 +480,24 @@ export default {
           }
         });
         query.fields = JSON.stringify(fields);
+      }
+      if (this.form.timeRangeStart && this.form.timeRangeEnd) {
+        const startTime = new Date(
+          1970,
+          0,
+          1,
+          +this.form.timeRangeStart.HH,
+          +this.form.timeRangeStart.mm,
+        );
+        const endTime = new Date(
+          1970,
+          0,
+          1,
+          +this.form.timeRangeEnd.HH,
+          +this.form.timeRangeEnd.mm,
+        );
+        query.timeRangeStart = startTime.getTime();
+        query.timeRangeEnd = endTime.getTime() + 59999;
       }
       this.$router.push({ path: '/download/results', query });
     },
