@@ -9,165 +9,156 @@
     <h1 class="text-green">資料計算結果</h1>
 
     <div class="panel panel-project">
-    <div class="float-right">
-          <a
-            class="btn btn-green-border btn-sm"
-            v-tooltip.bottom="'將計算結果輸出為 CSV 檔並下載'"
-          >
-              <span class="icon"><i class="icon-download-green"></i></span>下載計算結果
-          </a>
-          <button class="btn btn-orange btn-sm ml-2"
-                  @click="submitCalculate">
-            計算
-          </button>
-    </div>
-
-      <div class="panel-body"> 
-    <form class="form-horizontal">
-      <div class="row">
-        <div class="col-12">
-          <h6 class="text-gray mt-3">資料來源</h6>
-        </div>
+      <div class="float-right">
+        <a
+          class="btn btn-green-border btn-sm"
+          v-tooltip.bottom="'將計算結果輸出為 CSV 檔並下載'"
+        >
+          <span class="icon"><i class="icon-download-green"></i></span>
+          下載計算結果
+        </a>
+        <button class="btn btn-orange btn-sm ml-2" @click="submitCalculate">
+          計算
+        </button>
       </div>
-      <div class="row">
-        <div class="col-4">
-          <div class="form-group">
-            <label for="">計畫名稱：</label>
-            <v-select
-              v-model="currentProject"
-              :options="projectOptions"
-              :placeholder="'請選擇計畫名稱'"
-              />
-          </div>
-          <div class="row">
-            <div class="col-4">
-              <div class="form-group">
-                <label for="">樣區：</label>
-                <v-select
-                  v-model="currentStudyArea"
-                  :options="studyAreaOptions"
-                  :placeholder="'請選擇樣區名稱'"
-                  />
-              </div>
-            </div>
-            <!--div class="col-4">
-              <div class="form-group">
-                <label for="">子樣區：</label>
-              </div>
-            </div-->
-            <div class="col-4">
-              <div class="form-group">
-                <label for="">相機位置：</label>
-                <v-select
-                  v-model="currentCameraLocation"
-                  :options="cameraOptions"
-                  :placeholder="'請選相機位置'"
-                  />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-4 divider">
-          <div class="form-group">
-            <label for="">物種：</label>
-            <v-select
-              v-model="species"
-              :options="speciesOptions"
-              :placeholder="'請選擇物種'"
-              />
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-group">
-                <label for="">資料啟始時間：</label>
 
-<div class="input-group-inline">
-                    <div class="input-group">
-                      <date-picker
-                        v-model="startDate"
-                        :placeholder="'2018-09-20'"
-                        :format="'YYYY-MM-DD'"
-                        :first-day-of-week="1"
-                      />
-                      <div class="input-group-append">
-                        <i class="icon icon-calendar"></i>
-                      </div>
-                    </div>
-                    <div class="input-group ml-2">
-                      <vue-timepicker
-                        v-model="startTime"
-                        format="HH:mm"
-                      />
-                    </div>
-                  </div>
-              </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="row">
+            <div class="col-12">
+              <h6 class="text-gray mt-3">資料來源</h6>
             </div>
-            <div class="col-6">
+          </div>
+          <div class="row">
+            <div class="col-4">
               <div class="form-group">
-                <label for="">資料結束時間：</label>
-                <div class="input-group-inline">
-                  <div class="input-group">
-                    <date-picker
-                      v-model="endDate"
-                      :placeholder="'2018-09-20'"
-                      :format="'YYYY-MM-DD'"
-                      :first-day-of-week="1"
-                      />
-                    <div class="input-group-append">
-                      <i class="icon icon-calendar"></i>
-                    </div>
+                <label>計畫名稱：</label>
+                <v-select
+                  v-model="currentProject"
+                  :options="projectOptions"
+                  :placeholder="'請選擇計畫名稱'"
+                />
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-group">
+                    <label>樣區：</label>
+                    <v-select
+                      v-model="currentStudyArea"
+                      :options="studyAreaOptions"
+                      :placeholder="'請選擇樣區名稱'"
+                    />
                   </div>
-                  <div class="input-group ml-2">
-                    <vue-timepicker
-                      v-model="endTime"
-                      format="HH:mm"
-                      />
+                </div>
+                <!--div class="col-4">
+                  <div class="form-group">
+                    <label>子樣區：</label>
+                  </div>
+                </div-->
+                <div class="col-4">
+                  <div class="form-group">
+                    <label>相機位置：</label>
+                    <v-select
+                      v-model="currentCameraLocation"
+                      :options="cameraOptions"
+                      :placeholder="'請選相機位置'"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+            <div class="col-4 divider">
+              <div class="form-group">
+                <label>物種：</label>
+                <v-select
+                  v-model="species"
+                  :options="speciesOptions"
+                  :placeholder="'請選擇物種'"
+                />
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label>資料啟始時間：</label>
+                    <div class="input-group-inline">
+                      <div class="input-group">
+                        <date-picker
+                          v-model="startDate"
+                          :placeholder="'2018-09-20'"
+                          :format="'YYYY-MM-DD'"
+                          :first-day-of-week="1"
+                        />
+                        <div class="input-group-append">
+                          <i class="icon icon-calendar"></i>
+                        </div>
+                      </div>
+                      <div class="input-group ml-2">
+                        <vue-timepicker v-model="startTime" format="HH:mm" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label>資料結束時間：</label>
+                    <div class="input-group-inline">
+                      <div class="input-group">
+                        <date-picker
+                          v-model="endDate"
+                          :placeholder="'2018-09-20'"
+                          :format="'YYYY-MM-DD'"
+                          :first-day-of-week="1"
+                        />
+                        <div class="input-group-append">
+                          <i class="icon icon-calendar"></i>
+                        </div>
+                      </div>
+                      <div class="input-group ml-2">
+                        <vue-timepicker v-model="endTime" format="HH:mm" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="col-4 divider">
-          <div class="form-group">
-            <label for="">有效照片判定間隔：</label>
-            <v-select
-              v-model="validTimeInterval"
-              :options="[2,5,10,30,60]"
-              :placeholder="'請選擇有效時間判定間隔'"
-              ></v-select>
+            <div class="col-4 divider">
+              <div class="form-group">
+                <label>有效照片判定間隔：</label>
+                <v-select
+                  v-model="validTimeInterval"
+                  :options="[2, 5, 10, 30, 60]"
+                  :placeholder="'請選擇有效時間判定間隔'"
+                ></v-select>
+              </div>
+              <div class="form-group">
+                <label>目擊事件判定間隔：</label>
+                <v-select
+                  v-model="eventTimeInterval"
+                  :options="[2, 5, 10, 30, 60]"
+                  :placeholder="'請選擇目擊事件判斷間隔'"
+                ></v-select>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="">目擊事件判定間隔：</label>
-            <v-select
-              v-model="eventTimeInterval"
-              :options="[2,5,10,30,60]"
-              :placeholder="'請選擇目擊事件判斷間隔'"
-              ></v-select>
-          </div>
-        </div>
+        </form>
       </div>
-    </form>
-
-      </div><!-- end panel-body -->
-    </div><!-- end panel -->
+      <!-- end panel-body -->
+    </div>
+    <!-- end panel -->
     <div class="sheet-container">
-      <CalculationSheet
-        ref="sheet"
-        :calculatorData="calculator"
-        />
+      <CalculationSheet ref="sheet" :calculatorData="calculator" />
     </div>
   </div>
 </template>
 <script>
-import DatePicker from 'vue2-datepicker';
-import VueTimepicker from 'vue2-timepicker';
-import vSelect from 'vue-select';
-import moment from 'moment';
 import { createNamespacedHelpers } from 'vuex';
 import { getProjectCameraLocations } from '@/service';
 import CalculationSheet from './CalculationSheet';
+import DatePicker from 'vue2-datepicker';
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
+import vSelect from 'vue-select';
 
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -195,13 +186,13 @@ export default {
       species: undefined,
       startDate: '',
       startTime: {
-        HH: "10",
-        mm: "00",
+        HH: '10',
+        mm: '00',
       },
       endDate: '',
       endTime: {
-        HH: "10",
-        mm: "00",
+        HH: '10',
+        mm: '00',
       },
       validTimeInterval: undefined,
       eventTimeInterval: undefined,
@@ -211,7 +202,7 @@ export default {
     this.getProjects();
   },
   methods: {
-    ...projects.mapActions(['getProjects','getProjectSpecies']),
+    ...projects.mapActions(['getProjects', 'getProjectSpecies']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getProjectCameraLocations',
@@ -233,16 +224,16 @@ export default {
       this.isLoading = false;
     },
   },
-    watch: {
+  watch: {
     currentStudyArea: function() {
       this.getProjectCameraLocations({
         projectId: this.currentProject.value,
         studyAreaId: this.currentStudyArea.value,
-      })
+      });
     },
     currentProject: function() {
-      this.getProjectStudyAreas(this.currentProject.value)
-      this.getProjectSpecies(this.currentProject.value)
+      this.getProjectStudyAreas(this.currentProject.value);
+      this.getProjectSpecies(this.currentProject.value);
     },
   },
   computed: {
@@ -280,5 +271,5 @@ export default {
       }));
     },
   },
-}
+};
 </script>

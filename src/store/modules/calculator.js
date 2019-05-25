@@ -1,4 +1,4 @@
-import { getCalculateOI, getCalculateLTD } from '@/service';
+import { getCalculateLTD, getCalculateOI } from '@/service';
 
 const state = {
   calculator: {},
@@ -17,7 +17,7 @@ const actions = {
   },
   async getCalculateLTD({ commit }, query) {
     const data = await getCalculateLTD(query);
-    commit('setCalculator', data, );
+    commit('setCalculator', data);
   },
 };
 
