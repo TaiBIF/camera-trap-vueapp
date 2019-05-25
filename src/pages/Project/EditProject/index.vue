@@ -6,6 +6,12 @@
     >
       <div class="row">
         <div class="col-2">
+          <router-link
+            :to="{ name: 'projectInfo', params: { projectId } }"
+            class="gray"
+          >
+            <i class="fa fa-chevron-left"></i> 返回計畫首頁
+          </router-link>
           <h1 class="heading">計畫管理</h1>
           <nav class="list">
             <router-link
@@ -67,3 +73,9 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.gray,
+.gray:hover {
+  color: #8b8b8b;
+}
+</style>
