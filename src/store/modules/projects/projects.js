@@ -2,7 +2,7 @@ import Vue from 'vue';
 import idx from 'idx';
 import produce from 'immer';
 
-import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import { dateFormatYYYY, dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
   getIdentifiedSpecies,
   getProjectDetail,
@@ -18,6 +18,7 @@ import {
   putProjectSpecies,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
+import { parseUrl } from 'query-string';
 
 // 計畫資料
 
@@ -131,6 +132,14 @@ const getters = {
         lastUpdate: dateFormatYYYYMMDD(lastData),
       };
     }),
+  getLatestAnnotationYear: state => {
+    const latestAnnotationTime = idx(
+      state,
+      _ => _.projectDetail.latestAnnotationTime,
+    );
+    if (!latestAnnotationTime) return null;
+    return parseInt(dateFormatYYYY(latestAnnotationTime), 10);
+  },
 };
 
 const mutations = {

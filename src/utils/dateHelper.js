@@ -13,3 +13,6 @@ export const dateFormatYYYYMMDD = dateTimeString =>
 
 export const dateFormatYYYYMMDDHHmmss = dateTimeString =>
   moment(dateTimeString).format('YYYY-MM-DD HH:mm:ss');
+
+export const dateFormatYYYY = dateTimeString =>
+  moment(dateTimeString).format('YYYY');
