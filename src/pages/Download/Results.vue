@@ -194,7 +194,7 @@ export default {
           label: dataField.title,
           value:
             dataField.widgetType === 'select'
-              ? dataField.options.find(x => x.id === value)['zh-TW']
+              ? dataField.options.find(x => x.id === value)[getLanguage()]
               : value,
         });
       }
@@ -274,7 +274,7 @@ export default {
       this.setProjectDetail({
         dataFields: this.dataFields.map(x => ({
           ...x,
-          title: { 'zh-TW': x.title },
+          title: { [getLanguage()]: x.title },
         })),
       });
       this.setCameraLocations(cameraLocations);
