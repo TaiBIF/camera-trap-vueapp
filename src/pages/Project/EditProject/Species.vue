@@ -18,7 +18,7 @@
                   <div
                     class="row sortable-item"
                     v-for="(sp, idx) in tempSpecies"
-                    :key="idx"
+                    :key="sp"
                   >
                     <div class="col-2">{{ idx + 1 }}</div>
                     <div class="col-4">
