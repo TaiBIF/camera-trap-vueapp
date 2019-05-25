@@ -17,7 +17,11 @@
               <i class="icon-save"></i>
             </button>
             <span class="divider"></span>
-            <button @click="setEdit(false)" class="btn btn-basic btn-sm">
+            <button
+              @click="setEdit(false)"
+              class="btn btn-basic btn-sm"
+              :disabled="requestProcessingCount !== 0"
+            >
               關閉編輯模式
             </button>
           </div>
@@ -296,7 +300,7 @@ export default {
   computed: {
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
-    ...annotations.mapState(['annotationsTotal']),
+    ...annotations.mapState(['annotationsTotal', 'requestProcessingCount']),
     ...account.mapGetters(['userId']),
     projectId: function() {
       return this.$route.params.projectId;
