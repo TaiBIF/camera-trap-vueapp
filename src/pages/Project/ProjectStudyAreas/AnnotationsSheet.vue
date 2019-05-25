@@ -34,6 +34,14 @@
             <i class="icon-time-machine"></i>
           </a>
         </div>
+
+        <div v-if="showErrorMessage && !!errorMessage" class="error-message">
+          <a class="close" @click="showErrorMessage = false">
+            <i class="fa fa-times"></i>
+          </a>
+          <span class="alert-box"></span>
+          <span class="text" v-html="errorMessage"> </span>
+        </div>
       </div>
     </div>
     <!-- handsontable -->
@@ -160,6 +168,7 @@ export default {
 
   data() {
     return {
+      showErrorMessage: true,
       idleTimeevent: -1,
       showIdleModal: false,
       isEnableContinuous: false,
@@ -370,6 +379,8 @@ export default {
       if (!!selected && selected[0][2] !== val) {
         hotInstance.selectRows(val);
       }
+
+      this.showErrorMessage = true;
     },
     projectDataFields: function() {
       this.setSheetHeader();
@@ -427,6 +438,21 @@ export default {
           : this.continuousStartRow + targetIndex - 1;
 
       return [this.continuousStartRow, endIndex];
+    },
+    errorMessage() {
+      if (this.currentAnnotationIdx < 0) {
+        return '';
+      }
+
+      let message = '';
+
+      this.annotations[this.currentAnnotationIdx].failures.forEach(key => {
+        if (failures[key]) {
+          message = failures[key];
+        }
+      });
+
+      return message;
     },
   },
   methods: {
@@ -489,10 +515,6 @@ export default {
             // 如果有 code 則要顯示物種提示
             td.dataset.tooltip = SpeciesTooltip[sp.code];
           } else if (this.annotations[row].failures.length > 0) {
-            // 如果有錯誤則要顯示錯誤提示
-            if (this.annotations[row].failures.includes('new-species')) {
-              td.dataset.tooltip = failures['new-species'];
-            }
             td.innerHTML += '<span class="alert-box">!</span>';
             td.className = 'htInvalid';
           }
