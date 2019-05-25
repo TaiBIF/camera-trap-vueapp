@@ -19,6 +19,7 @@ const state = {
   annotations: [],
   annotationsTotal: 0,
   revision: [],
+  requestProcessingCount: 0,
 };
 
 const getters = {
@@ -40,6 +41,12 @@ const getters = {
 };
 
 const mutations = {
+  plusRequestProcessing(state) {
+    state.requestProcessingCount++;
+  },
+  minusRequestProcessing(state) {
+    state.requestProcessingCount--;
+  },
   saveQuery(state, query) {
     state.query = query;
   },
@@ -73,6 +80,7 @@ const actions = {
     commit('saveQuery', query);
   },
   async setAnnotations({ commit }, { annotationId, body }) {
+    commit('plusRequestProcessing');
     // const data = await setAnnotations(annotationId, body);
     // commit('updateAnnotations', data);
 
@@ -83,23 +91,28 @@ const actions = {
       value: v.value,
     }));
     commit('updateAnnotations', data);
+    commit('minusRequestProcessing');
   },
   async deleteAnnotations({ commit }, ids) {
+    commit('plusRequestProcessing');
     await Promise.all(ids.map(id => deleteAnnotations(id)));
     commit('deleteAnnotations', ids);
+    commit('minusRequestProcessing');
   },
-  async cloneAnnotations({ state, getters, dispatch }, annotationIdx) {
+  async cloneAnnotations({ state, getters, commit, dispatch }, annotationIdx) {
+    commit('plusRequestProcessing');
     const annotation = getters.annotations[annotationIdx];
     const payload = {
       cameraLocation: annotation.cameraLocation,
       filename: annotation.filename,
-      file: annotation.file.id,
+      file: idx(annotation, _ => _.file.id),
       time: annotation.time,
       speciesTitle: annotation.species.title,
       fields: annotation.fields.filter(v => !!v.value),
     };
     await createAnnotations(payload);
     dispatch('getAnnotations', state.query);
+    commit('minusRequestProcessing');
   },
   async getRevision({ commit }, annotationId) {
     const data = await getRevision(annotationId);
