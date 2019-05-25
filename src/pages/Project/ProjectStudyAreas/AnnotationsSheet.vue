@@ -86,6 +86,16 @@
         </div>
       </div>
     </div>
+
+    <info-modal
+      v-if="showIdleModal"
+      :open="showIdleModal"
+      @close="showIdleModal = false"
+    >
+      <p class="text-gray">
+        您已閒置30分鐘，系統已自動跳出編輯模式。
+      </p>
+    </info-modal>
   </div>
 </template>
 
@@ -99,6 +109,7 @@ import * as R from 'ramda';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import { getLanguage } from '@/utils/i18n';
 import ContinuousButton from '@/components/ProjectStudyAreas/ContinuousButton';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
 import 'handsontable-key-value';
@@ -130,6 +141,7 @@ export default {
   components: {
     HotTable,
     ContinuousButton,
+    InfoModal,
   },
   props: {
     isEdit: {
@@ -152,6 +164,8 @@ export default {
 
   data() {
     return {
+      idleTimeevent: -1,
+      showIdleModal: false,
       isEnableContinuous: false,
       continuousMinute: 3,
       continuousStartRow: undefined,
@@ -238,6 +252,7 @@ export default {
             return selected.length !== 1 || selected[0][0] !== selected[0][2];
           },
           callback: (key, selection) => {
+            this.setIdleTimeout();
             const row = selection[0].start.row;
             this.cloneAnnotations(row);
           },
@@ -246,6 +261,7 @@ export default {
           name: '刪除列',
           disabled: false,
           callback: (key, selection) => {
+            this.setIdleTimeout();
             R.pipe(
               R.map(s => R.range(s.start.row, s.end.row + 1)),
               R.flatten,
@@ -281,12 +297,15 @@ export default {
       this.setSheetColumn();
       window.onresize = () => this.setSheetHeight();
     }, 500);
+
+    // 編輯中離開頁面警告
     window.onbeforeunload = () => {
       return this.isEdit ? '是否要離開此頁面' : undefined;
     };
   },
   beforeDestroy() {
     window.onbeforeunload = null;
+    clearTimeout(this.idleTimeevent);
   },
   watch: {
     continuousRange: function(newVal, oldVal) {
@@ -310,6 +329,9 @@ export default {
       if (val === false) {
         this.isEnableContinuous = false;
         this.continuousStartRow = undefined;
+        clearTimeout(this.idleTimeevent);
+      } else if (val === true) {
+        this.setIdleTimeout();
       }
 
       this.HandsontableSetting.contextMenu =
@@ -417,6 +439,13 @@ export default {
       'deleteAnnotations',
       'cloneAnnotations',
     ]),
+    setIdleTimeout() {
+      clearTimeout(this.idleTimeevent);
+      this.idleTimeevent = setTimeout(() => {
+        this.$emit('closeEdit');
+        this.showIdleModal = true;
+      }, 1000 * 60 * 30); // 30 分鐘
+    },
     setSheetHeight() {
       const sheetHeight =
         window.innerHeight -
@@ -661,6 +690,7 @@ export default {
       this.continuousRecover[row].isRecover = !recover.isRecover;
     },
     changeRequest(row, prop, newVal) {
+      this.setIdleTimeout();
       let annotation = {
         fields: R.clone(this.annotations[row].fields),
         speciesTitle:

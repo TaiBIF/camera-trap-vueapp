@@ -172,6 +172,7 @@
         @galleryShow="galleryShow = $event"
         @historyShow="historyShow = $event"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
+        @closeEdit="setEdit(false)"
       />
       <right-side
         :galleryShow="galleryShow"
