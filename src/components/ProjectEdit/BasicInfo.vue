@@ -263,17 +263,12 @@
           </div>
         </div>
       </div>
-
-      <div class="action">
-        <div @click="$router.back()" class="btn btn-default">取消</div>
-        <button
-          type="submit"
-          @click.stop.prevent="doDone()"
-          class="btn btn-orange"
-        >
-          {{ doneBtnText }}
-        </button>
-      </div>
+      <ActionBtns
+        @cancel="handleClickCancel"
+        @submit="doDone"
+        :error="error"
+        :submitBtnContext="doneBtnText"
+      />
     </form>
   </div>
 </template>
@@ -284,6 +279,7 @@ import moment from 'moment';
 import vSelect from 'vue-select';
 
 import { uploadCoverImage } from '@/service';
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 
 export default {
   data() {
@@ -294,16 +290,27 @@ export default {
   components: {
     vSelect,
     DatePicker,
+    ActionBtns,
   },
   props: {
-    doneBtnText: String,
     project: Object,
     areas: {
       type: Array,
       default: () => [],
     },
+    error: {
+      type: Object,
+      default: undefined,
+    },
+    doneBtnText: {
+      type: String,
+      default: '儲存設定',
+    },
   },
   computed: {
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     isUploadTypeError() {
       if (!this.previewImg) {
         return false;
@@ -327,6 +334,18 @@ export default {
     },
   },
   methods: {
+    handleClickCancel() {
+      if (this.projectId) {
+        this.$router.push({
+          name: 'projectInfo',
+          params: {
+            projectId: this.projectId,
+          },
+        });
+      } else {
+        this.$router.push({ name: 'projecOverview' });
+      }
+    },
     async uploadCover(e) {
       if (e.target.files && e.target.files[0]) {
         let reader = new FileReader();

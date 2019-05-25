@@ -31,7 +31,7 @@ orbs:
         executor: aws/default
         steps:
           - restore_cache:
-              key: dist#{{ .Revision }}
+              key: dist-{{ .Branch }}-{{ .Revision }}
           - aws/install
           - aws/configure
           - run:
@@ -42,9 +42,8 @@ orbs:
                 then
                   BUCKET=camera-trap.tw
                 fi
-                aws s3 sync dist "s3://$BUCKET" --delete --acl public-read
-                # aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete
-                # aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete --acl public-read
+                aws s3 sync dist "s3://$BUCKET" --exclude '*.js' --delete --acl public-read
+                aws s3 sync --content-encoding 'gzip' dist "s3://$BUCKET" --exclude '*.*' --include '*.js' --delete --acl public-read
           - run:
               name: Invalidate Cloudfront distribution
               command: |
@@ -78,14 +77,14 @@ orbs:
                 SCRIPT=build:staging
                 if [ $CIRCLE_BRANCH = prod ]
                 then
-                    SCRIPT=build:production
+                    SCRIPT=build
                 fi
                 npm run $SCRIPT
           - run:
               name: Create debug info
               command: node scripts/debug > dist/debug.json
           - save_cache:
-              key: dist#{{ .Revision }}
+              key: dist-{{ .Branch }}-{{ .Revision }}
               paths:
                 - dist
 

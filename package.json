@@ -6,7 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:staging": "vue-cli-service build --mode staging",
-    "build:production": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "storybook": "start-storybook"
   },
@@ -52,6 +51,7 @@
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.1",
     "babel-preset-vue": "^2.0.2",
+    "compression-webpack-plugin": "^2.0.0",
     "eslint": "^5.8.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-sort-imports-es6-autofix": "^0.4.0",

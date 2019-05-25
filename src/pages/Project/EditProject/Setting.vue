@@ -13,16 +13,7 @@
       :dailyTestTime="dailyTestTime"
       @change="dailyTestTime = $event"
     />
-    <div class="action">
-      <div @click="$router.back()" class="btn btn-default">返回</div>
-      <button
-        type="submit"
-        @click.stop.prevent="doSubmit()"
-        class="btn btn-orange"
-      >
-        儲存設定
-      </button>
-    </div>
+    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
   </div>
 </template>
 
@@ -30,6 +21,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import idx from 'idx';
 
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import CameraTestTime from './CameraTestTime.vue';
 import DataFields from './DataFields.vue';
 import DataFieldsTemplate from './DataFieldsTemplate.vue';
@@ -42,11 +34,13 @@ export default {
     DataFields,
     DataFieldsTemplate,
     CameraTestTime,
+    ActionBtns,
   },
   data() {
     return {
       dailyTestTime: undefined,
       tempDataFields: [],
+      error: undefined,
     };
   },
   props: {
@@ -75,6 +69,14 @@ export default {
       this.dailyTestTime = idx(this.projectDetail, _ => _.dailyTestTime);
       this.tempDataFields = this.projectDataFields;
     },
+    handleClickCancel() {
+      this.$router.push({
+        name: 'projectInfo',
+        params: {
+          projectId: this.projectId,
+        },
+      });
+    },
     async requestField(payload) {
       await this.postDataFields({
         ...payload,
@@ -83,6 +85,7 @@ export default {
     },
     async doSubmit() {
       this.setLoading(true);
+      this.error = undefined;
       await this.putProject({
         id: this.projectId,
         body: {
@@ -90,8 +93,18 @@ export default {
           dailyTestTime: this.dailyTestTime,
           dataFields: this.tempDataFields,
         },
+      }).catch(e => {
+        this.error = e;
       });
       this.setLoading(false);
+      if (!this.error) {
+        this.$router.push({
+          name: 'projectCameraLocation',
+          params: {
+            projectId: this.projectId,
+          },
+        });
+      }
     },
   },
 };

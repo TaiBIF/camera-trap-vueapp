@@ -1,8 +1,5 @@
 <template>
   <div>
-    <p v-if="errorMessage" :style="{ color: 'red' }">
-      錯誤訊息: {{ errorMessage }}
-    </p>
     <div class="panel">
       <div class="panel-heading">
         <h4>相機位置管理</h4>
@@ -43,9 +40,21 @@
               <div class="row">
                 <div class="col-12 text-right">
                   <div class="form-group-inline">
-                    <label for="">座標大地基準：</label>
-                    WGS84
-                    <span class="icon-note">
+                    <label id="geodetic-label">座標大地基準：</label>
+                    <v-select
+                      id="geodetic-select"
+                      v-model="geodeticDatum"
+                      :options="geodeticDatumEnum"
+                      :clearable="false"
+                      placeholder="請選擇"
+                    ></v-select>
+                    <span
+                      class="icon-note"
+                      v-tooltip.right="{
+                        content:
+                          '為準確呈現圖籍，請指明相機位置座標的大地基準。單一樣區內所有相機位置必須一致，因此更改設定會全部覆寫喔。',
+                      }"
+                    >
                       <i class="icon-info"></i>
                     </span>
                   </div>
@@ -55,10 +64,11 @@
             <div class="sheet-container">
               <hot-table
                 id="sheet"
+                ref="sheet"
                 licenseKey="non-commercial-and-evaluation"
                 language="zh-TW"
                 :settings="HandsontableSetting"
-              ></hot-table>
+              />
               <a class="text-green btn btn-link" @click="addNewCameraLoation">
                 <span class="icon"><i class="icon-add-green"></i></span>
                 <span class="text">新增相機位置</span>
@@ -68,17 +78,12 @@
         </div>
       </div>
     </div>
-
-    <div class="action">
-      <div @click="$router.back()" class="btn btn-default">取消</div>
-      <button
-        type="submit"
-        @click.stop.prevent="doSubmit()"
-        class="btn btn-orange"
-      >
-        儲存設定
-      </button>
-    </div>
+    <ActionBtns
+      @cancel="handleClickCancel"
+      @submit="doSubmit"
+      :error="error"
+      :disabledSubmit="!canSubmit"
+    />
   </div>
 </template>
 
@@ -86,26 +91,48 @@
 import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
+import vSelect from 'vue-select';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { getProjectCameraLocationsByName } from '@/service';
+import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
+const geodeticDatumEnum = ['WGS84', 'TWD97'];
 
 export default {
   components: {
     StudyAreaSidebar,
     HotTable,
+    ActionBtns,
+    vSelect,
+  },
+  mounted() {
+    window.addEventListener('resize', this.updateSheetSize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateSheetSize);
   },
   data: function() {
     return {
+      geodeticDatumEnum,
       errorMessage: undefined,
+      error: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
-      newCameraLocation: {},
-      editCameraLocation: {},
+      geodeticDatum: undefined,
       HandsontableSetting: {
+        stretchH: 'all',
+        width: () => {
+          return document.querySelector('.panel').offsetWidth - 300;
+        },
+        height: () => {
+          return Math.min(
+            this.HandsontableSetting.data.length * 42 + 43,
+            document.querySelector('.sidebar').offsetHeight - 100,
+          );
+        },
         rowHeaders: true,
         colHeaders: [
           // 'URL',
@@ -228,19 +255,16 @@ export default {
     setLoading: Function,
   },
   watch: {
+    'HandsontableSetting.data': function() {
+      this.updateSheetSize();
+    },
     currentStudyAreaId: function(val) {
+      this.geodeticDatum = undefined;
       this.currentCameraLocationId = '';
       this.getProjectCameraLocations({
         projectId: this.projectId,
         studyAreaId: val,
       });
-    },
-    currentCameraLocationId: function(val) {
-      const obj = this.cameraLocations.find(v => v.id === val);
-      Object.assign(this.editCameraLocation, obj);
-      this.editCameraLocation.settingTime = moment(
-        this.editCameraLocation.settingTime,
-      ).format('YYYY-MM-DD');
     },
     cameraLocations: function(val) {
       this.HandsontableSetting.data = val.map(v => ({
@@ -250,6 +274,17 @@ export default {
           ? { settingTime: dateFormatYYYYMMDD(v.settingTime) }
           : undefined),
       }));
+
+      // 設定座標係預設值
+      const allGeodetic = this.HandsontableSetting.data.map(
+        v => v.geodeticDatum,
+      );
+      allGeodetic.length > 0 &&
+        this.geodeticDatumEnum.forEach(geo => {
+          if (allGeodetic.every(v => v === geo)) {
+            this.geodeticDatum = geo;
+          }
+        });
     },
   },
   computed: {
@@ -257,6 +292,12 @@ export default {
     ...studyAreas.mapState(['cameraLocations']),
     projectId: function() {
       return this.$route.params.projectId;
+    },
+    canSubmit() {
+      return (
+        !!this.currentStudyAreaId &&
+        this.geodeticDatumEnum.includes(this.geodeticDatum)
+      );
     },
   },
   methods: {
@@ -268,6 +309,14 @@ export default {
     selectStudyArea(id) {
       this.currentStudyAreaId = id;
     },
+    handleClickCancel() {
+      this.$router.push({
+        name: 'projectInfo',
+        params: {
+          projectId: this.projectId,
+        },
+      });
+    },
     async addStudyArea(title, parent) {
       this.setLoading(true);
       try {
@@ -275,9 +324,9 @@ export default {
           id: this.projectId,
           area: { title, parent },
         });
-        this.errorMessage = '';
+        this.error = undefined;
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
       this.setLoading(false);
     },
@@ -297,12 +346,23 @@ export default {
             ...(v.settingTime
               ? { settingTime: moment(v.settingTime).toISOString() }
               : undefined),
+            geodeticDatum: this.geodeticDatum,
           })),
         });
-        this.errorMessage = '';
+        this.error = undefined;
+        this.$router.push({
+          name: 'projectMember',
+          params: {
+            projectId: this.projectId,
+          },
+        });
       } catch (e) {
-        this.errorMessage = JSON.stringify(e);
+        this.error = e;
       }
+    },
+    updateSheetSize() {
+      this.$refs.sheet &&
+        this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
     },
   },
 };
@@ -315,5 +375,13 @@ export default {
     border-right: 1px red solid;
     padding-right: 1rem;
   }
+}
+
+#geodetic-label {
+  align-self: center !important;
+}
+
+#geodetic-select {
+  width: 120px;
 }
 </style>

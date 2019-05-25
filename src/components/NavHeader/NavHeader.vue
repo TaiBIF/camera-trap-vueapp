@@ -209,9 +209,7 @@ export default {
   watch: {
     isLogin: function(newValue, oldValue) {
       if (oldValue && !newValue) {
-        this.$router.push({
-          path: '/',
-        });
+        this.$router.push({ name: 'intro' });
       }
     },
   },

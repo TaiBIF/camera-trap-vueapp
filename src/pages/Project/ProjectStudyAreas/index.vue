@@ -177,6 +177,7 @@
         :galleryShow="galleryShow"
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
+        @historyShow="historyShow = $event"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
         @changeWidth="$refs.sheet.setSheetHeight()"
       />
