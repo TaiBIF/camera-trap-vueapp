@@ -18,18 +18,13 @@
       >
         <i class="fa fa-caret-down"></i>
       </button>
-      <div
-        class="dropdown-menu"
-        aria-labelledby="continuousButton"
-        style="padding-left:5px; padding-right:5px;"
-      >
+      <div class="dropdown-menu" aria-labelledby="continuousButton">
         當相鄰照片間隔
         <input
           type="number"
           min="1"
           max="10"
           class="form-control form-control-inline"
-          style="width:3em; display:inline;"
           :value="continuousMinute"
           @change="changeMinute"
         />
@@ -75,5 +70,17 @@ export default {
 
 .gray-background {
   background-color: #8080802e;
+}
+
+.dropdown-menu {
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 255px;
+  padding: 5px;
+
+  > input {
+    width: 3em;
+    display: inline;
+  }
 }
 </style>
