@@ -19,12 +19,12 @@ export default {
   data() {
     return {
       legendGroup: {
-        receive: [
+        retrieved: [
           { name: '當月資料完整', color: '#BFE08E' },
           { name: '當月資料不完整 (相機故障、失竊等因素)', color: '#FEC9D4' },
           { name: '相機撤除', color: '#8C9CAB' },
         ],
-        identify: [
+        identified: [
           { name: '當月資料已辨識', color: '#AACAEE' },
           { name: '當月資料已辨識，但資料未完整', color: '#8C9CAB' },
         ],

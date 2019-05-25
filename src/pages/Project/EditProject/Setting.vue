@@ -70,7 +70,12 @@ export default {
       this.tempDataFields = this.projectDataFields;
     },
     handleClickCancel() {
-      this.$router.push({ path: `/project/${this.projectId}` });
+      this.$router.push({
+        name: 'projectInfo',
+        params: {
+          projectId: this.projectId,
+        },
+      });
     },
     async requestField(payload) {
       await this.postDataFields({
@@ -94,7 +99,10 @@ export default {
       this.setLoading(false);
       if (!this.error) {
         this.$router.push({
-          path: `/project/${this.projectId}/edit/camera-location`,
+          name: 'projectCameraLocation',
+          params: {
+            projectId: this.projectId,
+          },
         });
       }
     },

@@ -9,18 +9,22 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'intro',
       component: () => import('@/pages/Intro.vue'),
     },
     {
       path: '/project',
+      name: 'project',
       component: () => import('@/pages/Project/index.vue'),
       children: [
         {
           path: 'overview',
+          name: 'projectOverview',
           component: () => import('@/pages/Project/Overview.vue'),
         },
         {
           path: 'create',
+          name: 'projectCreate',
           component: () => import('@/pages/Project/Create.vue'),
         },
         {
@@ -38,7 +42,7 @@ export default new Router({
               children: [
                 {
                   path: '/',
-                  redirect: 'video/all/receive',
+                  redirect: 'video/all/retrieved',
                   name: 'projectInfo',
                 },
                 {

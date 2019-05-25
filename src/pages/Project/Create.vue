@@ -71,9 +71,7 @@ export default {
     },
     submitProject() {
       this.postProject(this.project).then(() =>
-        this.$router.push({
-          path: '/project/overview',
-        }),
+        this.$router.push({ name: 'projecOverview' }),
       );
     },
   },

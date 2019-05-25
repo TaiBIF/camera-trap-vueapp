@@ -103,7 +103,7 @@ const getters = {
     if (lastUpdateTimeString) return dateFormatYYYYMMDD(lastUpdateTimeString);
     return '';
   },
-  getReceivedRetrievalData: state => ({ year, id }) =>
+  getRetrievalData: state => ({ year, id }) =>
     (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
       if (!item) return 0; // 無資料
 
@@ -112,7 +112,7 @@ const getters = {
       return 2; // 當月資料不完整
       // TODO: status 3 相機撤除尚未導入
     }),
-  getIdentifyRetrievalData: state => ({ year, id }) =>
+  getIdentifiedData: state => ({ year, id }) =>
     (idx(state, _ => _.retrievalData[year][id]) || Array(12)).map(item => {
       if (!item) return 0; // 無資料
 
