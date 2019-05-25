@@ -66,10 +66,7 @@ export default {
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
-    ...projects.mapGetters([
-      'getReceivedRetrievalData',
-      'getIdentifyRetrievalData',
-    ]),
+    ...projects.mapGetters(['getRetrievalData', 'getIdentifiedData']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -87,9 +84,9 @@ export default {
           name: title,
           path: children && children.length > 0 ? children[0].id : id,
           result:
-            this.chartType === 'receive'
-              ? this.getReceivedRetrievalData({ year: this.year, id })
-              : this.getIdentifyRetrievalData({ year: this.year, id }),
+            this.chartType === 'retrieved'
+              ? this.getRetrievalData({ year: this.year, id })
+              : this.getIdentifiedData({ year: this.year, id }),
         }));
       } else {
         // single area: list all cameras in this area
@@ -98,28 +95,28 @@ export default {
           name,
           path: id,
           result:
-            this.chartType === 'receive'
-              ? this.getReceivedRetrievalData({ year: this.year, id })
-              : this.getIdentifyRetrievalData({ year: this.year, id }),
+            this.chartType === 'retrieved'
+              ? this.getRetrievalData({ year: this.year, id })
+              : this.getIdentifiedData({ year: this.year, id }),
         }));
       }
     },
   },
   methods: {
     clickRow(path) {
-      if (this.selectedStudyAreaId === 'all') {
-        this.$router.push({
-          path: `/project/${this.projectId}/info/video/${path}/${
-            this.chartType
-          }`,
-        });
-      } else {
-        this.$router.push({
-          path: `/project/${this.projectId}/info/video/${
-            this.selectedStudyAreaId
-          }/${this.chartType}/${path}`,
-        });
+      const params = {
+        projectId: this.projectId,
+        selectedStudyAreaId: path,
+        type: this.chartType,
+      };
+      if (this.selectedStudyAreaId !== 'all') {
+        params.selectedStudyAreaId = this.selectedStudyAreaId;
+        params.selectedCameraId = path;
       }
+      this.$router.push({
+        name: 'projectVideo',
+        params,
+      });
     },
   },
 };
@@ -187,7 +184,7 @@ export default {
     }
   }
 
-  td.identify > span {
+  td.identified > span {
     &.is-complete {
       background: #aacaee;
     }
@@ -206,10 +203,10 @@ export default {
       background: #2a7f60;
     }
 
-    td.identify > span {
+    td.identified > span {
       border: 0px;
     }
-    td.identify > span.is-complete {
+    td.identified > span.is-complete {
       background: #5895da;
     }
   }

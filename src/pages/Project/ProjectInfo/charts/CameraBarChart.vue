@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-charts :options="barOption" ref="barCharts" />
-    <chart-legend type="receive" />
+    <chart-legend type="retrieved" />
   </div>
 </template>
 

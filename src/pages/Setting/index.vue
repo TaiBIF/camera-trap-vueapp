@@ -176,7 +176,7 @@ export default {
   methods: {
     ...account.mapActions(['updateProfile', 'loadSpecies']),
     handleCancel() {
-      this.$router.push('/project/overview');
+      this.$router.push({ name: 'projectOverview' });
     },
     handleSubmit() {
       const newHotkeys = this.speciesHotkeys.map(({ species, hotkey }) => ({
