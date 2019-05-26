@@ -87,9 +87,9 @@
       <div class="panel tab-panel">
         <div class="panel-header">
           <ul class="nav-tab">
-            <li :class="{ active: $route.name === 'projectVideo' }">
+            <li :class="{ active: $route.name === 'projectMedia' }">
               <router-link
-                :to="`/project/${projectId}/info/video/all/retrieved`"
+                :to="`/project/${projectId}/info/media/all/retrieved`"
               >
                 影像回收/辨識狀況
               </router-link>

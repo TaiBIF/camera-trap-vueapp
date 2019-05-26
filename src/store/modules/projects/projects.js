@@ -19,7 +19,6 @@ import {
   putProjectSpecies,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
-import { parseUrl } from 'query-string';
 
 // 計畫資料
 
