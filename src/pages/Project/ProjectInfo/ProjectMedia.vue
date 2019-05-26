@@ -81,14 +81,14 @@
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'retrieved' }"
-                :to="generateVideoPath('retrieved')"
+                :to="generateMediaPath('retrieved')"
               >
                 影像回收狀況
               </router-link>
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'identified' }"
-                :to="generateVideoPath('identified')"
+                :to="generateMediaPath('identified')"
               >
                 影像辨識進度
               </router-link>
@@ -128,7 +128,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 const projects = createNamespacedHelpers('projects');
 
 export default {
-  name: 'project-video',
+  name: 'project-media',
   components: {
     ProjectMap,
     ProjectChart,
@@ -160,7 +160,7 @@ export default {
       return this.$route.params.selectedCameraId;
     },
     backToAreaLink: function() {
-      return `/project/${this.projectId}/info/video/${
+      return `/project/${this.projectId}/info/media/${
         this.selectedStudyAreaId
       }/retrieved`;
     },
@@ -250,7 +250,7 @@ export default {
       );
       if (studyArea) {
         this.$router.push({
-          name: 'projectVideo',
+          name: 'projectMedia',
           params: {
             projectId: this.projectId,
             selectedStudyAreaId: studyArea.path,
@@ -259,13 +259,13 @@ export default {
         });
       }
     },
-    generateVideoPath(type) {
+    generateMediaPath(type) {
       if (this.selectedCameraId) {
-        return `/project/${this.projectId}/info/video/${
+        return `/project/${this.projectId}/info/media/${
           this.selectedStudyAreaId
         }/${type}/${this.selectedCameraId}`;
       }
-      return `/project/${this.projectId}/info/video/${
+      return `/project/${this.projectId}/info/media/${
         this.selectedStudyAreaId
       }/${type}`;
     },

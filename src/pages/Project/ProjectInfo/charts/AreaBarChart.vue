@@ -114,7 +114,7 @@ export default {
         params.selectedCameraId = path;
       }
       this.$router.push({
-        name: 'projectVideo',
+        name: 'projectMedia',
         params,
       });
     },

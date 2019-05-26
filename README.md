@@ -77,7 +77,7 @@ npm run serve
 | /                                                      | Intro.vue                              |
 | /project/overview                                      | Project/Overview.vue                   | 2.1 計畫總覽(2.1.1, 2.2.1)                                               |
 | /project/create                                        | Project/Create.vue                     | 2.3 新增計畫(2.3.1, 2.3.2)                                               |
-| /project/:projectId/info/(video,species)/:areaId/:type | Project/ProjectInfo.vue                | 2.4 計畫⾸頁(2.4 ~ 2.11, 9.1.1)                                          |
+| /project/:projectId/info/(media,species)/:areaId/:type | Project/ProjectInfo.vue                | 2.4 計畫⾸頁(2.4 ~ 2.11, 9.1.1)                                          |
 | /project/:projectId/edit/basic                         | Project/EditProject/Basic.vue          | 3.1 計畫管理-基本資訊(3.1)                                               |
 | /project/:projectId/edit/setting                       | Project/EditProject/Setting.vue        | 3.2 計畫管理-編輯設定(3.2, 3.3.1, 9.1.2)                                 |
 | /project/:projectId/edit/camera-location               | Project/EditProject/CameraLocation.vue | 3.4 計畫管理-相機位置管理(3.4.1, 3.5)                                    |
