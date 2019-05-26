@@ -97,19 +97,25 @@
         </div>
         <div v-if="selectedCamera" class="row">
           <div class="cameraInfo">
-            <div>
+            <div v-if="!!selectedCamera.settingTime">
               架設日期：{{ dateFormatYYYYMMDD(selectedCamera.settingTime) }}
             </div>
-            <div>
+            <div v-if="!!selectedCamera.longitude && !!selectedCamera.latitude">
               經緯度：{{
                 `${parseFloat(selectedCamera.longitude).toFixed(
                   6,
                 )}, ${parseFloat(selectedCamera.latitude).toFixed(6)}`
               }}
             </div>
-            <div>海拔：{{ selectedCamera.altitude }}m</div>
-            <div>植披：{{ selectedCamera.vegetation }}</div>
-            <div>土地利用型態：{{ selectedCamera.landCoverType }}</div>
+            <div v-if="!!selectedCamera.altitude">
+              海拔：{{ selectedCamera.altitude }}m
+            </div>
+            <div v-if="!!selectedCamera.vegetation">
+              植披：{{ selectedCamera.vegetation }}
+            </div>
+            <div v-if="!!selectedCamera.landCoverType">
+              土地利用型態：{{ selectedCamera.landCoverType }}
+            </div>
           </div>
         </div>
         <project-chart :activeCameraId="activeCameraId" />
