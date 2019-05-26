@@ -60,22 +60,26 @@ export default {
   data() {
     return {
       currentYear: currentYear,
-      selectedYear: currentYear,
+      selectedYear: 0,
       showErrorReportModal: false,
       submitErrorReportFailMessage: '',
     };
   },
   mounted() {
-    this.loadRetrievealDataByCurrentSelected();
+    this.setSelectedYear();
   },
   watch: {
     selectedYear: 'loadRetrievealDataByCurrentSelected',
     projectId: 'loadRetrievealDataByCurrentSelected',
     selectedStudyAreaId: 'loadRetrievealDataByCurrentSelected',
     selectedCameraId: 'loadRetrievealDataByCurrentSelected',
+    getLatestAnnotationYear: 'setSelectedYear',
   },
   computed: {
-    ...projects.mapGetters(['retrievalLoadingStatus']),
+    ...projects.mapGetters([
+      'retrievalLoadingStatus',
+      'getLatestAnnotationYear',
+    ]),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -88,16 +92,32 @@ export default {
   },
   methods: {
     ...projects.mapActions(['loadRetrievalData']),
+    setSelectedYear() {
+      if (this.selectedYear && this.selectedYear !== this.currentYear) {
+        // do nothing if selectedYear already exist and is not currentYear (user have changed manully)
+      } else if (
+        this.getLatestAnnotationYear &&
+        this.getLatestAnnotationYear !== this.currentYear
+      ) {
+        // if lastest annotation year is not current year, then set selected year to lastest annotation year
+        this.selectedYear = this.getLatestAnnotationYear;
+      } else if (!this.selectedYear) {
+        // if lastest annotation year not exist then set to current year
+        this.selectedYear = this.currentYear;
+      }
+    },
     loadRetrievealDataByCurrentSelected() {
-      this.loadRetrievalData({
-        year: this.selectedYear,
-        projectId: this.projectId,
-        studyAreaId:
-          this.selectedStudyAreaId !== 'all'
-            ? this.selectedStudyAreaId
-            : undefined,
-        cameraLocationId: this.selectedCameraId,
-      });
+      if (this.selectedYear) {
+        this.loadRetrievalData({
+          year: this.selectedYear,
+          projectId: this.projectId,
+          studyAreaId:
+            this.selectedStudyAreaId !== 'all'
+              ? this.selectedStudyAreaId
+              : undefined,
+          cameraLocationId: this.selectedCameraId,
+        });
+      }
     },
     changeSelectedYear(year) {
       if (year > new Date().getFullYear()) {

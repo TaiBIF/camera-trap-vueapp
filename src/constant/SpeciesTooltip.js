@@ -6,5 +6,6 @@ export default {
 };
 
 export const failures = {
-  'new-species': '物種名稱不在預設中，請修正名稱，或回報管理員。',
+  'new-species':
+    '物種名稱不在預設中，請修正名稱，或<a href="/help/contact-us" class="link">回報管理員</a>',
 };
