@@ -184,7 +184,7 @@
         :currentAnnotationIdx="currentAnnotationIdx"
         @historyShow="historyShow = $event"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
-        @changeWidth="$refs.sheet.setSheetHeight()"
+        @changeWidth="setSheetHeight"
       />
     </div>
 
@@ -273,6 +273,8 @@ export default {
     });
   },
   watch: {
+    galleryShow: 'setSheetHeight',
+    historyShow: 'setSheetHeight',
     $route() {
       this.isEdit = false;
       this.query = Object.assign({}, defaultQuery);
@@ -427,6 +429,9 @@ export default {
         },
       });
       this.isLoading = false;
+    },
+    setSheetHeight() {
+      this.$refs.sheet.setSheetHeight();
     },
   },
 };

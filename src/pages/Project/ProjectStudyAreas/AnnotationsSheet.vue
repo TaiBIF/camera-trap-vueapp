@@ -477,6 +477,10 @@ export default {
         document.querySelector('.sheet-header').clientHeight;
 
       this.HandsontableSetting.height = sheetHeight;
+
+      this.$nextTick(() => {
+        this.$refs.sheet.hotInstance.render();
+      });
     },
     afterOnCellMouseDown(event) {
       this.currentMouseButton = event.button;
