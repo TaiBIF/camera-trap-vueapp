@@ -345,7 +345,8 @@
                 <div class="form-group">
                   <label class="required">物種：</label>
                   <v-select
-                    :options="speciesOptions"
+                    :disabled="!projectSpeciesOptions.length"
+                    :options="projectSpeciesOptions"
                     v-model="form.selectedSpecies[0]"
                   />
                 </div>
@@ -506,7 +507,7 @@ export default {
   computed: {
     ...account.mapGetters(['species']),
     ...dataFields.mapGetters(['dataFields']),
-    ...projects.mapState(['projects']),
+    ...projects.mapState(['projects', 'projectSpecies']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
 
     projectOptions() {
@@ -528,11 +529,17 @@ export default {
         value: x.id,
       }));
     },
+    projectSpeciesOptions() {
+      return this.projectSpecies.map(x => ({
+        label: x.title[getLanguage()],
+        value: x.id,
+      }));
+    },
   },
   methods: {
     ...account.mapActions(['loadSpecies']),
     ...dataFields.mapActions(['getAllDataFields']),
-    ...projects.mapActions(['getAllProjects']),
+    ...projects.mapActions(['getAllProjects', 'getProjectSpecies']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getAllProjectCameraLocations',
@@ -574,7 +581,11 @@ export default {
        */
       const form = this.form.items[index];
       if (changed === 'project') {
-        await this.getProjectStudyAreas(form.selected.project.value);
+        const tasks = [this.getProjectStudyAreas(form.selected.project.value)];
+        if (index === 0) {
+          tasks.push(this.getProjectSpecies(form.selected.project.value));
+        }
+        await Promise.all(tasks);
         form.studyAreas = this.studyAreas;
         form.options.studyAreas = form.studyAreas.map(x => ({
           label: x.title,
@@ -700,7 +711,7 @@ export default {
     submitCalculateForm() {
       const query = {
         calculateType: this.form.selectedCalculateType.value,
-        cameraLocations: this.form.items[0].selected.cameraLocation.value,
+        cameraLocation: this.form.items[0].selected.cameraLocation.value,
         species: this.form.selectedSpecies[0].value,
         validTimeInterval: this.form.selectedValidTimeInterval.value,
         eventTimeInterval: this.form.selectedEventTimeInterval.value,

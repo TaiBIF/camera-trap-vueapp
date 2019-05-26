@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import account from '@/store/modules/account';
+import calculator from '@/store/modules/calculator';
 import config from '@/store/modules/config';
 import dataFields from '@/store/modules/dataFields';
 import forest from '@/store/modules/forest';
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     config,
     dataFields,
     forest,
+    calculator,
     notifications,
     ...projects,
     upload,
