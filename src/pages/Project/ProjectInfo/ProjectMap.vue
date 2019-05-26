@@ -276,7 +276,7 @@ export default {
     },
     selectArea(path) {
       this.$router.push({
-        name: 'projectVideo',
+        name: 'projectMedia',
         params: {
           projectId: this.projectId,
           selectedStudyAreaId: path,
@@ -286,7 +286,7 @@ export default {
     },
     selectCamera(cameraId) {
       this.$router.push({
-        name: 'projectVideo',
+        name: 'projectMedia',
         params: {
           projectId: this.projectId,
           selectedStudyAreaId: this.selectedStudyAreaId,

@@ -42,15 +42,15 @@ export default new Router({
               children: [
                 {
                   path: '/',
-                  redirect: 'video/all/retrieved',
+                  redirect: 'media/all/retrieved',
                   name: 'projectInfo',
                 },
                 {
-                  path: 'video/:selectedStudyAreaId/:type/:selectedCameraId?',
-                  name: 'projectVideo',
+                  path: 'media/:selectedStudyAreaId/:type/:selectedCameraId?',
+                  name: 'projectMedia',
                   meta: { projectAside: true },
                   component: () =>
-                    import('@/pages/Project/ProjectInfo/ProjectVideo.vue'),
+                    import('@/pages/Project/ProjectInfo/ProjectMedia.vue'),
                 },
                 {
                   path: 'species',

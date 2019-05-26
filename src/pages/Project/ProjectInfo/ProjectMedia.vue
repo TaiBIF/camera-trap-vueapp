@@ -81,14 +81,14 @@
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'retrieved' }"
-                :to="generateVideoPath('retrieved')"
+                :to="generateMediaPath('retrieved')"
               >
                 影像回收狀況
               </router-link>
               <router-link
                 class="btn btn-border-gray"
                 :class="{ active: $route.params.type === 'identified' }"
-                :to="generateVideoPath('identified')"
+                :to="generateMediaPath('identified')"
               >
                 影像辨識進度
               </router-link>
@@ -97,19 +97,25 @@
         </div>
         <div v-if="selectedCamera" class="row">
           <div class="cameraInfo">
-            <div>
+            <div v-if="!!selectedCamera.settingTime">
               架設日期：{{ dateFormatYYYYMMDD(selectedCamera.settingTime) }}
             </div>
-            <div>
+            <div v-if="!!selectedCamera.longitude && !!selectedCamera.latitude">
               經緯度：{{
                 `${parseFloat(selectedCamera.longitude).toFixed(
                   6,
                 )}, ${parseFloat(selectedCamera.latitude).toFixed(6)}`
               }}
             </div>
-            <div>海拔：{{ selectedCamera.altitude }}m</div>
-            <div>植披：{{ selectedCamera.vegetation }}</div>
-            <div>土地利用型態：{{ selectedCamera.landCoverType }}</div>
+            <div v-if="!!selectedCamera.altitude">
+              海拔：{{ selectedCamera.altitude }}m
+            </div>
+            <div v-if="!!selectedCamera.vegetation">
+              植披：{{ selectedCamera.vegetation }}
+            </div>
+            <div v-if="!!selectedCamera.landCoverType">
+              土地利用型態：{{ selectedCamera.landCoverType }}
+            </div>
           </div>
         </div>
         <project-chart :activeCameraId="activeCameraId" />
@@ -128,7 +134,7 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 const projects = createNamespacedHelpers('projects');
 
 export default {
-  name: 'project-video',
+  name: 'project-media',
   components: {
     ProjectMap,
     ProjectChart,
@@ -160,7 +166,7 @@ export default {
       return this.$route.params.selectedCameraId;
     },
     backToAreaLink: function() {
-      return `/project/${this.projectId}/info/video/${
+      return `/project/${this.projectId}/info/media/${
         this.selectedStudyAreaId
       }/retrieved`;
     },
@@ -250,7 +256,7 @@ export default {
       );
       if (studyArea) {
         this.$router.push({
-          name: 'projectVideo',
+          name: 'projectMedia',
           params: {
             projectId: this.projectId,
             selectedStudyAreaId: studyArea.path,
@@ -259,13 +265,13 @@ export default {
         });
       }
     },
-    generateVideoPath(type) {
+    generateMediaPath(type) {
       if (this.selectedCameraId) {
-        return `/project/${this.projectId}/info/video/${
+        return `/project/${this.projectId}/info/media/${
           this.selectedStudyAreaId
         }/${type}/${this.selectedCameraId}`;
       }
-      return `/project/${this.projectId}/info/video/${
+      return `/project/${this.projectId}/info/media/${
         this.selectedStudyAreaId
       }/${type}`;
     },
