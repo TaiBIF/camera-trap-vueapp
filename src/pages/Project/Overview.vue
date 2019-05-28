@@ -3,7 +3,7 @@
     class="container"
     v-infinite-scroll="loadMoreProjects"
     infinite-scroll-disabled="disableLoadMoreProjects"
-    infinite-scroll-distance="800"
+    infinite-scroll-distance="300"
   >
     <h1 class="heading">計畫總覽</h1>
     <div v-if="projects.length === 0">
@@ -29,33 +29,17 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              依 {{ sortedBy }} 排序
+              依 {{ SORTED_BY_ENUM[sortedBy] }} 排序
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <a
                 class="dropdown-item"
-                @click="
-                  sortByField('startTime', -1);
-                  sortedBy = '資料起始時間';
-                "
-                >依資料起始時間排序 (新→舊)</a
+                :key="key"
+                v-for="(item, key) in SORTED_BY_ENUM"
+                @click="sortedBy = key"
               >
-              <a
-                class="dropdown-item"
-                @click="
-                  sortByField('funder', 1);
-                  sortedBy = '委託單位';
-                "
-                >依委託單位筆畫排序</a
-              >
-              <a
-                class="dropdown-item"
-                @click="
-                  sortByField('title', 1);
-                  sortedBy = '計畫名稱';
-                "
-                >依計畫名稱筆畫排序</a
-              >
+                {{ item }}
+              </a>
             </div>
           </div>
         </div>
@@ -106,12 +90,19 @@ import infiniteScroll from 'vue-infinite-scroll';
 
 const projects = createNamespacedHelpers('projects');
 const PROJECT_PAGE = 12;
+const SORTED_BY_ENUM = {
+  oldestAnnotationTime: '依資料起始時間排序 (新→舊)',
+  latestAnnotationTime: '依最後更新時間排序 (新→舊)',
+  funder: '依委託單位筆畫排序',
+  title: '依計畫名稱筆畫排序',
+};
 
 export default {
   directives: { infiniteScroll },
   data() {
     return {
-      sortedBy: '條件',
+      SORTED_BY_ENUM,
+      sortedBy: 'oldestAnnotationTime',
       busy: false,
     };
   },
@@ -119,7 +110,17 @@ export default {
     this.getProjects({
       index: 0,
       size: PROJECT_PAGE,
+      sort: this.sortedBy,
     });
+  },
+  watch: {
+    sortedBy: function() {
+      this.getProjects({
+        index: 0,
+        size: PROJECT_PAGE,
+        sort: this.sortedBy,
+      });
+    },
   },
   computed: {
     ...projects.mapState(['projects', 'projectsTotal']),
@@ -129,21 +130,13 @@ export default {
   },
   methods: {
     ...projects.mapActions(['getProjects']),
-    sortByField(fieldName, dir) {
-      this.projects.sort((prjA, prjB) => {
-        if (dir > 0) {
-          return prjA[fieldName] > prjB[fieldName] ? 1 : -1;
-        } else {
-          return prjA[fieldName] < prjB[fieldName] ? 1 : -1;
-        }
-      });
-    },
     async loadMoreProjects() {
       this.busy = true;
 
       await this.getProjects({
         index: this.projects.length / PROJECT_PAGE,
         size: PROJECT_PAGE,
+        sort: this.sortedBy,
       });
 
       this.busy = false;
