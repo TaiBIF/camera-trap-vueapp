@@ -91,8 +91,8 @@ import infiniteScroll from 'vue-infinite-scroll';
 const projects = createNamespacedHelpers('projects');
 const PROJECT_PAGE = 12;
 const SORTED_BY_ENUM = {
-  oldestAnnotationTime: '依資料起始時間排序 (新→舊)',
-  latestAnnotationTime: '依最後更新時間排序 (新→舊)',
+  '-oldestAnnotationTime': '依資料起始時間排序 (新→舊)',
+  '-latestAnnotationTime': '依最後更新時間排序 (新→舊)',
   funder: '依委託單位筆畫排序',
   title: '依計畫名稱筆畫排序',
 };
@@ -102,7 +102,7 @@ export default {
   data() {
     return {
       SORTED_BY_ENUM,
-      sortedBy: 'oldestAnnotationTime',
+      sortedBy: '-oldestAnnotationTime',
       busy: false,
     };
   },
