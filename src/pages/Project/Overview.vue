@@ -107,19 +107,11 @@ export default {
     };
   },
   mounted() {
-    this.getProjects({
-      index: 0,
-      size: PROJECT_PAGE,
-      sort: this.sortedBy,
-    });
+    this.getProjectRequest();
   },
   watch: {
-    sortedBy: function() {
-      this.getProjects({
-        index: 0,
-        size: PROJECT_PAGE,
-        sort: this.sortedBy,
-      });
+    sortedBy() {
+      this.getProjectRequest();
     },
   },
   computed: {
@@ -130,16 +122,17 @@ export default {
   },
   methods: {
     ...projects.mapActions(['getProjects']),
-    async loadMoreProjects() {
+    async getProjectRequest(index = 0) {
       this.busy = true;
-
       await this.getProjects({
-        index: this.projects.length / PROJECT_PAGE,
+        index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
       });
-
       this.busy = false;
+    },
+    loadMoreProjects() {
+      this.getProjectRequest(this.projects.length / PROJECT_PAGE);
     },
   },
 };
