@@ -24,6 +24,7 @@ import { getLanguage } from '@/utils/i18n';
 
 const state = {
   projects: [],
+  projectsTotal: 0,
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
@@ -146,6 +147,12 @@ const mutations = {
   setProjects(state, payload) {
     state.projects = payload;
   },
+  appendProjects(state, payload) {
+    state.projects = [...state.projects, ...payload];
+  },
+  setProjectsTotal(state, payload) {
+    state.projectsTotal = payload;
+  },
   setProjectDetail(state, data) {
     state.projectDetail = data;
   },
@@ -182,9 +189,13 @@ const mutations = {
 };
 
 const actions = {
-  async getProjects({ commit }) {
-    const data = await getProjects();
-    commit('setProjects', idx(data, _ => _.items) || []);
+  async getProjects({ commit }, payload) {
+    const data = await getProjects(payload);
+    commit(
+      payload.index === 0 ? 'setProjects' : 'appendProjects',
+      idx(data, _ => _.items) || [],
+    );
+    commit('setProjectsTotal', data.total);
   },
   async getAllProjects({ commit }, query) {
     const data = await getAllProjects(query);

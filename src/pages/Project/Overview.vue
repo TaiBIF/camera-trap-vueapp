@@ -1,5 +1,10 @@
 <template>
-  <div class="container">
+  <div
+    class="container"
+    v-infinite-scroll="loadMoreProjects"
+    infinite-scroll-disabled="disableLoadMoreProjects"
+    infinite-scroll-distance="800"
+  >
     <h1 class="heading">計畫總覽</h1>
     <div v-if="projects.length === 0">
       <div class="empty-content">
@@ -97,20 +102,30 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import infiniteScroll from 'vue-infinite-scroll';
 
 const projects = createNamespacedHelpers('projects');
+const PROJECT_PAGE = 12;
 
 export default {
+  directives: { infiniteScroll },
   data() {
     return {
       sortedBy: '條件',
+      busy: false,
     };
   },
   mounted() {
-    this.getProjects();
+    this.getProjects({
+      index: 0,
+      size: PROJECT_PAGE,
+    });
   },
   computed: {
-    ...projects.mapState(['projects']),
+    ...projects.mapState(['projects', 'projectsTotal']),
+    disableLoadMoreProjects() {
+      return this.busy || this.projectsTotal === this.projects.length;
+    },
   },
   methods: {
     ...projects.mapActions(['getProjects']),
@@ -122,6 +137,16 @@ export default {
           return prjA[fieldName] < prjB[fieldName] ? 1 : -1;
         }
       });
+    },
+    async loadMoreProjects() {
+      this.busy = true;
+
+      await this.getProjects({
+        index: this.projects.length / PROJECT_PAGE,
+        size: PROJECT_PAGE,
+      });
+
+      this.busy = false;
     },
   },
 };
