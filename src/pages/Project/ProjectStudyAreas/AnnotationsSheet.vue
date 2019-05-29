@@ -647,9 +647,12 @@ export default {
                 }, {}),
                 renderer: (instance, td, row, col, prop, value) => {
                   resetTd(td);
-                  const target = R.find(R.propEq('id', value), v.options);
 
-                  td.innerHTML = target ? target[getLanguage()] : '';
+                  td.innerHTML = R.pipe(
+                    R.find(R.propEq('id', value)),
+                    R.ifElse(R.isNil, R.always(''), v => v[getLanguage()]),
+                  )(v.options);
+
                   return td;
                 },
               };
