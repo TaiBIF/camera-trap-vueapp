@@ -2,9 +2,9 @@ import fetchWrap from '@/utils/fetch';
 import queryString from 'query-string';
 
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#get-projects
-const getProjects = async () => {
+const getProjects = async query => {
   const res = await fetchWrap({
-    url: '/api/v1/projects',
+    url: `/api/v1/projects?${queryString.stringify(query)}`,
     method: 'GET',
   });
   return res;
