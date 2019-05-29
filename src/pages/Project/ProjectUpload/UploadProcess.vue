@@ -96,7 +96,7 @@
                     <i class="icon icon-upload-success" /> 系統已收到檔案
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploadError">
-                    <i class="icon icon-upload-fail" /> 處理中
+                    <i class="icon icon-upload-fail" /> 上傳失敗
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.cancel">
                     已取消上傳
