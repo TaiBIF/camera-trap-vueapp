@@ -104,6 +104,7 @@
                   <label>物種：</label>
                   <v-select
                     :options="speciesOptions"
+                    :disabled="!speciesOptions.length"
                     v-model="form.selectedSpecies"
                     multiple
                   />
@@ -451,6 +452,7 @@ import { getLanguage } from '@/utils/i18n';
 import datePicker from 'vue2-datepicker';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
+import { getProjectSpecies } from '@/service';
 
 const account = createNamespacedHelpers('account');
 const dataFields = createNamespacedHelpers('dataFields');
@@ -472,6 +474,7 @@ export default {
         { label: '30 分鐘', value: 30 * 60 * 1000 },
         { label: '60 分鐘', value: 60 * 60 * 1000 },
       ],
+      speciesOptions: [], // {Array<{label: 'string', value: 'string'}>}
       form: {
         selectedCalculateType: { label: '有效照片與目擊事件', value: 'oi' },
         selectedSpecies: [],
@@ -505,7 +508,6 @@ export default {
     };
   },
   computed: {
-    ...account.mapGetters(['species']),
     ...dataFields.mapGetters(['dataFields']),
     ...projects.mapState(['projects', 'projectSpecies']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
@@ -520,15 +522,6 @@ export default {
         value: project.id,
       }));
     },
-    speciesOptions() {
-      /*
-      @returns {Array<{label: 'string', value: 'string'}>}
-      */
-      return this.species.map(x => ({
-        label: x.title,
-        value: x.id,
-      }));
-    },
     projectSpeciesOptions() {
       return this.projectSpecies.map(x => ({
         label: x.title[getLanguage()],
@@ -537,9 +530,8 @@ export default {
     },
   },
   methods: {
-    ...account.mapActions(['loadSpecies']),
     ...dataFields.mapActions(['getAllDataFields']),
-    ...projects.mapActions(['getAllProjects', 'getProjectSpecies']),
+    ...projects.mapActions(['getAllProjects']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getAllProjectCameraLocations',
@@ -581,11 +573,27 @@ export default {
        */
       const form = this.form.items[index];
       if (changed === 'project') {
-        const tasks = [this.getProjectStudyAreas(form.selected.project.value)];
-        if (index === 0) {
-          tasks.push(this.getProjectSpecies(form.selected.project.value));
-        }
-        await Promise.all(tasks);
+        const projectIds = new Set();
+        this.form.items.forEach(form => {
+          projectIds.add(form.selected.project.value);
+        });
+        const tasks = Array.from(projectIds).map(projectId =>
+          getProjectSpecies(projectId),
+        );
+        tasks.unshift(this.getProjectStudyAreas(form.selected.project.value));
+        // eslint-disable-next-line no-unused-vars
+        const [_, ...species] = await Promise.all(tasks);
+        this.speciesOptions = [];
+        species.forEach(species => {
+          species.items.forEach(x => {
+            if (!this.speciesOptions.find(y => y.value === x.id)) {
+              this.speciesOptions.push({
+                label: x.title[getLanguage()],
+                value: x.id,
+              });
+            }
+          });
+        });
         form.studyAreas = this.studyAreas;
         form.options.studyAreas = form.studyAreas.map(x => ({
           label: x.title,
@@ -736,7 +744,6 @@ export default {
       await Promise.all([
         this.getAllProjects({ size: 100, sort: 'title' }),
         this.getAllDataFields({ filter: 'custom' }),
-        this.loadSpecies(),
       ]);
       this.isLoading = false;
     } catch (error) {
