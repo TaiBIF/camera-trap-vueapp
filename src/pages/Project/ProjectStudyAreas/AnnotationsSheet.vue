@@ -116,8 +116,6 @@ import ContinuousButton from '@/components/ProjectStudyAreas/ContinuousButton';
 import InfoModal from '@/components/Modal/InfoModal.vue';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
-import 'handsontable-key-value';
-
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
@@ -642,14 +640,18 @@ export default {
               break;
             case 'select':
               obj = {
-                type: 'key-value',
-                filter: false,
-                source: v.options.map(v => ({
-                  id: v.id,
-                  value: v[getLanguage()],
-                })),
-                keyProperty: 'id',
-                valueProperty: 'value',
+                editor: 'select',
+                selectOptions: v.options.reduce((accumulator, v) => {
+                  accumulator[v.id] = v[getLanguage()];
+                  return accumulator;
+                }, {}),
+                renderer: (instance, td, row, col, prop, value) => {
+                  resetTd(td);
+                  const target = R.find(R.propEq('id', value), v.options);
+
+                  td.innerHTML = target ? target[getLanguage()] : '';
+                  return td;
+                },
               };
               break;
           }
