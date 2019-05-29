@@ -18,7 +18,7 @@
                   <div
                     class="row sortable-item"
                     v-for="(sp, idx) in tempSpecies"
-                    :key="sp"
+                    :key="sp.id || sp.tempId"
                   >
                     <div class="col-2">{{ idx + 1 }}</div>
                     <div class="col-4">
@@ -104,7 +104,10 @@ export default {
   methods: {
     ...projects.mapActions(['getProjectSpecies', 'putProjectSpecies']),
     addSpecies() {
-      this.tempSpecies.push({ title: '' });
+      this.tempSpecies.push({
+        title: '',
+        tempId: Date.now(), // use timestamp as temperate id as key in v-for loop
+      });
     },
     async sumbitSpecies() {
       await this.putProjectSpecies({
