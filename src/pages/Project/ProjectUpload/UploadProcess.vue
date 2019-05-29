@@ -93,10 +93,10 @@
                     />上傳中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
-                    <i class="icon icon-upload-success" /> 上傳成功
+                    <i class="icon icon-upload-success" /> 系統已收到檔案
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploadError">
-                    <i class="icon icon-upload-fail" /> 上傳失敗
+                    <i class="icon icon-upload-fail" /> 處理中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.cancel">
                     已取消上傳
@@ -238,6 +238,7 @@ export default {
             ) {
               annotationType = 'annotation-video';
             }
+
             this.currentFetchController = new AbortController();
             await uploadAnnotation(
               file.cameraLocationId,
