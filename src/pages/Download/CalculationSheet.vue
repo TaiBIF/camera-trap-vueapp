@@ -41,15 +41,19 @@ export default {
           ['目擊事件', `${this.calculatorData.eventQuantity} 次`],
           [
             '有效圖片除以相機工作時長',
-            `${Math.floor(
-              this.calculatorData.validQuantity / dutyHours,
-            )} 張/小時`,
+            `${
+              dutyHours === 0
+                ? '-'
+                : Math.floor(this.calculatorData.validQuantity / dutyHours)
+            } 張/小時`,
           ],
           [
             '目擊事件除以相機工作時長',
-            `${Math.floor(
-              this.calculatorData.eventQuantity / dutyHours,
-            )} 次/小時`,
+            `${
+              dutyHours === 0
+                ? '-'
+                : Math.floor(this.calculatorData.eventQuantity / dutyHours)
+            } 次/小時`,
           ],
         ];
       }

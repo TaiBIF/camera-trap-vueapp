@@ -403,7 +403,7 @@
             <div class="row">
               <div class="col-4">
                 <div class="form-group">
-                  <label class="required">有效時間判定間隔(分鐘)：</label>
+                  <label class="required">有效時間判定間隔：</label>
                   <v-select
                     v-model="form.selectedValidTimeInterval"
                     :options="timeIntervalOptions"
@@ -466,17 +466,17 @@ export default {
       currentTab: 'search', // "search" | "calculate"
       isAdvanceSearch: false,
       timeIntervalOptions: [
-        { label: 2, value: 2 * 60 * 1000 },
-        { label: 5, value: 5 * 60 * 1000 },
-        { label: 10, value: 10 * 60 * 1000 },
-        { label: 30, value: 30 * 60 * 1000 },
-        { label: 60, value: 60 * 60 * 1000 },
+        { label: '2 分鐘', value: 2 * 60 * 1000 },
+        { label: '5 分鐘', value: 5 * 60 * 1000 },
+        { label: '10 分鐘', value: 10 * 60 * 1000 },
+        { label: '30 分鐘', value: 30 * 60 * 1000 },
+        { label: '60 分鐘', value: 60 * 60 * 1000 },
       ],
       form: {
         selectedCalculateType: { label: '有效照片與目擊事件', value: 'oi' },
         selectedSpecies: [],
-        selectedValidTimeInterval: { label: 2, value: 2 * 60 * 1000 },
-        selectedEventTimeInterval: { label: 2, value: 2 * 60 * 1000 },
+        selectedValidTimeInterval: { label: '2 分鐘', value: 2 * 60 * 1000 },
+        selectedEventTimeInterval: { label: '2 分鐘', value: 2 * 60 * 1000 },
         items: [
           {
             selected: {

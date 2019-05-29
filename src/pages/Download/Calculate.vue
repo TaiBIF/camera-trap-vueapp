@@ -185,11 +185,11 @@ export default {
       isLoading: true,
       isInitial: true,
       timeIntervalOptions: [
-        { label: 2, value: 2 * 60 * 1000 },
-        { label: 5, value: 5 * 60 * 1000 },
-        { label: 10, value: 10 * 60 * 1000 },
-        { label: 30, value: 30 * 60 * 1000 },
-        { label: 60, value: 60 * 60 * 1000 },
+        { label: '2 分鐘', value: 2 * 60 * 1000 },
+        { label: '5 分鐘', value: 5 * 60 * 1000 },
+        { label: '10 分鐘', value: 10 * 60 * 1000 },
+        { label: '30 分鐘', value: 30 * 60 * 1000 },
+        { label: '60 分鐘', value: 60 * 60 * 1000 },
       ],
       calculateType: this.$route.query.calculateType || 'oi',
       form: {
@@ -226,7 +226,7 @@ export default {
         selectedValidTimeInterval: (() => {
           if (this.$route.query.validTimeInterval) {
             return {
-              label: +this.$route.query.validTimeInterval / 60 / 1000,
+              label: `${+this.$route.query.validTimeInterval / 60 / 1000} 分鐘`,
               value: +this.$route.query.validTimeInterval,
             };
           }
@@ -234,7 +234,7 @@ export default {
         selectedEventTimeInterval: (() => {
           if (this.$route.query.eventTimeInterval) {
             return {
-              label: +this.$route.query.eventTimeInterval / 60 / 1000,
+              label: `${+this.$route.query.eventTimeInterval / 60 / 1000} 分鐘`,
               value: +this.$route.query.eventTimeInterval,
             };
           }
