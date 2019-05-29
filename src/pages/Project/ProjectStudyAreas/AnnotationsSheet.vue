@@ -496,7 +496,10 @@ export default {
       this.changeAnnotationIdx(row, column, row2);
     },
     changeAnnotationIdx(row, column, row2) {
-      this.$emit('currentAnnotationIdx', row2);
+      if (row2) {
+        //在表單尚未有資料前點 header 時 row2 會是 null
+        this.$emit('currentAnnotationIdx', row2);
+      }
     },
     setSpeciesTooltip(instance, td, row, col, prop, title) {
       resetTd(td); // td 會共用，所以每次都要重置
