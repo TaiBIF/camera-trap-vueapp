@@ -186,6 +186,8 @@ const studyAreas = createNamespacedHelpers('studyAreas');
   permissionDenied: 'permission-denied', // 沒有權限
   others: 'others', // 其他錯誤
 
+  cjk: to merge and use /src/service/modules/upload.js
+
 */
 export default {
   components: {
