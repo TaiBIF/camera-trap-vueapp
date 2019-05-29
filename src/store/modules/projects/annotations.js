@@ -85,12 +85,16 @@ const actions = {
     // commit('updateAnnotations', data);
 
     // workaround 之後格式修改後拿掉
-    let data = await setAnnotations(annotationId, body);
-    data.fields = data.fields.map(v => ({
-      dataField: v.dataField.id,
-      value: v.value,
-    }));
-    commit('updateAnnotations', data);
+    try {
+      let data = await setAnnotations(annotationId, body);
+      data.fields = data.fields.map(v => ({
+        dataField: v.dataField.id,
+        value: v.value,
+      }));
+      commit('updateAnnotations', data);
+    } catch (error) {
+      console.log(error);
+    }
     commit('minusRequestProcessing');
   },
   async deleteAnnotations({ commit }, ids) {
