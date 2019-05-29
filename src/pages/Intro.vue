@@ -5,7 +5,7 @@
         <div class="caption col-xs-12 col-sm-12 col-md-6">
           <h1 class="header">Camera Trap</h1>
           <p>簡單、效率、專業 - 紅外線相機資料管理平台</p>
-          <a class="btn btn-orange btn-lg" @click="loginModalOpen = true"
+          <a class="btn btn-orange btn-lg" @click="handleClickStartUse"
             >開始使用</a
           >
         </div>
@@ -342,7 +342,10 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import LoginModal from '@/components/Modal/LoginModal';
+
+const account = createNamespacedHelpers('account');
 
 export default {
   components: { LoginModal },
@@ -350,6 +353,18 @@ export default {
     return {
       loginModalOpen: false,
     };
+  },
+  computed: {
+    ...account.mapGetters(['isLogin']),
+  },
+  methods: {
+    handleClickStartUse() {
+      if (this.isLogin) {
+        this.$router.push({ name: 'projectOverview' });
+      } else {
+        this.loginModalOpen = true;
+      }
+    },
   },
 };
 </script>
