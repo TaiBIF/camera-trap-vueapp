@@ -29,7 +29,7 @@
             >
               <div class="form-content">
                 <div class="row">
-                  <div class="col-3">
+                  <div class="col-12">
                     <div class="form-group">
                       <label class="required">計畫名稱：</label>
                       <v-select
@@ -42,7 +42,9 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                </div>
+                <div class="row">
+                  <div class="col-4">
                     <div class="form-group">
                       <label class="required">樣區：</label>
                       <v-select
@@ -56,7 +58,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col-4">
                     <div class="form-group">
                       <label>子樣區：</label>
                       <v-select
@@ -70,7 +72,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col-4">
                     <div class="form-group">
                       <label class="required">相機位置：</label>
                       <v-select
@@ -210,7 +212,8 @@
                     <label>
                       <span class="text">{{ dataField.title }}：</span>
                       <span class="icon">
-                        <i class="icon-info mt-1"></i>
+                        <i class="mt-1"></i
+                        ><!-- TODO(moogoo): 先拿掉class: icon-info 缺 spec-->
                       </span>
                     </label>
                     <input
