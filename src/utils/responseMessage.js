@@ -8,7 +8,7 @@ const getErrorMessage = status => {
     case '403':
       return '操作失敗，您的帳號無權限操作此步驟';
     case '200':
-      return '新增成功';
+      return '設定儲存成功';
     default:
       return '操作失敗，請再試一次';
   }
