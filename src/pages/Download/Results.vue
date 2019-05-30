@@ -105,7 +105,7 @@
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
-        @changeWidth="$refs.sheet.setSheetHeight()"
+        @changeWidth="setSheetHeight"
       />
     </div>
   </div>
@@ -143,6 +143,10 @@ export default {
       currentAnnotationIdx: -1,
       query: Object.assign({}, this.$route.query),
     };
+  },
+  watch: {
+    galleryShow: 'setSheetHeight',
+    historyShow: 'setSheetHeight',
   },
   computed: {
     ...account.mapGetters(['species']),
@@ -253,8 +257,12 @@ export default {
       });
       this.isLoading = false;
     },
+    setSheetHeight() {
+      this.$refs.sheet.setSheetHeight();
+    },
   },
   async mounted() {
+    console.log(this.$route.query);
     let cameraLocationIds;
     if (!this.$route.query.cameraLocations) {
       cameraLocationIds = [];
