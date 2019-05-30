@@ -54,6 +54,12 @@ const getters = {
     });
     return title;
   },
+  cameraLocationsTitle: (_, getters) => id => {
+    return R.pipe(
+      R.find(R.propEq('id', id)),
+      R.ifElse(R.isNil, R.always(''), v => v.name),
+    )(getters.cameraLocations);
+  },
 };
 
 const mutations = {
