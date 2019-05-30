@@ -14,7 +14,7 @@
                   type="text"
                   class="form-control"
                   v-model="newMember.user"
-                  placeholder="請輸入成員 ORCiD"
+                  placeholder="請輸入成員 ORCiD 或電子郵件"
                 />
               </div>
               <div class="col-4">
