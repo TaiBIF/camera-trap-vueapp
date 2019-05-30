@@ -1,5 +1,5 @@
 // Define all response messages for end-user
-const getErrorMessage = status => {
+const getResponseMessage = status => {
   switch (status) {
     case '400':
       return '操作失敗，資料內容有誤。';
@@ -14,4 +14,4 @@ const getErrorMessage = status => {
   }
 };
 
-export default getErrorMessage;
+export default getResponseMessage;
