@@ -1,6 +1,9 @@
 <template>
   <div class="action">
-    <div class="error">
+    <div v-if="response.status === 200" class="success">
+      <span v-if="!!responseMessage">{{ responseMessage }}</span>
+    </div>
+    <div v-else class="error">
       <span v-if="!!responseMessage">{{ responseMessage }}</span>
     </div>
     <div>
@@ -61,6 +64,9 @@ export default {
 
   & > .error > span {
     color: #d80c37;
+  }
+  & > .success > span {
+    color: #2a7f60;
   }
 }
 </style>
