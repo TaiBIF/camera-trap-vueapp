@@ -1,9 +1,9 @@
 <template>
   <div class="action">
-    <div v-if="response.status === 200" class="success">
+    <div v-if="responseMessage === 200" class="success">
       <span v-if="!!responseMessage">{{ responseMessage }}</span>
     </div>
-    <div v-else class="error">
+    <div v-if="responseMessage !== 200" class="error">
       <span v-if="!!responseMessage">{{ responseMessage }}</span>
     </div>
     <div>
