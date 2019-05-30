@@ -116,8 +116,6 @@ import ContinuousButton from '@/components/ProjectStudyAreas/ContinuousButton';
 import InfoModal from '@/components/Modal/InfoModal.vue';
 import SpeciesTooltip, { failures } from '@/constant/SpeciesTooltip.js';
 
-import 'handsontable-key-value';
-
 const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
@@ -645,14 +643,21 @@ export default {
               break;
             case 'select':
               obj = {
-                type: 'key-value',
-                filter: false,
-                source: v.options.map(v => ({
-                  id: v.id,
-                  value: v[getLanguage()],
-                })),
-                keyProperty: 'id',
-                valueProperty: 'value',
+                editor: 'select',
+                selectOptions: v.options.reduce((accumulator, v) => {
+                  accumulator[v.id] = v[getLanguage()];
+                  return accumulator;
+                }, {}),
+                renderer: (instance, td, row, col, prop, value) => {
+                  resetTd(td);
+
+                  td.innerHTML = R.pipe(
+                    R.find(R.propEq('id', value)),
+                    R.ifElse(R.isNil, R.always(''), v => v[getLanguage()]),
+                  )(v.options);
+
+                  return td;
+                },
               };
               break;
           }
@@ -681,25 +686,35 @@ export default {
     },
     changeAnnotation(changes) {
       if (!!changes && this.isEdit === true) {
-        changes.forEach(({ 0: row, 1: prop, 3: newVal }) => {
+        // 如果修改同一個 row 不同的 column 在 changes 會是多筆資料，這樣送出 api 會有錯誤
+        // 所以需要將同 row 多筆資料合併成一筆
+        const newChanges = changes.reduce(
+          (accumulator, { 0: row, 1: prop, 3: newVal }) => {
+            accumulator[row] = R.defaultTo([], accumulator[row]);
+            accumulator[row].push({ prop, newVal });
+            return accumulator;
+          },
+          {},
+        );
+        Object.entries(newChanges).forEach(([row, change]) => {
           if (
             this.continuousRange &&
             changes.length === 1 &&
-            row === this.continuousRange[0]
+            row === this.continuousRange[0] + ''
           ) {
             R.range(this.continuousRange[0], this.continuousRange[1] + 1).map(
               v => {
                 this.continuousRecover[v] = {
                   ...this.continuousRecover[v],
-                  prop,
-                  newVal,
+                  prop: change[0].prop,
+                  newVal: change[0].newVal,
                   isRecover: false,
                 };
-                this.changeRequest(v, prop, newVal);
+                this.changeRequest(v, change);
               },
             );
           } else {
-            this.changeRequest(row, prop, newVal);
+            this.changeRequest(row, change);
           }
         });
       }
@@ -707,38 +722,43 @@ export default {
     continuousRecoverRequest(row) {
       const recover = this.continuousRecover[row];
 
-      this.changeRequest(
-        row,
-        recover.prop,
-        recover.isRecover ? recover.newVal : recover.oldVal[recover.prop],
-      );
+      this.changeRequest(row, [
+        {
+          prop: recover.prop,
+          newVal: recover.isRecover
+            ? recover.newVal
+            : recover.oldVal[recover.prop],
+        },
+      ]);
       this.continuousRecover[row].isRecover = !recover.isRecover;
     },
-    changeRequest(row, prop, newVal) {
+    changeRequest(row, change) {
       this.setIdleTimeout();
       let annotation = {
         fields: R.clone(this.annotations[row].fields),
-        speciesTitle:
-          prop === 'species' ? newVal : this.annotations[row].species.title,
+        speciesTitle: this.annotations[row].species.title,
       };
-
-      if (prop !== 'species') {
-        const targetIdx = R.findIndex(R.propEq('dataField', prop))(
-          annotation.fields,
-        );
-
-        if (targetIdx === -1) {
-          // 不存在就新增
-          annotation.fields.push({
-            dataField: prop,
-            value: newVal,
-          });
+      change.forEach(({ prop, newVal }) => {
+        if (prop === 'species') {
+          annotation.speciesTitle = newVal;
         } else {
-          // 存在則修改
-          annotation.fields[targetIdx].value = newVal;
+          if (prop !== 'species') {
+            const targetIdx = R.findIndex(R.propEq('dataField', prop))(
+              annotation.fields,
+            );
+            if (targetIdx === -1) {
+              // 不存在就新增
+              annotation.fields.push({
+                dataField: prop,
+                value: newVal,
+              });
+            } else {
+              // 存在則修改
+              annotation.fields[targetIdx].value = newVal;
+            }
+          }
         }
-      }
-
+      });
       // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
       annotation.fields = annotation.fields.filter(v => !!v.value);
 
