@@ -449,12 +449,11 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { getLanguage } from '@/utils/i18n';
+import { getProjectSpecies } from '@/service';
 import datePicker from 'vue2-datepicker';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
-import { getProjectSpecies } from '@/service';
 
-const account = createNamespacedHelpers('account');
 const dataFields = createNamespacedHelpers('dataFields');
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
