@@ -275,6 +275,7 @@ export default {
         dataFields: this.dataFields.map(x => ({
           ...x,
           title: { [getLanguage()]: x.title },
+          description: { [getLanguage()]: x.description },
         })),
       });
       this.setCameraLocations(cameraLocations);
@@ -319,9 +320,11 @@ export default {
           }
         }
       });
-      this.setStudyAreas(studyAreas);
-
+      //console.log('sa', studyAreas);
+      // TODO: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value#Examples
+      //this.setStudyAreas(studyAreas);
       await this.getAnnotations(this.$route.query);
+
       this.isLoading = false;
     } catch (error) {
       this.isLoading = false;
