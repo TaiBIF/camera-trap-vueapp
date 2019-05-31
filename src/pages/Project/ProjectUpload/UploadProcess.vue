@@ -67,7 +67,7 @@
                       @click="
                         showInfoModal = true;
                         uploadErrorType = 'other-error';
-                        uploadErrorOtherText=file.errorMessage;
+                        uploadErrorOtherText = file.errorMessage;
                       "
                       class="link text-danger text-underline"
                       >檢視錯誤</a
@@ -76,11 +76,10 @@
                       v-if="file.uploadStatus === uploadStatus.success"
                       class="link text-green text-underline"
                       :href="
-                             `/project/${projectId}/study-areas/${
-                             file.studyAreaId
-                             }`
-"
-                             >查看</a>
+                        `/project/${projectId}/study-areas/${file.studyAreaId}`
+                      "
+                      >查看</a
+                    >
                   </div>
                   <div
                     v-if="file.uploadStatus === uploadStatus.waiting"
@@ -176,8 +175,7 @@
         <h1 class="text-green">
           {{ uploadErrorOtherText }}
         </h1>
-        <p class="text-gray">
-        </p>
+        <p class="text-gray"></p>
       </div>
     </info-modal>
   </div>
@@ -243,7 +241,6 @@ export default {
     async doUpload() {
       for (const index in this.fileList) {
         const file = this.fileList[index];
-        console.log();
         if (file.uploadStatus !== uploadStatus.cancel) {
           this.setFileType(index, uploadStatus.uploading);
           try {
@@ -255,12 +252,18 @@ export default {
             } else if ('image/jpeg,image/png'.includes(file.type)) {
               annotationType = 'annotation-image';
             } else if (
-              'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(file.type)
+              'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(
+                file.type,
+              )
             ) {
               annotationType = 'annotation-video';
             }
             if (annotationType === '') {
-              this.setFileType(index, uploadStatus.uploadError, 'no annotation-type (not support)');
+              this.setFileType(
+                index,
+                uploadStatus.uploadError,
+                'no annotation-type (not support)',
+              );
               throw 'no annotation-type (not support)';
             }
             this.currentFetchController = new AbortController();
@@ -271,9 +274,12 @@ export default {
               annotationType,
             );
             if (retData.message) {
-              this.setFileType(index, uploadStatus.uploadError, retData.message);
-            }
-            else {
+              this.setFileType(
+                index,
+                uploadStatus.uploadError,
+                retData.message,
+              );
+            } else {
               this.setFileType(index, uploadStatus.success);
             }
           } catch (error) {
@@ -296,7 +302,7 @@ export default {
           if (idx === Number(targetIdx)) {
             file.uploadStatus = status;
             if (errorMessage) {
-              file.errorMessage = errorMessage
+              file.errorMessage = errorMessage;
             }
           }
           return file;
