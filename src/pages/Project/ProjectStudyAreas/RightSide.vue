@@ -220,8 +220,10 @@ export default {
       }
     },
     dragEnd() {
-      this.isDrag = false;
-      this.$emit('changeWidth');
+      if (this.isDrag) {
+        this.isDrag = false;
+        this.$emit('changeWidth');
+      }
     },
     goPrev() {
       this.$emit(
