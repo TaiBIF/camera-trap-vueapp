@@ -69,15 +69,42 @@
         />
       </l-layer-group>
     </l-map>
-    <div class="checkbox float-right mt-3 mb-0">
+    <div class="checkbox__container checkbox">
+      <div>
+        <input
+          type="checkbox"
+          name="show-species"
+          id="show-species"
+          value="1"
+          v-model="showSpecies"
+        />
+        <label for="show-species">顯示物種</label>
+      </div>
+      <div>
+        <input
+          type="checkbox"
+          name="show-woods"
+          id="show-woods"
+          value="1"
+          v-model="showForestBoundary"
+        />
+        <label for="show-woods">在地圖顯示林班地範圍</label>
+      </div>
+    </div>
+    <div class="range__container">
       <input
-        type="checkbox"
-        name="show-woods"
-        id="show-woods"
-        value="1"
-        v-model="showForestBoundary"
+        type="range"
+        name="speciesDate"
+        v-model="displaySpeciesDate"
+        min="0"
+        :max="totalDisplayMonth"
+        :disabled="!showSpecies"
       />
-      <label for="show-woods">在地圖顯示林班地範圍</label>
+      <div class="range__display">
+        <span>{{ startDisplayDate }}</span>
+        <span>{{ currentDisplayDate }}</span>
+        <span>{{ endDisplayDate }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -167,6 +194,10 @@ export default {
       attribution:
         '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
       showForestBoundary: false,
+      showSpecies: false,
+      displaySpeciesDate: 0,
+      startDisplayDate: '2010-05', // TODO: get from API
+      endDisplayDate: '2016-11', // TODO: get from API
     };
   },
   watch: {
@@ -256,6 +287,33 @@ export default {
         lng: position.lng,
       };
     },
+    startDisplayYear: function() {
+      return parseInt(this.startDisplayDate.slice(0, 4), 10);
+    },
+    startDisplayMonth: function() {
+      return parseInt(this.startDisplayDate.slice(5), 10);
+    },
+    endDisplayYear: function() {
+      return parseInt(this.endDisplayDate.slice(0, 4), 10);
+    },
+    endDisplayMonth: function() {
+      return parseInt(this.endDisplayDate.slice(5), 10);
+    },
+    totalDisplayMonth: function() {
+      return (
+        (this.endDisplayYear - this.startDisplayYear) * 12 +
+        (this.endDisplayMonth - this.startDisplayMonth)
+      );
+    },
+    currentDisplayDate: function() {
+      // tranfer slider number to date
+      const num = parseInt(this.displaySpeciesDate, 10);
+      const totalMonth = this.startDisplayMonth + num;
+      const year = this.startDisplayYear + Math.floor((totalMonth - 1) / 12);
+      const month = totalMonth % 12 === 0 ? 12 : totalMonth % 12;
+
+      return `${year}-${('0' + month).slice(-2)}`;
+    },
   },
   methods: {
     ...forest.mapActions(['loadForestBoundary']),
@@ -312,3 +370,34 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.checkbox__container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+
+  & > div {
+    position: relative;
+
+    & > label {
+      padding-left: 25px;
+      font-size: 14px;
+    }
+  }
+}
+
+.range__container {
+  & > input {
+    width: 100%;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .range__display {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+</style>
