@@ -84,12 +84,8 @@ const getters = {
     if (permission && permission.role === 'researcher') return true;
     return false;
   },
-  identifiedSpecies: state => {
-    const records = idx(state, _ => _.identifiedSpecies.records) || [];
-    records.sort(({ count: countA }, { count: countB }) => countB - countA);
-
-    return records;
-  },
+  identifiedSpecies: state =>
+    idx(state, _ => _.identifiedSpecies.records) || [],
   identifiedSpeciesLastUpdate: state => {
     const timeUpdated = idx(state, _ => _.identifiedSpecies.timeUpdated);
 
@@ -163,7 +159,15 @@ const mutations = {
     state.projectSpecies = data;
   },
   setIdentifiedSpecies(state, data) {
-    state.identifiedSpecies = data;
+    let records = [];
+    if (data.records && data.records.length > 0) {
+      records = [...data.records];
+      records.sort(({ count: countA }, { count: countB }) => countB - countA);
+    }
+    state.identifiedSpecies = {
+      ...data,
+      records,
+    };
   },
   setRetrievalStatus(state, status) {
     Vue.set(state.retrievalData, 'loadingStatus', status);
