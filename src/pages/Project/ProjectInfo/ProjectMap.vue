@@ -99,10 +99,19 @@
         min="0"
         :max="totalDisplayMonth"
         :disabled="!showSpecies"
+        @mousedown="mousedownSlider"
+        @mousemove="mousemoveSlider"
+        @mouseup="mouseupSlider"
       />
+      <div
+        v-show="displayCurrentDate.show"
+        class="range__current"
+        :style="{ left: displayCurrentDate.x + 'px' }"
+      >
+        {{ currentDisplayDate }}
+      </div>
       <div class="range__display">
         <span>{{ startDisplayDate }}</span>
-        <span>{{ currentDisplayDate }}</span>
         <span>{{ endDisplayDate }}</span>
       </div>
     </div>
@@ -198,6 +207,10 @@ export default {
       displaySpeciesDate: 0,
       startDisplayDate: '2010-05', // TODO: get from API
       endDisplayDate: '2016-11', // TODO: get from API
+      displayCurrentDate: {
+        x: 0,
+        show: false,
+      },
     };
   },
   watch: {
@@ -367,6 +380,25 @@ export default {
     centerUpdated({ lat, lng }) {
       this.reloadForestBoundary({ lat, lng });
     },
+    mousedownSlider(e) {
+      this.displayCurrentDate = {
+        show: true,
+        x: e.layerX,
+      };
+    },
+    mousemoveSlider(e) {
+      const { target, layerX } = e;
+      if (
+        this.displayCurrentDate.show &&
+        layerX >= 0 &&
+        layerX <= target.clientWidth
+      ) {
+        this.displayCurrentDate.x = layerX;
+      }
+    },
+    mouseupSlider() {
+      this.displayCurrentDate.show = false;
+    },
   },
 };
 </script>
@@ -387,6 +419,8 @@ export default {
 }
 
 .range__container {
+  position: relative;
+
   & > input {
     width: 100%;
 
@@ -395,9 +429,22 @@ export default {
     }
   }
 
+  .range__current {
+    position: absolute;
+    top: -28px;
+    left: 0;
+    padding: 5px 10px;
+    border-radius: 3px;
+    width: 80px;
+    transform: translateX(-40px);
+    background-color: white;
+    color: #8b8b8b;
+  }
+
   .range__display {
     display: flex;
     justify-content: space-between;
+    color: #8b8b8b;
   }
 }
 </style>
