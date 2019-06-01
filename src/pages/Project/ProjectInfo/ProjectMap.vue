@@ -20,9 +20,9 @@
           :lat-lng="area.position"
           :draggable="false"
           :radius="studyAreaRadius"
-          :color="markerColor.area.color"
-          :fillColor="markerColor.area.color"
-          :fillOpacity="showSpecies ? 0.2 : 0.8"
+          :color="markerColor.area"
+          :fillColor="markerColor.area"
+          :fillOpacity="showSpecies ? 0.1 : 0.8"
           @click="selectArea(area.path)"
         >
           <l-tooltip
@@ -65,9 +65,9 @@
           :lat-lng="camera.position"
           :draggable="false"
           :radius="cameraRadius"
-          :color="markerColor.camera.color"
-          :fillColor="markerColor.camera.color"
-          fillOpacity="0.2"
+          :color="markerColor.camera"
+          :fillColor="markerColor.camera"
+          :fillOpacity="0.1"
           @click="selectCamera(camera.id)"
           @mouseover="$emit('hoverCamera', camera.id)"
           @mouseout="$emit('hoverCamera')"
@@ -115,6 +115,12 @@
           :color="'#FFAF00'"
         />
       </l-layer-group>
+      <l-control position="topright" class="species__legend">
+        <div v-for="species in speciesLegend" :key="species.id">
+          <span :style="{ backgroundColor: species.color }"></span>
+          {{ species.name }}
+        </div>
+      </l-control>
     </l-map>
     <div class="checkbox__container checkbox">
       <div>
@@ -168,6 +174,7 @@
 <script>
 import {
   LCircle,
+  LControl,
   LLayerGroup,
   LMap,
   LMarker,
@@ -222,13 +229,12 @@ const ErrorCameraIconSelect = L.icon({
 
 const defaultZoom = { area: 8, camera: 12 };
 const defaultPosition = { lng: 120.982024, lat: 23.973875 };
-
 const positonShift = [
-  { lat: 0.000002, lng: 0.000002 },
-  { lat: -0.000002, lng: 0.000002 },
-  { lat: -0.000002, lng: -0.000001 },
-  { lat: 0.000001, lng: 0.000002 },
-  { lat: 0.000002, lng: -0.000002 },
+  { lng: 0.0000012, lat: 0.000002 },
+  { lng: -0.0000012, lat: 0.000002 },
+  { lng: -0.000002, lat: -0.000001 },
+  { lng: 0, lat: -0.000003 },
+  { lng: 0.000002, lat: -0.000001 },
 ];
 
 export default {
@@ -241,6 +247,7 @@ export default {
     LCircle,
     LTooltip,
     LLayerGroup,
+    LControl,
   },
   props: {
     activeCameraId: {
@@ -261,14 +268,8 @@ export default {
       studyAreaRadius: 10000,
       cameraRadius: 5000,
       markerColor: {
-        area: {
-          color: 'rgba(42, 127, 96, .43)',
-          fillColor: 'rgb(42, 127, 96)',
-        },
-        camera: {
-          color: 'rgba(17, 138, 178,.43)',
-          fillColor: 'rgb(17, 138, 178)',
-        },
+        area: 'rgb(42, 127, 96)',
+        camera: 'rgb(17, 138, 178)',
       },
       showForestBoundary: false,
       showSpecies: false,
@@ -279,86 +280,94 @@ export default {
       },
       startDisplayDate: '2010-05', // TODO: get from API
       endDisplayDate: '2016-11', // TODO: get from API
+      species: {
+        // TODO: get from API
+        '5cd661e332a98b60839c6caf': '山羌',
+        '5cd661e332a98b60839c6caa': '空拍',
+        '5cd661e332a98b60839c6cab': '測試',
+        '5cd661e332a98b60839c6cb1': '獼猴',
+        '5cd661e332a98b60839c6cb2': '鼬獾',
+      },
       speciesMarkers: {
         // TODO: get from API
         '5ceb8464caaeca01402d6354': [
           {
-            name: 'A',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 28,
+            species: '山羌',
+            speciesId: '5cd661e332a98b60839c6caf',
+            numberOfRecords: 1000,
           },
           {
-            name: 'B',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 36,
+            species: '空拍',
+            speciesId: '5cd661e332a98b60839c6caa',
+            numberOfRecords: 1000,
           },
           {
-            name: 'C',
+            species: '測試',
             speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 145,
+            numberOfRecords: 1000,
           },
           {
-            name: 'D',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 1515,
+            species: '獼猴',
+            speciesId: '5cd661e332a98b60839c6cb1',
+            numberOfRecords: 1000,
           },
           {
-            name: 'E',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 0,
+            species: '鼬獾',
+            speciesId: '5cd661e332a98b60839c6cb2',
+            numberOfRecords: 1000,
           },
         ],
         '5ceb83f7caaecaca502d62d9': [
           {
-            name: 'A',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '山羌',
+            speciesId: '5cd661e332a98b60839c6caf',
             numberOfRecords: 78,
           },
           {
-            name: 'B',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '空拍',
+            speciesId: '5cd661e332a98b60839c6caa',
             numberOfRecords: 66,
           },
           {
-            name: 'C',
+            species: '測試',
             speciesId: '5cd661e332a98b60839c6cab',
             numberOfRecords: 45,
           },
           {
-            name: 'D',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '獼猴',
+            speciesId: '5cd661e332a98b60839c6cb1',
             numberOfRecords: 185,
           },
           {
-            name: 'E',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '鼬獾',
+            speciesId: '5cd661e332a98b60839c6cb2',
             numberOfRecords: 30,
           },
         ],
         '5ceb8488caaecaf5472d63a8': [
           {
-            name: 'A',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '山羌',
+            speciesId: '5cd661e332a98b60839c6caf',
             numberOfRecords: 278,
           },
           {
-            name: 'B',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '空拍',
+            speciesId: '5cd661e332a98b60839c6caa',
             numberOfRecords: 6,
           },
           {
-            name: 'C',
+            species: '測試',
             speciesId: '5cd661e332a98b60839c6cab',
             numberOfRecords: 415,
           },
           {
-            name: 'D',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '獼猴',
+            speciesId: '5cd661e332a98b60839c6cb1',
             numberOfRecords: 15,
           },
           {
-            name: 'E',
-            speciesId: '5cd661e332a98b60839c6cab',
+            species: '鼬獾',
+            speciesId: '5cd661e332a98b60839c6cb2',
             numberOfRecords: 83,
           },
         ],
@@ -411,6 +420,13 @@ export default {
         }),
       );
     },
+    speciesLegend: function() {
+      return Object.entries(this.species).map(([id, name], index) => ({
+        id,
+        name,
+        color: chartColors[index],
+      }));
+    },
     speciesMaxRecords: function() {
       return Object.values(this.speciesMarkers)
         .reduce((join, speciesMarkers) => [...join, ...speciesMarkers], [])
@@ -426,8 +442,8 @@ export default {
           speciesMarkers: this.speciesMarkers[id].map(
             ({ speciesId, numberOfRecords }, index) => ({
               speciesId,
-              color: chartColors[index],
-              radius: (numberOfRecords / this.speciesMaxRecords) * 2000,
+              color: this.getSpeciesMarkerColor(speciesId),
+              radius: (numberOfRecords / this.speciesMaxRecords) * 2000 + 200, // limit radius between 200 ~ 2200
               position: this.getRandomPosition(
                 position,
                 index,
@@ -442,8 +458,8 @@ export default {
         speciesMarkers: this.speciesMarkers[id].map(
           ({ speciesId, numberOfRecords }, index) => ({
             speciesId,
-            color: chartColors[index],
-            radius: (numberOfRecords / this.speciesMaxRecords) * 200,
+            color: this.getSpeciesMarkerColor(speciesId),
+            radius: (numberOfRecords / this.speciesMaxRecords) * 1000 + 100, // limit radius between 100 ~ 1100
             position: this.getRandomPosition(
               position,
               index,
@@ -599,6 +615,12 @@ export default {
         lng: lng + positonShift[idx].lng * scale,
       };
     },
+    getSpeciesMarkerColor(speciesId) {
+      if (!this.speciesLegend) return '';
+      const species = this.speciesLegend.find(({ id }) => id === speciesId);
+
+      return (species && species.color) || '';
+    },
   },
 };
 </script>
@@ -645,6 +667,21 @@ export default {
     display: flex;
     justify-content: space-between;
     color: #8b8b8b;
+  }
+}
+
+.species__legend > div {
+  position: relative;
+
+  & > span {
+    display: block;
+    position: absolute;
+    top: 4px;
+    left: -12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid white;
   }
 }
 </style>
