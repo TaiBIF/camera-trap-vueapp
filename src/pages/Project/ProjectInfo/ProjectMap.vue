@@ -12,17 +12,17 @@
       <l-layer-group
         v-if="mapMode === 'area'"
         layer-type="overlay"
-        name="Layer Circle"
+        name="Layer StudyArea"
       >
         <l-circle
           v-for="(area, idx) in areas"
           :key="`project-area-${idx}`"
           :lat-lng="area.position"
           :draggable="false"
-          :radius="10000"
-          :fillColor="'#2A7F60'"
-          :fillOpacity="1"
-          :color="'rgba(42,127,96,.43)'"
+          :radius="studyAreaRadius"
+          :color="markerColor.area.color"
+          :fillColor="markerColor.area.color"
+          :fillOpacity="showSpecies ? 0.2 : 0.8"
           @click="selectArea(area.path)"
         >
           <l-tooltip
@@ -32,10 +32,10 @@
         </l-circle>
       </l-layer-group>
       <l-layer-group
-        v-if="mapMode === 'camera'"
+        v-if="mapMode === 'camera' && !showSpecies"
         :className="'site-container'"
         layer-type="overlay"
-        name="Layer Marker"
+        name="Layer Camera"
       >
         <l-marker
           v-for="(camera, idx) in cameras"
@@ -54,9 +54,56 @@
         </l-marker>
       </l-layer-group>
       <l-layer-group
+        v-if="mapMode === 'camera' && showSpecies"
+        :className="'site-container'"
+        layer-type="overlay"
+        name="Layer Camera"
+      >
+        <l-circle
+          v-for="(camera, idx) in cameras"
+          :key="`project-camera-${idx}`"
+          :lat-lng="camera.position"
+          :draggable="false"
+          :radius="cameraRadius"
+          :color="markerColor.camera.color"
+          :fillColor="markerColor.camera.color"
+          fillOpacity="0.2"
+          @click="selectCamera(camera.id)"
+          @mouseover="$emit('hoverCamera', camera.id)"
+          @mouseout="$emit('hoverCamera')"
+        >
+          <l-tooltip
+            :content="camera.name"
+            :options="{ permanent: true, direction: 'top' }"
+          />
+        </l-circle>
+      </l-layer-group>
+      <l-layer-group
+        v-if="showSpecies"
+        layer-type="overlay"
+        name="Layer Species"
+      >
+        <div
+          v-for="(group, idx) in speciesGroups"
+          :key="`project-species-${idx}`"
+        >
+          <l-circle
+            v-for="(species, speciesIdx) in group.speciesMarkers"
+            :key="`project-species-${idx}-${speciesIdx}`"
+            :lat-lng="species.position"
+            :draggable="false"
+            :radius="species.radius"
+            :color="species.color"
+            :fillColor="species.color"
+            :fillOpacity="1"
+          >
+          </l-circle>
+        </div>
+      </l-layer-group>
+      <l-layer-group
         v-if="showForestBoundary"
         layer-type="overlay"
-        name="Layer polyline"
+        name="Layer ForestBoundary"
       >
         <l-polygon
           v-for="item in forestBoundary"
@@ -130,6 +177,7 @@ import {
 } from 'vue2-leaflet';
 import { createNamespacedHelpers } from 'vuex';
 import L from 'leaflet';
+import chartColors from '@/constant/chartColors';
 import idx from 'idx';
 import 'leaflet/dist/leaflet.css';
 
@@ -175,6 +223,14 @@ const ErrorCameraIconSelect = L.icon({
 const defaultZoom = { area: 8, camera: 12 };
 const defaultPosition = { lng: 120.982024, lat: 23.973875 };
 
+const positonShift = [
+  { lat: 0.000002, lng: 0.000002 },
+  { lat: -0.000002, lng: 0.000002 },
+  { lat: -0.000002, lng: -0.000001 },
+  { lat: 0.000001, lng: 0.000002 },
+  { lat: 0.000002, lng: -0.000002 },
+];
+
 export default {
   name: 'project-map',
   components: {
@@ -202,14 +258,110 @@ export default {
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+      studyAreaRadius: 10000,
+      cameraRadius: 5000,
+      markerColor: {
+        area: {
+          color: 'rgba(42, 127, 96, .43)',
+          fillColor: 'rgb(42, 127, 96)',
+        },
+        camera: {
+          color: 'rgba(17, 138, 178,.43)',
+          fillColor: 'rgb(17, 138, 178)',
+        },
+      },
       showForestBoundary: false,
       showSpecies: false,
       displaySpeciesDate: 0,
-      startDisplayDate: '2010-05', // TODO: get from API
-      endDisplayDate: '2016-11', // TODO: get from API
       displayCurrentDate: {
         x: 0,
         show: false,
+      },
+      startDisplayDate: '2010-05', // TODO: get from API
+      endDisplayDate: '2016-11', // TODO: get from API
+      speciesMarkers: {
+        // TODO: get from API
+        '5ceb8464caaeca01402d6354': [
+          {
+            name: 'A',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 28,
+          },
+          {
+            name: 'B',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 36,
+          },
+          {
+            name: 'C',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 145,
+          },
+          {
+            name: 'D',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 1515,
+          },
+          {
+            name: 'E',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 0,
+          },
+        ],
+        '5ceb83f7caaecaca502d62d9': [
+          {
+            name: 'A',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 78,
+          },
+          {
+            name: 'B',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 66,
+          },
+          {
+            name: 'C',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 45,
+          },
+          {
+            name: 'D',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 185,
+          },
+          {
+            name: 'E',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 30,
+          },
+        ],
+        '5ceb8488caaecaf5472d63a8': [
+          {
+            name: 'A',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 278,
+          },
+          {
+            name: 'B',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 6,
+          },
+          {
+            name: 'C',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 415,
+          },
+          {
+            name: 'D',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 15,
+          },
+          {
+            name: 'E',
+            speciesId: '5cd661e332a98b60839c6cab',
+            numberOfRecords: 83,
+          },
+        ],
       },
     };
   },
@@ -258,6 +410,48 @@ export default {
           icon: this.getMarkerIcon(id, failures),
         }),
       );
+    },
+    speciesMaxRecords: function() {
+      return Object.values(this.speciesMarkers)
+        .reduce((join, speciesMarkers) => [...join, ...speciesMarkers], [])
+        .reduce(
+          (max, { numberOfRecords }) => Math.max(max, numberOfRecords),
+          0,
+        );
+    },
+    speciesGroups: function() {
+      if (this.mapMode === 'area') {
+        return this.studyAreas.map(({ position, id }) => ({
+          position,
+          speciesMarkers: this.speciesMarkers[id].map(
+            ({ speciesId, numberOfRecords }, index) => ({
+              speciesId,
+              color: chartColors[index],
+              radius: (numberOfRecords / this.speciesMaxRecords) * 2000,
+              position: this.getRandomPosition(
+                position,
+                index,
+                this.studyAreaRadius,
+              ),
+            }),
+          ),
+        }));
+      }
+      return this.studyAreas.map(({ position, id }) => ({
+        position,
+        speciesMarkers: this.speciesMarkers[id].map(
+          ({ speciesId, numberOfRecords }, index) => ({
+            speciesId,
+            color: chartColors[index],
+            radius: (numberOfRecords / this.speciesMaxRecords) * 200,
+            position: this.getRandomPosition(
+              position,
+              index,
+              this.cameraRadius,
+            ),
+          }),
+        ),
+      }));
     },
     mapCenter: function() {
       // project level: calculate center base on all parent studyAreas
@@ -319,7 +513,7 @@ export default {
       );
     },
     currentDisplayDate: function() {
-      // tranfer slider number to date
+      // transfer slider number to date
       const num = parseInt(this.displaySpeciesDate, 10);
       const totalMonth = this.startDisplayMonth + num;
       const year = this.startDisplayYear + Math.floor((totalMonth - 1) / 12);
@@ -398,6 +592,12 @@ export default {
     },
     mouseupSlider() {
       this.displayCurrentDate.show = false;
+    },
+    getRandomPosition({ lat, lng }, idx, scale) {
+      return {
+        lat: lat + positonShift[idx].lat * scale,
+        lng: lng + positonShift[idx].lng * scale,
+      };
     },
   },
 };
