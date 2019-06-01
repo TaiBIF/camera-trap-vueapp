@@ -10,7 +10,7 @@
     >
       <l-tile-layer :url="url" :attribution="attribution" />
       <l-layer-group
-        v-if="mapMode === 'area'"
+        v-if="mapMode === 'byStudyArea'"
         layer-type="overlay"
         name="Layer StudyArea"
       >
@@ -32,7 +32,7 @@
         </l-circle>
       </l-layer-group>
       <l-layer-group
-        v-if="mapMode === 'camera' && !showSpecies"
+        v-if="mapMode === 'byCameraLocation' && !showSpecies"
         :className="'site-container'"
         layer-type="overlay"
         name="Layer Camera"
@@ -54,7 +54,7 @@
         </l-marker>
       </l-layer-group>
       <l-layer-group
-        v-if="mapMode === 'camera' && showSpecies"
+        v-if="mapMode === 'byCameraLocation' && showSpecies"
         :className="'site-container'"
         layer-type="overlay"
         name="Layer Camera"
@@ -83,22 +83,17 @@
         layer-type="overlay"
         name="Layer Species"
       >
-        <div
-          v-for="(group, idx) in speciesGroups"
+        <l-circle
+          v-for="(species, idx) in speciesMarkers"
           :key="`project-species-${idx}`"
+          :lat-lng="species.position"
+          :draggable="false"
+          :radius="species.radius"
+          :color="species.color"
+          :fillColor="species.color"
+          :fillOpacity="1"
         >
-          <l-circle
-            v-for="(species, speciesIdx) in group.speciesMarkers"
-            :key="`project-species-${idx}-${speciesIdx}`"
-            :lat-lng="species.position"
-            :draggable="false"
-            :radius="species.radius"
-            :color="species.color"
-            :fillColor="species.color"
-            :fillOpacity="1"
-          >
-          </l-circle>
-        </div>
+        </l-circle>
       </l-layer-group>
       <l-layer-group
         v-if="showForestBoundary"
@@ -150,7 +145,7 @@
         name="speciesDate"
         v-model="displaySpeciesDate"
         min="0"
-        :max="totalDisplayMonth"
+        :max="totalDisplayMonth - 1"
         :disabled="!showSpecies"
         @mousedown="mousedownSlider"
         @mousemove="mousemoveSlider"
@@ -164,8 +159,8 @@
         {{ currentDisplayDate }}
       </div>
       <div class="range__display">
-        <span>{{ startDisplayDate }}</span>
-        <span>{{ endDisplayDate }}</span>
+        <span>{{ speciesGroupStartDate }}</span>
+        <span>{{ speciesGroupEndDate }}</span>
       </div>
     </div>
   </div>
@@ -183,6 +178,7 @@ import {
   LTooltip,
 } from 'vue2-leaflet';
 import { createNamespacedHelpers } from 'vuex';
+import { setTwoDigitFormat } from '@/utils/dateHelper';
 import L from 'leaflet';
 import chartColors from '@/constant/chartColors';
 import idx from 'idx';
@@ -227,7 +223,7 @@ const ErrorCameraIconSelect = L.icon({
   shadowAnchor: [33, 80],
 });
 
-const defaultZoom = { area: 8, camera: 12 };
+const defaultZoom = { byStudyArea: 8, byCameraLocation: 12 };
 const defaultPosition = { lng: 120.982024, lat: 23.973875 };
 const positonShift = [
   { lng: 0.0000012, lat: 0.000002 },
@@ -257,7 +253,7 @@ export default {
   },
   data() {
     return {
-      zoom: defaultZoom.area,
+      zoom: defaultZoom.byStudyArea,
       getForestBoundaryParam: defaultPosition,
       options: {
         zoomControl: true,
@@ -278,100 +274,6 @@ export default {
         x: 0,
         show: false,
       },
-      startDisplayDate: '2010-05', // TODO: get from API
-      endDisplayDate: '2016-11', // TODO: get from API
-      species: {
-        // TODO: get from API
-        '5cd661e332a98b60839c6caf': '山羌',
-        '5cd661e332a98b60839c6caa': '空拍',
-        '5cd661e332a98b60839c6cab': '測試',
-        '5cd661e332a98b60839c6cb1': '獼猴',
-        '5cd661e332a98b60839c6cb2': '鼬獾',
-      },
-      speciesMarkers: {
-        // TODO: get from API
-        '5ceb8464caaeca01402d6354': [
-          {
-            species: '山羌',
-            speciesId: '5cd661e332a98b60839c6caf',
-            numberOfRecords: 1000,
-          },
-          {
-            species: '空拍',
-            speciesId: '5cd661e332a98b60839c6caa',
-            numberOfRecords: 1000,
-          },
-          {
-            species: '測試',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 1000,
-          },
-          {
-            species: '獼猴',
-            speciesId: '5cd661e332a98b60839c6cb1',
-            numberOfRecords: 1000,
-          },
-          {
-            species: '鼬獾',
-            speciesId: '5cd661e332a98b60839c6cb2',
-            numberOfRecords: 1000,
-          },
-        ],
-        '5ceb83f7caaecaca502d62d9': [
-          {
-            species: '山羌',
-            speciesId: '5cd661e332a98b60839c6caf',
-            numberOfRecords: 78,
-          },
-          {
-            species: '空拍',
-            speciesId: '5cd661e332a98b60839c6caa',
-            numberOfRecords: 66,
-          },
-          {
-            species: '測試',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 45,
-          },
-          {
-            species: '獼猴',
-            speciesId: '5cd661e332a98b60839c6cb1',
-            numberOfRecords: 185,
-          },
-          {
-            species: '鼬獾',
-            speciesId: '5cd661e332a98b60839c6cb2',
-            numberOfRecords: 30,
-          },
-        ],
-        '5ceb8488caaecaf5472d63a8': [
-          {
-            species: '山羌',
-            speciesId: '5cd661e332a98b60839c6caf',
-            numberOfRecords: 278,
-          },
-          {
-            species: '空拍',
-            speciesId: '5cd661e332a98b60839c6caa',
-            numberOfRecords: 6,
-          },
-          {
-            species: '測試',
-            speciesId: '5cd661e332a98b60839c6cab',
-            numberOfRecords: 415,
-          },
-          {
-            species: '獼猴',
-            speciesId: '5cd661e332a98b60839c6cb1',
-            numberOfRecords: 15,
-          },
-          {
-            species: '鼬獾',
-            speciesId: '5cd661e332a98b60839c6cb2',
-            numberOfRecords: 83,
-          },
-        ],
-      },
     };
   },
   watch: {
@@ -383,7 +285,14 @@ export default {
     },
   },
   computed: {
-    ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
+    ...studyAreas.mapGetters([
+      'studyAreas',
+      'cameraLocations',
+      'speciesGroupStartDate',
+      'speciesGroupEndDate',
+      'topFiveSpecies',
+      'getSpeciesGroups',
+    ]),
     ...forest.mapGetters(['forestBoundary']),
     projectId: function() {
       return this.$route.params.projectId;
@@ -396,9 +305,9 @@ export default {
     },
     mapMode: function() {
       if (this.selectedStudyAreaId === 'all') {
-        return 'area';
+        return 'byStudyArea';
       }
-      return 'camera';
+      return 'byCameraLocation';
     },
     areas: function() {
       return this.studyAreas.map(({ title, id, children, position }) => ({
@@ -420,26 +329,31 @@ export default {
         }),
       );
     },
+    speciesGroups: function() {
+      return this.getSpeciesGroups({
+        type: this.mapMode,
+        date: this.currentDisplayDate,
+      });
+    },
     speciesLegend: function() {
-      return Object.entries(this.species).map(([id, name], index) => ({
+      return Object.entries(this.topFiveSpecies).map(([id, name], index) => ({
         id,
         name,
         color: chartColors[index],
       }));
     },
     speciesMaxRecords: function() {
-      return Object.values(this.speciesMarkers)
-        .reduce((join, speciesMarkers) => [...join, ...speciesMarkers], [])
+      return Object.values(this.speciesGroups)
+        .reduce((join, speciesData) => [...join, ...speciesData], [])
         .reduce(
           (max, { numberOfRecords }) => Math.max(max, numberOfRecords),
           0,
         );
     },
-    speciesGroups: function() {
-      if (this.mapMode === 'area') {
-        return this.studyAreas.map(({ position, id }) => ({
-          position,
-          speciesMarkers: this.speciesMarkers[id].map(
+    speciesMarkers: function() {
+      if (this.mapMode === 'byStudyArea') {
+        return this.studyAreas.reduce((res, { position, id }) => {
+          const markers = this.speciesGroups[id].map(
             ({ speciesId, numberOfRecords }, index) => ({
               speciesId,
               color: this.getSpeciesMarkerColor(speciesId),
@@ -450,24 +364,27 @@ export default {
                 this.studyAreaRadius,
               ),
             }),
-          ),
-        }));
+          );
+          return [...res, ...markers];
+        }, []);
       }
-      return this.studyAreas.map(({ position, id }) => ({
-        position,
-        speciesMarkers: this.speciesMarkers[id].map(
-          ({ speciesId, numberOfRecords }, index) => ({
-            speciesId,
-            color: this.getSpeciesMarkerColor(speciesId),
-            radius: (numberOfRecords / this.speciesMaxRecords) * 1000 + 100, // limit radius between 100 ~ 1100
-            position: this.getRandomPosition(
-              position,
-              index,
-              this.cameraRadius,
-            ),
-          }),
-        ),
-      }));
+      // TODO: apply camera version
+      return [];
+      // return this.cameras.reduce((res, { position, id }) => {
+      //   const markers = this.speciesGroups[id].map(
+      //     ({ speciesId, numberOfRecords }, index) => ({
+      //       speciesId,
+      //       color: this.getSpeciesMarkerColor(speciesId),
+      //       radius: (numberOfRecords / this.speciesMaxRecords) * 1000 + 100, // limit radius between 100 ~ 1100
+      //       position: this.getRandomPosition(
+      //         position,
+      //         index,
+      //         this.cameraRadius,
+      //       ),
+      //     }),
+      //   );
+      //   return [...res, ...markers];
+      // }, []);
     },
     mapCenter: function() {
       // project level: calculate center base on all parent studyAreas
@@ -511,21 +428,22 @@ export default {
       };
     },
     startDisplayYear: function() {
-      return parseInt(this.startDisplayDate.slice(0, 4), 10);
+      return parseInt(this.speciesGroupStartDate.slice(0, 4), 10);
     },
     startDisplayMonth: function() {
-      return parseInt(this.startDisplayDate.slice(5), 10);
+      return parseInt(this.speciesGroupStartDate.slice(5), 10);
     },
     endDisplayYear: function() {
-      return parseInt(this.endDisplayDate.slice(0, 4), 10);
+      return parseInt(this.speciesGroupEndDate.slice(0, 4), 10);
     },
     endDisplayMonth: function() {
-      return parseInt(this.endDisplayDate.slice(5), 10);
+      return parseInt(this.speciesGroupEndDate.slice(5), 10);
     },
     totalDisplayMonth: function() {
       return (
         (this.endDisplayYear - this.startDisplayYear) * 12 +
-        (this.endDisplayMonth - this.startDisplayMonth)
+        (this.endDisplayMonth - this.startDisplayMonth) +
+        1
       );
     },
     currentDisplayDate: function() {
@@ -535,7 +453,7 @@ export default {
       const year = this.startDisplayYear + Math.floor((totalMonth - 1) / 12);
       const month = totalMonth % 12 === 0 ? 12 : totalMonth % 12;
 
-      return `${year}-${('0' + month).slice(-2)}`;
+      return `${year}-${setTwoDigitFormat(month)}`;
     },
   },
   methods: {

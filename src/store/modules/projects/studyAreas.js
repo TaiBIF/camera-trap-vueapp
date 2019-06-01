@@ -7,6 +7,7 @@ import {
   getAllProjectCameraLocations,
   getProjectCameraLocations,
   getProjectStudyAreas,
+  getSpeciesGroupByStudyArea,
   lockProjectCameraLocations,
   postProjectCameraLocations,
   postProjectStudyAreas,
@@ -14,12 +15,17 @@ import {
   unlockProjectCameraLocations,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
+import { setTwoDigitFormat } from '@/utils/dateHelper';
 
 // 計畫內的樣區資訊，全放在 project 會過大
 
 const state = {
   studyAreas: [], // 計畫樣區列表
   cameraLocations: [], // 指定樣區內的相機位置列表，只保存最後一次的查詢結果
+  speciesGroup: {
+    byStudyArea: [], // 各樣區的前五大物種與回收影像數量
+    byCameraLocation: [], // 各相機的前五大物種與回收影像數量
+  },
 };
 
 const getters = {
@@ -54,6 +60,49 @@ const getters = {
     });
     return title;
   },
+  speciesGroupStartDate: state => {
+    const firstDate = idx(state, _ => _.speciesGroup.byStudyArea[0].metrics[0]);
+    if (!firstDate) return '';
+    return `${firstDate.year}-${setTwoDigitFormat(firstDate.month)}`;
+  },
+  speciesGroupEndDate: state => {
+    const metrics = idx(state, _ => _.speciesGroup.byStudyArea[0].metrics);
+    if (!metrics || metrics.length === 0) return '';
+
+    const lastDate = metrics[metrics.length - 1];
+    return `${lastDate.year}-${setTwoDigitFormat(lastDate.month)}`;
+  },
+  topFiveSpecies: state => {
+    const speciesGroup = idx(state, _ => _.speciesGroup.byStudyArea) || [];
+    const allSpeciesData = speciesGroup.reduce((res, group) => {
+      return group.metrics.reduce(
+        (merge, { metrics }) => [...merge, ...metrics],
+        res,
+      );
+    }, []);
+
+    let topFive = {};
+    allSpeciesData.some(({ speciesId, species }) => {
+      topFive[speciesId] = species;
+      return topFive.length >= 5;
+    });
+    return topFive;
+  },
+  getSpeciesGroups: state => ({ type, date }) => {
+    const group = idx(state, _ => _.speciesGroup[type]) || [];
+
+    return group.reduce((res, { studyAreaId, metrics }) => {
+      const selectedDateSpecies =
+        metrics.find(
+          ({ year, month }) => `${year}-${setTwoDigitFormat(month)}` === date,
+        ) || [];
+
+      return {
+        ...res,
+        [studyAreaId]: selectedDateSpecies.metrics,
+      };
+    }, {});
+  },
 };
 
 const mutations = {
@@ -65,6 +114,9 @@ const mutations = {
   },
   resetCameraLocations(state) {
     state.cameraLocations = [];
+  },
+  setSpeciesGroup(state, { type, data }) {
+    state.speciesGroup[type] = data;
   },
 };
 
@@ -133,6 +185,10 @@ const actions = {
       ),
     );
     dispatch('getProjectCameraLocations', { projectId, studyAreaId });
+  },
+  async loadSpeciesGroupByStudyArea({ commit }, { projectId }) {
+    const data = await getSpeciesGroupByStudyArea(projectId);
+    commit('setSpeciesGroup', { type: 'byStudyArea', data });
   },
 };
 

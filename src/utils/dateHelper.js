@@ -20,3 +20,5 @@ export const dateFormatYYYYMMDDHHmmss = dateTimeString =>
 export const dateFormatYYYY = dateTimeString => {
   return moment(dateTimeString).format('YYYY');
 };
+
+export const setTwoDigitFormat = num => ('0' + num).slice(-2);

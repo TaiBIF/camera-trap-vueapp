@@ -40,6 +40,7 @@ export default {
   mounted() {
     this.getProjectDetail(this.projectId);
     this.getProjectStudyAreas(this.projectId);
+    this.loadSpeciesGroupByStudyArea(this.projectId);
     this.fetchProjectCameraLocations();
   },
   watch: {
@@ -62,6 +63,7 @@ export default {
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getProjectCameraLocations',
+      'loadSpeciesGroupByStudyArea',
     ]),
     fetchProjectCameraLocations() {
       if (this.selectedStudyAreaId && this.selectedStudyAreaId !== 'all') {
