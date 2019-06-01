@@ -409,6 +409,7 @@ export default {
       });
     },
     async doSearch() {
+      this.currentAnnotationIdx = -1;
       if (this.query.cameraLocations.length === 0) {
         this.resetAnnotations();
         return;
@@ -416,7 +417,6 @@ export default {
       const { query } = this;
 
       this.isLoading = true;
-      this.currentAnnotationIdx = -1;
 
       await this.getAnnotations({
         studyAreaId: this.studyAreaId,

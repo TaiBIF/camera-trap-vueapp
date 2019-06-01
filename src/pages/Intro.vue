@@ -219,7 +219,7 @@
           />
         </div>
 
-        <a class="btn btn-orange btn-lg" @click="loginModalOpen = true">
+        <a class="btn btn-orange btn-lg" @click="handleClickStartUse">
           立即開始使用
         </a>
       </div>
