@@ -66,16 +66,20 @@
                       v-if="file.uploadStatus === uploadStatus.uploadError"
                       @click="
                         showInfoModal = true;
-                        uploadErrorType = 'data-error';
+                        uploadErrorType = 'other-error';
+                        uploadErrorOtherText = file.errorMessage;
                       "
                       class="link text-danger text-underline"
                       >檢視錯誤</a
                     >
-                    <!--<a
+                    <a
                       v-if="file.uploadStatus === uploadStatus.success"
                       class="link text-green text-underline"
+                      :href="
+                        `/project/${projectId}/study-areas/${file.studyAreaId}`
+                      "
                       >查看</a
-                    >-->
+                    >
                   </div>
                   <div
                     v-if="file.uploadStatus === uploadStatus.waiting"
@@ -160,6 +164,19 @@
           <a>上傳格式說明</a>。
         </p>
       </div>
+      <div v-else-if="uploadErrorType === 'other-error'">
+        <div class="image">
+          <img
+            src="/assets/common/error-img.png"
+            width="221"
+            srcset="/assets/common/error-img@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          {{ uploadErrorOtherText }}
+        </h1>
+        <p class="text-gray"></p>
+      </div>
     </info-modal>
   </div>
 </template>
@@ -205,6 +222,7 @@ export default {
       currentFetchController: undefined,
       showInfoModal: false,
       uploadErrorType: '',
+      uploadErrorOtherText: '',
     };
   },
   mounted() {
@@ -234,19 +252,36 @@ export default {
             } else if ('image/jpeg,image/png'.includes(file.type)) {
               annotationType = 'annotation-image';
             } else if (
-              'video/quicktime,video/mp4,video/mpeg'.includes(file.type)
+              'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(
+                file.type,
+              )
             ) {
               annotationType = 'annotation-video';
             }
-
+            if (annotationType === '') {
+              this.setFileType(
+                index,
+                uploadStatus.uploadError,
+                'no annotation-type (not support)',
+              );
+              throw 'no annotation-type (not support)';
+            }
             this.currentFetchController = new AbortController();
-            await uploadAnnotation(
+            let retData = await uploadAnnotation(
               file.cameraLocationId,
               file,
               this.currentFetchController.signal,
               annotationType,
             );
-            this.setFileType(index, uploadStatus.success);
+            if (retData.message) {
+              this.setFileType(
+                index,
+                uploadStatus.uploadError,
+                retData.message,
+              );
+            } else {
+              this.setFileType(index, uploadStatus.success);
+            }
           } catch (error) {
             if (file.uploadStatus !== uploadStatus.cancel) {
               // 不是主動取消才要改變狀態
@@ -260,12 +295,26 @@ export default {
       this.setFileType(targetIdx, uploadStatus.cancel);
       this.currentFetchController.abort();
     },
-    setFileType(targetIdx, status) {
+    setFileType(targetIdx, status, errorMessage) {
       this.$emit(
         'change',
         this.fileList.map((file, idx) => {
           if (idx === Number(targetIdx)) {
             file.uploadStatus = status;
+            if (errorMessage) {
+              file.errorMessage = errorMessage;
+            }
+          }
+          return file;
+        }),
+      );
+    },
+    setFileErrorMessage(targetIdx, errorMessage) {
+      this.$emit(
+        'change',
+        this.fileList.map((file, idx) => {
+          if (idx === Number(targetIdx)) {
+            file.errorMessage = errorMessage;
           }
           return file;
         }),

@@ -477,6 +477,7 @@ export default {
         { label: '30 分鐘', value: 30 * 60 * 1000 },
         { label: '60 分鐘', value: 60 * 60 * 1000 },
       ],
+      projectSpeciesOptions: [], // for the calculate {Array<{label: 'string', value: 'string'}>}
       speciesOptions: [], // {Array<{label: 'string', value: 'string'}>}
       form: {
         selectedCalculateType: { label: '有效照片與目擊事件', value: 'oi' },
@@ -512,7 +513,7 @@ export default {
   },
   computed: {
     ...dataFields.mapGetters(['dataFields']),
-    ...projects.mapState(['projects', 'projectSpecies']),
+    ...projects.mapState(['projects']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
 
     projectOptions() {
@@ -523,12 +524,6 @@ export default {
       return this.projects.map(project => ({
         label: project.title,
         value: project.id,
-      }));
-    },
-    projectSpeciesOptions() {
-      return this.projectSpecies.map(x => ({
-        label: x.title[getLanguage()],
-        value: x.id,
       }));
     },
   },
@@ -587,7 +582,13 @@ export default {
         // eslint-disable-next-line no-unused-vars
         const [_, ...species] = await Promise.all(tasks);
         this.speciesOptions = [];
-        species.forEach(species => {
+        species.forEach((species, index) => {
+          if (index === 0) {
+            this.projectSpeciesOptions = species.items.map(x => ({
+              label: x.title[getLanguage()],
+              value: x.id,
+            }));
+          }
           species.items.forEach(x => {
             if (!this.speciesOptions.find(y => y.value === x.id)) {
               this.speciesOptions.push({

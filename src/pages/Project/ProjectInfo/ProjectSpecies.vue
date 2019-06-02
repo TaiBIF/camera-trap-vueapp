@@ -72,18 +72,10 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import VueHighcharts from 'vue2-highcharts';
+import chartColors from '@/constant/chartColors';
 
 const projects = createNamespacedHelpers('projects');
 
-const chartColors = [
-  '#5DB897',
-  '#AACAEE',
-  '#7E99E5',
-  '#5569B5',
-  '#CC76BA',
-  '#FFC8EB',
-  '#BDE9A5',
-];
 export default {
   name: 'project-species',
   components: {
