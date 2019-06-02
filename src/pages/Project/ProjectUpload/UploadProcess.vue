@@ -244,34 +244,11 @@ export default {
         if (file.uploadStatus !== uploadStatus.cancel) {
           this.setFileType(index, uploadStatus.uploading);
           try {
-            let annotationType = '';
-            if (file.type === 'text/csv') {
-              annotationType = 'annotation-csv';
-            } else if (file.type === 'application/zip') {
-              annotationType = 'annotation-zip';
-            } else if ('image/jpeg,image/png'.includes(file.type)) {
-              annotationType = 'annotation-image';
-            } else if (
-              'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(
-                file.type,
-              )
-            ) {
-              annotationType = 'annotation-video';
-            }
-            if (annotationType === '') {
-              this.setFileType(
-                index,
-                uploadStatus.uploadError,
-                'no annotation-type (not support)',
-              );
-              throw 'no annotation-type (not support)';
-            }
             this.currentFetchController = new AbortController();
             let retData = await uploadAnnotation(
               file.cameraLocationId,
               file,
               this.currentFetchController.signal,
-              annotationType,
             );
             if (retData.message) {
               this.setFileType(
@@ -285,7 +262,7 @@ export default {
           } catch (error) {
             if (file.uploadStatus !== uploadStatus.cancel) {
               // 不是主動取消才要改變狀態
-              this.setFileType(index, uploadStatus.uploadError);
+              this.setFileType(index, uploadStatus.uploadError, error);
             }
           }
         }
