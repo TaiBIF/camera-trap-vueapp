@@ -7,6 +7,7 @@ import {
   getAllProjectCameraLocations,
   getProjectCameraLocations,
   getProjectStudyAreas,
+  getSpeciesGroupByCameraLocation,
   getSpeciesGroupByStudyArea,
   lockProjectCameraLocations,
   postProjectCameraLocations,
@@ -91,7 +92,7 @@ const getters = {
   getSpeciesGroups: state => ({ type, date }) => {
     const group = idx(state, _ => _.speciesGroup[type]) || [];
 
-    return group.reduce((res, { studyAreaId, metrics }) => {
+    return group.reduce((res, { studyAreaId, cameraLocationId, metrics }) => {
       const selectedDateSpecies =
         metrics.find(
           ({ year, month }) => `${year}-${setTwoDigitFormat(month)}` === date,
@@ -99,7 +100,7 @@ const getters = {
 
       return {
         ...res,
-        [studyAreaId]: selectedDateSpecies.metrics,
+        [studyAreaId || cameraLocationId]: selectedDateSpecies.metrics,
       };
     }, {});
   },
@@ -189,6 +190,16 @@ const actions = {
   async loadSpeciesGroupByStudyArea({ commit }, { projectId }) {
     const data = await getSpeciesGroupByStudyArea(projectId);
     commit('setSpeciesGroup', { type: 'byStudyArea', data });
+  },
+  async loadSpeciesGroupByCameraLocation(
+    { commit },
+    { projectId, studyAreaId },
+  ) {
+    const data = await getSpeciesGroupByCameraLocation({
+      projectId,
+      studyAreaId,
+    });
+    commit('setSpeciesGroup', { type: 'byCameraLocation', data });
   },
 };
 

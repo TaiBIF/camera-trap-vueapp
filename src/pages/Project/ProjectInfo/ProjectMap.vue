@@ -74,7 +74,7 @@
         >
           <l-tooltip
             :content="camera.name"
-            :options="{ permanent: true, direction: 'top' }"
+            :options="{ permanent: true, direction: 'center' }"
           />
         </l-circle>
       </l-layer-group>
@@ -110,7 +110,7 @@
           :color="'#FFAF00'"
         />
       </l-layer-group>
-      <l-control position="topright" class="species__legend">
+      <l-control v-if="showSpecies" position="topright" class="species__legend">
         <div v-for="species in speciesLegend" :key="species.id">
           <span :style="{ backgroundColor: species.color }"></span>
           {{ species.name }}
@@ -144,6 +144,7 @@
         type="range"
         name="speciesDate"
         v-model="displaySpeciesDate"
+        step="1"
         min="0"
         :max="totalDisplayMonth - 1"
         :disabled="!showSpecies"
@@ -353,7 +354,7 @@ export default {
     speciesMarkers: function() {
       if (this.mapMode === 'byStudyArea') {
         return this.studyAreas.reduce((res, { position, id }) => {
-          const markers = this.speciesGroups[id].map(
+          const markers = (this.speciesGroups[id] || []).map(
             ({ speciesId, numberOfRecords }, index) => ({
               speciesId,
               color: this.getSpeciesMarkerColor(speciesId),
@@ -368,23 +369,21 @@ export default {
           return [...res, ...markers];
         }, []);
       }
-      // TODO: apply camera version
-      return [];
-      // return this.cameras.reduce((res, { position, id }) => {
-      //   const markers = this.speciesGroups[id].map(
-      //     ({ speciesId, numberOfRecords }, index) => ({
-      //       speciesId,
-      //       color: this.getSpeciesMarkerColor(speciesId),
-      //       radius: (numberOfRecords / this.speciesMaxRecords) * 1000 + 100, // limit radius between 100 ~ 1100
-      //       position: this.getRandomPosition(
-      //         position,
-      //         index,
-      //         this.cameraRadius,
-      //       ),
-      //     }),
-      //   );
-      //   return [...res, ...markers];
-      // }, []);
+      return this.cameras.reduce((res, { position, id }) => {
+        const markers = (this.speciesGroups[id] || []).map(
+          ({ speciesId, numberOfRecords }, index) => ({
+            speciesId,
+            color: this.getSpeciesMarkerColor(speciesId),
+            radius: (numberOfRecords / this.speciesMaxRecords) * 1000 + 100, // limit radius between 100 ~ 1100
+            position: this.getRandomPosition(
+              position,
+              index,
+              this.cameraRadius,
+            ),
+          }),
+        );
+        return [...res, ...markers];
+      }, []);
     },
     mapCenter: function() {
       // project level: calculate center base on all parent studyAreas
@@ -579,6 +578,7 @@ export default {
     transform: translateX(-40px);
     background-color: white;
     color: #8b8b8b;
+    box-shadow: 0px 0px 2px 0px black;
   }
 
   .range__display {
