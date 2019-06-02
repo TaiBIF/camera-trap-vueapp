@@ -127,7 +127,7 @@ export default {
       galleryShow: true,
       historyShow: true,
       currentAnnotationIdx: -1,
-      query: Object.assign({}, this.$route.query),
+      query: Object.assign({}, { size: 50 }, this.$route.query),
     };
   },
   watch: {
@@ -264,7 +264,7 @@ export default {
         }),
       ]);
 
-      await this.getAnnotations(this.$route.query);
+      await this.doSearch();
     } catch (error) {
       throw error;
     } finally {
