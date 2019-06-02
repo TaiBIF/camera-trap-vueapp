@@ -122,7 +122,7 @@ const unlockProjectCameraLocations = async (projectId, cameraLocationId) => {
 };
 
 // TODO: apply when API ready
-const getSpeciesGroupByStudyArea = async projectId => {
+const getSpeciesGroupByStudyArea = async () => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve([
@@ -677,7 +677,7 @@ const getSpeciesGroupByStudyArea = async projectId => {
 };
 
 // TODO: apply when API ready
-const getSpeciesGroupByCameraLocation = async ({ projectId, studyAreaId }) => {
+const getSpeciesGroupByCameraLocation = async () => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve([
