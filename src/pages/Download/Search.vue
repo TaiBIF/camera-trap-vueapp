@@ -91,14 +91,14 @@
                 ></a>
               </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-12 text-right">
                 <a class="text-green btn pr-0" @click="addFormItem()">
                   <span class="icon"><i class="icon-add-green"></i></span>
                   <span class="text">新增資料來源</span>
                 </a>
               </div>
-            </div>
+            </div> -->
 
             <div class="row">
               <div class="col-12">
@@ -454,6 +454,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { getLanguage } from '@/utils/i18n';
 import { getProjectSpecies } from '@/service';
 import datePicker from 'vue2-datepicker';
+import idx from 'idx';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
 
@@ -670,6 +671,9 @@ export default {
           x => x.selected.cameraLocation.value,
         ),
         species: this.form.selectedSpecies.map(x => x.value),
+        // 補上 projectId, studyAreaId 讓之後頁面可以從 api 取得資訊
+        projectId: idx(this.form.items, _ => _[0].selected.project.value),
+        studyAreaId: idx(this.form.items, _ => _[0].selected.studyArea.value),
       };
       if (this.form.startDate) {
         const time = new Date(this.form.startDate);
