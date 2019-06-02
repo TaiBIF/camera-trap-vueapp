@@ -27,7 +27,7 @@
           <div class="col-4">
             <div class="item">
               <label>資料來源：</label>
-              <div class="content">
+              <div class="content" v-show="isInitDone">
                 <div
                   :key="cameraLocation"
                   v-for="cameraLocation in [...$route.query.cameraLocations]"
@@ -76,7 +76,7 @@
       </div>
     </div>
 
-    <div class="sheet-container">
+    <div class="sheet-container" v-show="isInitDone">
       <AnnotationsSheet
         ref="sheet"
         :isEdit="isEdit"
@@ -122,7 +122,7 @@ export default {
   data() {
     return {
       isLoading: true,
-
+      isInitDone: false,
       isEdit: false,
       galleryShow: true,
       historyShow: true,
@@ -265,11 +265,12 @@ export default {
       ]);
 
       await this.getAnnotations(this.$route.query);
-
-      this.isLoading = false;
     } catch (error) {
-      this.isLoading = false;
       throw error;
+    } finally {
+      this.isLoading = false;
+      this.isInitDone = true;
+      this.setSheetHeight();
     }
   },
 };
