@@ -75,6 +75,21 @@ const uploadFileByCameraLocation = async (cameraLocationId, file, signal) => {
   return data;
 };
 
+const uploadFileByAnnotation = async (annotationId, file, signal) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const query = queryString.stringify(getAnnotationQuery(file));
+
+  const url = `/api/v1/annotations/${annotationId}/file?${query}`;
+  const data = await fetchUpload({
+    url,
+    body: formData,
+    signal,
+  });
+  return data;
+};
+
 /**
  * https://cameratraptw.docs.apiary.io/#/reference/issues/create-an-issue/create-an-issue/200?mc=reference%2Fissues%2Fcreate-an-issue%2Fcreate-an-issue%2F200
  * @param {string} type 問題回報 issue, 意見反饋 suggestion
@@ -113,5 +128,6 @@ export {
   uploadIssueAttachment,
   uploadCoverImage,
   uploadFileByCameraLocation,
+  uploadFileByAnnotation,
   createIssue,
 };

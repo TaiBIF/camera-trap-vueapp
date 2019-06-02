@@ -15,18 +15,16 @@
             srcset="/assets/common/empty-site@2x.png"
           />
           <h5 class="text-gray">尚未上傳照片資料</h5>
-          <router-link
-            :to="{
-              name: 'projectUpload',
-              params: {
-                projectId,
-              },
-            }"
-            class="btn btn-orange"
-          >
+          <label class="btn btn-orange">
+            <input
+              style="display:none;"
+              type="file"
+              :accept="uploadAccept"
+              @change="uploadFile"
+            />
             <span class="icon"><i class="icon-upload-white"></i></span>
             <span class="text">補上傳影像檔</span>
-          </router-link>
+          </label>
         </div>
       </div>
       <div class="gallery-body" v-else>
@@ -126,7 +124,9 @@ import { createNamespacedHelpers } from 'vuex';
 import { videoPlayer } from 'vue-video-player';
 import idx from 'idx';
 
+import { acceptDef } from '@/constant/uploadAccept.js';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
+import { uploadFileByAnnotation } from '@/service';
 import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
 
 import 'video.js/dist/video-js.css';
@@ -154,6 +154,7 @@ export default {
   },
   data() {
     return {
+      uploadAccept: [acceptDef.image, acceptDef.video].join(''),
       galleryWidth: 450,
       isDrag: false,
       playbackRate: 1,
@@ -247,6 +248,21 @@ export default {
     onPlayerEnded(e) {
       this.playbackRate = e.playbackRate();
       this.goNext();
+    },
+
+    async uploadFile(e) {
+      const file = idx(e, _ => _.target.files[0]);
+      if (file) {
+        try {
+          let retData = await uploadFileByAnnotation(this.currentData.id, file);
+          console.log(retData);
+          // if (retData.message) {
+          // } else {
+          // }
+        } catch (error) {
+          console.log(error);
+        }
+      }
     },
   },
 };
