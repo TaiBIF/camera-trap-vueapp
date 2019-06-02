@@ -37,7 +37,17 @@ const fetchUpload = async ({ url, body, signal }) => {
     body,
     signal,
   });
-  return await res.json();
+
+  const data = await res.json();
+
+  if (res.ok === false) {
+    throw {
+      status: res.status,
+      statusText: res.statusText,
+      message: idx(data, _ => _.message),
+    };
+  }
+  return data;
 };
 
 export default fetchWrap;
