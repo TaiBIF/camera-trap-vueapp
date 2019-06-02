@@ -3,10 +3,7 @@
     class="sidebar"
     :style="{ width: `${historyShow || galleryShow ? galleryWidth : 0}px` }"
   >
-    <div
-      class="photo-container"
-      v-if="galleryShow && currentAnnotationIdx !== -1"
-    >
+    <div class="photo-container" v-if="galleryShow">
       <div class="gallery-body" v-if="!hasMedia">
         <div class="empty-result">
           <img
@@ -24,12 +21,13 @@
           </div>
           <div v-else>
             <h5 class="text-gray">尚未上傳照片資料</h5>
-            <label class="btn btn-orange">
+            <label :class="['btn', !!currentData ? 'btn-orange' : 'btn-gray']">
               <input
                 style="display:none;"
                 type="file"
                 :accept="uploadAccept"
                 @change="uploadFile"
+                :disabled="!currentData"
               />
               <span class="icon"><i class="icon-upload-white"></i></span>
               <span class="text">補上傳影像檔</span>
