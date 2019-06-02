@@ -40,11 +40,24 @@ export default {
   mounted() {
     this.getProjectDetail(this.projectId);
     this.getProjectStudyAreas(this.projectId);
+    this.loadSpeciesGroupByStudyArea(this.projectId);
     this.fetchProjectCameraLocations();
+    if (this.selectedStudyAreaId !== 'all') {
+      this.loadSpeciesGroupByCameraLocation({
+        projectId: this.projectId,
+        studyAreaId: this.selectedStudyAreaId,
+      });
+    }
   },
   watch: {
     selectedStudyAreaId() {
       this.fetchProjectCameraLocations();
+      if (this.selectedStudyAreaId !== 'all') {
+        this.loadSpeciesGroupByCameraLocation({
+          projectId: this.projectId,
+          studyAreaId: this.selectedStudyAreaId,
+        });
+      }
     },
   },
   computed: {
@@ -62,6 +75,8 @@ export default {
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getProjectCameraLocations',
+      'loadSpeciesGroupByStudyArea',
+      'loadSpeciesGroupByCameraLocation',
     ]),
     fetchProjectCameraLocations() {
       if (this.selectedStudyAreaId && this.selectedStudyAreaId !== 'all') {
