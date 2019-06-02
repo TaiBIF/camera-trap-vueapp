@@ -57,7 +57,7 @@ const uploadCoverImage = async file => {
   return data;
 };
 
-const uploadAnnotation = async (cameraLocationId, file, signal) => {
+const uploadFileByCameraLocation = async (cameraLocationId, file, signal) => {
   const formData = new FormData();
   formData.append('file', file);
 
@@ -112,6 +112,6 @@ const createIssue = async ({
 export {
   uploadIssueAttachment,
   uploadCoverImage,
-  uploadAnnotation,
+  uploadFileByCameraLocation,
   createIssue,
 };

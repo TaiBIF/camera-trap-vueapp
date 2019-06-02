@@ -185,7 +185,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import filesize from 'filesize';
 
-import { uploadAnnotation } from '@/service';
+import { uploadFileByCameraLocation } from '@/service';
 import InfoModal from '@/components/Modal/InfoModal.vue';
 import uploadStatus from '@/constant/uploadStatus.js';
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -245,7 +245,7 @@ export default {
           this.setFileType(index, uploadStatus.uploading);
           try {
             this.currentFetchController = new AbortController();
-            let retData = await uploadAnnotation(
+            let retData = await uploadFileByCameraLocation(
               file.cameraLocationId,
               file,
               this.currentFetchController.signal,
