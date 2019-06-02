@@ -569,6 +569,17 @@ export default {
         {
           data: 'filename',
           readOnly: true,
+          renderer: (instance, td, row, col, prop, value) => {
+            resetTd(td);
+
+            td.innerHTML = value;
+            if (!this.annotations[row].file) {
+              td.innerHTML += '<span class="alert-box">!</span>';
+              td.className = 'htFileInvalid';
+            }
+
+            return td;
+          },
         },
         {
           data: 'time',
@@ -770,3 +781,17 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.handsontable td.htFileInvalid {
+  overflow: visible;
+  background: transparentize(#dbc451, 0.9);
+
+  .alert-box {
+    background: #ffecc5;
+    float: left;
+    margin-left: -7px;
+    margin-top: 1px;
+  }
+}
+</style>
