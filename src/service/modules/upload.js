@@ -3,6 +3,34 @@ import queryString from 'query-string';
 
 import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
+const getAnnotationQuery = file => {
+  let annotationType = '';
+
+  if (file.type === 'text/csv') {
+    annotationType = 'annotation-csv';
+  } else if (file.type === 'application/zip') {
+    annotationType = 'annotation-zip';
+  } else if ('image/jpeg,image/png'.includes(file.type)) {
+    annotationType = 'annotation-image';
+  } else if (
+    'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(file.type)
+  ) {
+    annotationType = 'annotation-video';
+  }
+
+  if (annotationType === '') {
+    throw 'no annotation-type (not support)';
+  }
+
+  return {
+    type: annotationType,
+    lastModified:
+      annotationType === 'annotation-video'
+        ? moment(file.lastModified).toISOString()
+        : undefined,
+  };
+};
+
 const uploadIssueAttachment = async file => {
   const formData = new FormData();
   formData.append('file', file);
@@ -33,29 +61,9 @@ const uploadAnnotation = async (cameraLocationId, file, signal) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  let annotationType = '';
-  if (file.type === 'text/csv') {
-    annotationType = 'annotation-csv';
-  } else if (file.type === 'application/zip') {
-    annotationType = 'annotation-zip';
-  } else if ('image/jpeg,image/png'.includes(file.type)) {
-    annotationType = 'annotation-image';
-  } else if (
-    'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(file.type)
-  ) {
-    annotationType = 'annotation-video';
-  }
-
-  if (annotationType === '') {
-    throw 'no annotation-type (not support)';
-  }
-
   const query = queryString.stringify({
-    type: annotationType,
     cameraLocation: cameraLocationId,
-    ...(annotationType === 'annotation-video'
-      ? { lastModified: moment(file.lastModified).toISOString() }
-      : undefined),
+    ...getAnnotationQuery(file),
   });
 
   const url = `/api/v1/files?${query}`;
