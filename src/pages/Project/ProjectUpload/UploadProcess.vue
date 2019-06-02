@@ -245,24 +245,16 @@ export default {
           this.setFileType(index, uploadStatus.uploading);
           try {
             this.currentFetchController = new AbortController();
-            let retData = await uploadFileByCameraLocation(
+            await uploadFileByCameraLocation(
               file.cameraLocationId,
               file,
               this.currentFetchController.signal,
             );
-            if (retData.message) {
-              this.setFileType(
-                index,
-                uploadStatus.uploadError,
-                retData.message,
-              );
-            } else {
-              this.setFileType(index, uploadStatus.success);
-            }
+            this.setFileType(index, uploadStatus.success);
           } catch (error) {
             if (file.uploadStatus !== uploadStatus.cancel) {
               // 不是主動取消才要改變狀態
-              this.setFileType(index, uploadStatus.uploadError, error);
+              this.setFileType(index, uploadStatus.uploadError, error.message);
             }
           }
         }
