@@ -25,7 +25,7 @@ const getAnnotationQuery = file => {
   return {
     type: annotationType,
     lastModified:
-      annotationType === 'annotation-video'
+      annotationType === 'annotation-video11'
         ? moment(file.lastModified).toISOString()
         : undefined,
   };

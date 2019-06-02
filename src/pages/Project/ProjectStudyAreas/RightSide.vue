@@ -14,17 +14,27 @@
             width="174"
             srcset="/assets/common/empty-site@2x.png"
           />
-          <h5 class="text-gray">尚未上傳照片資料</h5>
-          <label class="btn btn-orange">
-            <input
-              style="display:none;"
-              type="file"
-              :accept="uploadAccept"
-              @change="uploadFile"
-            />
-            <span class="icon"><i class="icon-upload-white"></i></span>
-            <span class="text">補上傳影像檔</span>
-          </label>
+          <div v-if="uploadType === uploadStatus.uploading">
+            <h5 class="text-gray">
+              <i
+                class="icon fas fa-circle-notch fa-spin"
+                style="font-size: 25px"
+              />上傳中
+            </h5>
+          </div>
+          <div v-else>
+            <h5 class="text-gray">尚未上傳照片資料</h5>
+            <label class="btn btn-orange">
+              <input
+                style="display:none;"
+                type="file"
+                :accept="uploadAccept"
+                @change="uploadFile"
+              />
+              <span class="icon"><i class="icon-upload-white"></i></span>
+              <span class="text">補上傳影像檔</span>
+            </label>
+          </div>
         </div>
       </div>
       <div class="gallery-body" v-else>
@@ -116,6 +126,49 @@
       @mousedown="dragStart"
       v-tooltip.right="'拖曳拉大影像檢視範圍'"
     ></div>
+
+    <info-modal
+      :open="
+        uploadType === uploadStatus.success ||
+          uploadType === uploadStatus.uploadError
+      "
+      @close="uploadType = uploadStatus.waiting"
+    >
+      <div v-if="uploadType === uploadStatus.success">
+        <div class="image">
+          <img
+            src="/assets/upinfo/upload-img.png"
+            width="221"
+            srcset="/assets/upinfo/upload-img@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          上傳成功
+        </h1>
+        <p class="text-gray">
+          系統已收到檔案，處理中
+        </p>
+      </div>
+      <div v-if="uploadType === uploadStatus.uploadError">
+        <div class="image">
+          <img
+            src="/assets/upinfo/file-error.png"
+            width="221"
+            srcset="/assets/upinfo/file-error@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          上傳失敗
+        </h1>
+        <p class="text-gray">
+          上傳失敗，請重載頁面再試一次，若問題持續，請<router-link
+            to="/help/contact-us"
+          >
+            聯絡我們
+          </router-link>
+        </p>
+      </div>
+    </info-modal>
   </div>
 </template>
 
@@ -127,7 +180,9 @@ import idx from 'idx';
 import { acceptDef } from '@/constant/uploadAccept.js';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper';
 import { uploadFileByAnnotation } from '@/service';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 import ZoomDrag from '@/components/ProjectStudyAreas/ZoomDrag.vue';
+import uploadStatus from '@/constant/uploadStatus.js';
 
 import 'video.js/dist/video-js.css';
 
@@ -137,6 +192,7 @@ export default {
   components: {
     ZoomDrag,
     videoPlayer,
+    InfoModal,
   },
   props: {
     galleryShow: {
@@ -158,6 +214,8 @@ export default {
       galleryWidth: 450,
       isDrag: false,
       playbackRate: 1,
+      uploadType: uploadStatus.waiting,
+      uploadStatus,
     };
   },
   mounted() {
@@ -254,13 +312,11 @@ export default {
       const file = idx(e, _ => _.target.files[0]);
       if (file) {
         try {
-          let retData = await uploadFileByAnnotation(this.currentData.id, file);
-          console.log(retData);
-          // if (retData.message) {
-          // } else {
-          // }
+          this.uploadType = uploadStatus.uploading;
+          await uploadFileByAnnotation(this.currentData.id, file);
+          this.uploadType = uploadStatus.success;
         } catch (error) {
-          console.log(error);
+          this.uploadType = uploadStatus.uploadError;
         }
       }
     },
