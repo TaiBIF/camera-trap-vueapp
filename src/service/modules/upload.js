@@ -1,3 +1,6 @@
+import moment from 'moment';
+import queryString from 'query-string';
+
 import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
 const uploadIssueAttachment = async file => {
@@ -35,7 +38,15 @@ const uploadAnnotation = async (
   const formData = new FormData();
   formData.append('file', file);
 
-  const url = `/api/v1/files?type=${annotationType}&cameraLocation=${cameraLocationId}`;
+  const query = queryString.stringify({
+    type: annotationType,
+    cameraLocation: cameraLocationId,
+    ...(annotationType === 'annotation-video'
+      ? { lastModified: moment(file.lastModified).toISOString() }
+      : undefined),
+  });
+
+  const url = `/api/v1/files?${query}`;
   const data = await fetchUpload({
     url,
     body: formData,
