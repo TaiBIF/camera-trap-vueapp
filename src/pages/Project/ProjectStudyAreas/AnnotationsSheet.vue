@@ -168,6 +168,7 @@ export default {
     return {
       showErrorMessage: true,
       idleTimeevent: -1,
+      sheetHeightTimeevent: -1,
       showIdleModal: false,
       isEnableContinuous: false,
       continuousMinute: 3,
@@ -298,8 +299,11 @@ export default {
       this.setSheetHeight();
       this.setSheetHeader();
       this.setSheetColumn();
-      window.onresize = () => this.setSheetHeight();
     }, 500);
+
+    this.sheetHeightTimeevent = setInterval(() => {
+      this.setSheetHeight(false);
+    }, 100);
 
     // 編輯中離開頁面警告
     window.onbeforeunload = () => {
@@ -309,6 +313,7 @@ export default {
   beforeDestroy() {
     window.onbeforeunload = null;
     clearTimeout(this.idleTimeevent);
+    clearInterval(this.sheetHeightTimeevent);
   },
   watch: {
     continuousRange: function(newVal, oldVal) {
@@ -466,7 +471,7 @@ export default {
         this.showIdleModal = true;
       }, 1000 * 60 * 30); // 30 分鐘
     },
-    setSheetHeight() {
+    setSheetHeight(isForce = true) {
       const sheetHeight =
         window.innerHeight -
         document.querySelector('header').clientHeight -
@@ -474,11 +479,12 @@ export default {
         document.querySelector('.sheet-footer').clientHeight -
         document.querySelector('.sheet-header').clientHeight;
 
-      this.HandsontableSetting.height = sheetHeight;
-
-      this.$nextTick(() => {
-        this.$refs.sheet.hotInstance.render();
-      });
+      if (isForce === true || this.HandsontableSetting.height !== sheetHeight) {
+        this.HandsontableSetting.height = sheetHeight;
+        this.$nextTick(() => {
+          this.$refs.sheet.hotInstance.render();
+        });
+      }
     },
     afterOnCellMouseDown(event) {
       this.currentMouseButton = event.button;

@@ -211,7 +211,7 @@ export default {
           this.form.options = [];
           break;
         case 'time':
-          this.form.description = 'YYYY-MM-DD hh:mm';
+          this.form.description = 'YYYY-MM-DD hh:mm:ss';
           break;
         default:
           this.form.options = undefined;

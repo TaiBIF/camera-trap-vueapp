@@ -6,10 +6,10 @@
     <div class="panel-body">
       <div class="column-editor">
         <div class="row column-header mx-0">
-          <div class="col-3">欄位名稱</div>
-          <div class="col-3">欄位形式</div>
-          <div class="col-3">輸入格式</div>
-          <div class="col-3"></div>
+          <div class="col-2">欄位名稱</div>
+          <div class="col-2">欄位形式</div>
+          <div class="col-6">輸入格式</div>
+          <div class="col-2"></div>
         </div>
         <div class="column-body">
           <!-- 不能拖拉的區塊 -->
@@ -18,9 +18,9 @@
             :key="field.id"
             v-for="field in noDraggableFields"
           >
-            <div class="col-3">{{ field.title }}</div>
-            <div class="col-3">{{ DataFieldEnum[field.widgetType] }}</div>
-            <div class="text-gray col-3">
+            <div class="col-2">{{ field.title }}</div>
+            <div class="col-2">{{ DataFieldEnum[field.widgetType] }}</div>
+            <div class="text-gray col-6">
               <div
                 v-if="field.systemCode === 'species'"
                 class="link text-green underline"
@@ -39,12 +39,12 @@
                 :key="field.id"
                 v-for="field in draggableFields"
               >
-                <div class="col-3">{{ field.title }}</div>
-                <div class="col-3">{{ DataFieldEnum[field.widgetType] }}</div>
-                <div class="text-gray col-3">
+                <div class="col-2">{{ field.title }}</div>
+                <div class="col-2">{{ DataFieldEnum[field.widgetType] }}</div>
+                <div class="text-gray col-6">
                   <span>{{ field.description }}</span>
                 </div>
-                <div class="text-right col-3">
+                <div class="text-right col-2">
                   <a
                     @click="removeFieldTarget = field"
                     class="d-inline-block align-middle ml-2"
