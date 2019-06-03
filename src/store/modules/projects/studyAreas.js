@@ -68,29 +68,65 @@ const getters = {
     )(getters.cameraLocations);
   },
   speciesGroupStartDate: state => {
-    const firstDate = idx(state, _ => _.speciesGroup.byStudyArea[0].metrics[0]);
-    if (!firstDate) return '';
-    return `${firstDate.year}-${setTwoDigitFormat(firstDate.month)}`;
+    const metrics = idx(state, _ => _.speciesGroup.byStudyArea[0].metrics);
+    if (!metrics || metrics.length === 0) return '';
+
+    // API response 沒有照日期順序, 需要前端自行 loop 找
+    const { startYear, startMonth } = metrics.reduce(
+      ({ startYear, startMonth }, { year, month }) => {
+        const startDate = parseInt(
+          `${startYear}${setTwoDigitFormat(startMonth)}`,
+          10,
+        );
+        const currentDate = parseInt(`${year}${setTwoDigitFormat(month)}`, 10);
+        if (!startYear || !startMonth || startDate > currentDate) {
+          return {
+            startYear: year,
+            startMonth: month,
+          };
+        }
+        return { startYear, startMonth };
+      },
+      {},
+    );
+    return `${startYear}-${setTwoDigitFormat(startMonth)}`;
   },
   speciesGroupEndDate: state => {
     const metrics = idx(state, _ => _.speciesGroup.byStudyArea[0].metrics);
     if (!metrics || metrics.length === 0) return '';
 
-    const lastDate = metrics[metrics.length - 1];
-    return `${lastDate.year}-${setTwoDigitFormat(lastDate.month)}`;
+    // API response 沒有照日期順序, 需要前端自行 loop 找
+    const { endYear, endMonth } = metrics.reduce(
+      ({ endYear, endMonth }, { year, month }) => {
+        const endDate = parseInt(
+          `${endYear}${setTwoDigitFormat(endMonth)}`,
+          10,
+        );
+        const currentDate = parseInt(`${year}${setTwoDigitFormat(month)}`, 10);
+        if (!endYear || !endMonth || endDate < currentDate) {
+          return {
+            endYear: year,
+            endMonth: month,
+          };
+        }
+        return { endYear, endMonth };
+      },
+      {},
+    );
+    return `${endYear}-${setTwoDigitFormat(endMonth)}`;
   },
   topFiveSpecies: state => {
     const speciesGroup = idx(state, _ => _.speciesGroup.byStudyArea) || [];
-    const allSpeciesData = speciesGroup.reduce((res, group) => {
-      return group.metrics.reduce(
-        (merge, { metrics }) => [...merge, ...metrics],
+    const allSpeciesData = speciesGroup.reduce((res, { metrics }) => {
+      return metrics.reduce(
+        (merge, { species }) => [...merge, ...species],
         res,
       );
     }, []);
 
     let topFive = {};
     allSpeciesData.some(({ speciesId, species }) => {
-      topFive[speciesId] = species;
+      if (speciesId && species) topFive[speciesId] = species;
       return topFive.length >= 5;
     });
     return topFive;
@@ -106,7 +142,7 @@ const getters = {
 
       return {
         ...res,
-        [studyAreaId || cameraLocationId]: selectedDateSpecies.metrics,
+        [studyAreaId || cameraLocationId]: selectedDateSpecies.species || [],
       };
     }, {});
   },
@@ -193,7 +229,7 @@ const actions = {
     );
     dispatch('getProjectCameraLocations', { projectId, studyAreaId });
   },
-  async loadSpeciesGroupByStudyArea({ commit }, { projectId }) {
+  async loadSpeciesGroupByStudyArea({ commit }, projectId) {
     const data = await getSpeciesGroupByStudyArea(projectId);
     commit('setSpeciesGroup', { type: 'byStudyArea', data });
   },
