@@ -85,16 +85,15 @@
                     v-if="file.uploadStatus === uploadStatus.waiting"
                     style="color: #AAAAAA"
                   >
-                    <i
-                      class="icon far fa-circle"
-                      style="color: #AAAAAA"
-                    />等待上傳
+                    <i class="icon far fa-circle" style="color: #AAAAAA" />
+                    /> 等待上傳
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploading">
                     <i
                       class="text-green icon fas fa-circle-notch fa-spin"
                       style="font-size: 25px"
-                    />上傳中
+                    />
+                    處理中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
                     <i class="icon icon-upload-success" /> 系統已收到檔案

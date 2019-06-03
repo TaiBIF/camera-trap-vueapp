@@ -49,7 +49,7 @@
             </div>
             <div v-if="row.state == 'processing'" class="float-left">
               <span class="icon"></span>
-              <span class="text">上傳中</span>
+              <span class="text">處理中</span>
             </div>
             <div v-if="row.state == 'failure'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
