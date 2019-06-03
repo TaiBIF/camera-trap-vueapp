@@ -343,7 +343,7 @@ export default {
           },
         });
       } else {
-        this.$router.push({ name: 'projecOverview' });
+        this.$router.push({ name: 'projectOverview' });
       }
     },
     async uploadCover(e) {
