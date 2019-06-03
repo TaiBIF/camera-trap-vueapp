@@ -131,6 +131,7 @@ export default {
       },
       removeMemberTarget: undefined,
       isAddBtnClicked: false,
+      status: undefined,
     };
   },
   components: {
