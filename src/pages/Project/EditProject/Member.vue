@@ -17,6 +17,12 @@
                   placeholder="請輸入成員 ORCiD 或電子郵件"
                 />
                 <div
+                  v-if="this.error === undefined && this.isAddBtnClicked"
+                  class="d-block text-green mt-1"
+                >
+                  成員已暫時加入下方列表中，請按下右下方的"儲存設定"進行資料儲存
+                </div>
+                <div
                   v-if="this.error !== undefined && this.error.status !== 200"
                   class="d-block text-danger mt-1"
                 >
@@ -124,6 +130,7 @@ export default {
         role: null,
       },
       removeMemberTarget: undefined,
+      isAddBtnClicked: false,
     };
   },
   components: {
@@ -177,6 +184,7 @@ export default {
           user: '',
           role: null,
         };
+        this.isAddBtnClicked = true;
       } catch (e) {
         this.error = e;
       }
