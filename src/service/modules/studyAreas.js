@@ -121,6 +121,936 @@ const unlockProjectCameraLocations = async (projectId, cameraLocationId) => {
   return res;
 };
 
+// TODO: apply when API ready
+const getSpeciesGroupByStudyArea = async () => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve([
+        {
+          studyAreaId: '5ceb8464caaeca01402d6354',
+          metrics: [
+            {
+              year: 2015,
+              month: 1,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 2,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 3,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 4,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 5,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 6,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 7,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 8,
+              metrics: [
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 54,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 81,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 9,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 1408,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 45,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 3055,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 201,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 335,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 10,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2497,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 423,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 434,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 279,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 11,
+              metrics: [
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 3481,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 424,
+                },
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2480,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 239,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 12,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2860,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1910,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 471,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 178,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 249,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          studyAreaId: '5ceb83f7caaecaca502d62d9',
+          metrics: [
+            {
+              year: 2015,
+              month: 1,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 2,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 3,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 4,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 5,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 6,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 7,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 8,
+              metrics: [
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 54,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 81,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 9,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 1408,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 45,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 3055,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 201,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 335,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 10,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2497,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 423,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 434,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 279,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 11,
+              metrics: [
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 3481,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 424,
+                },
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2480,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 239,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 12,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2860,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1910,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 471,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 178,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 249,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          studyAreaId: '5ceb8488caaecaf5472d63a8',
+          metrics: [
+            {
+              year: 2015,
+              month: 1,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 2,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 3,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 4,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 5,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 6,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 7,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 8,
+              metrics: [
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 54,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 81,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 9,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 1408,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 45,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 3055,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 201,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 335,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 10,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2497,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 423,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 434,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 279,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 11,
+              metrics: [
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 3481,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 424,
+                },
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2480,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 239,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 12,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2860,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1910,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 471,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 178,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 249,
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    }, 500);
+  });
+  // const res = await fetchWrap({
+  //   url: `/api/v1/projects/${projectId}/camera-locations`,
+  //   method: 'GET',
+  // });
+  // return res;
+};
+
+// TODO: apply when API ready
+const getSpeciesGroupByCameraLocation = async () => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve([
+        {
+          cameraLocationId: '5ceb8464caaecacfc62d6356',
+          metrics: [
+            {
+              year: 2015,
+              month: 1,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 2,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 3,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 4,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 5,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 6,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 7,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 8,
+              metrics: [
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 54,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 81,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 9,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 1408,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 45,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 3055,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 201,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 335,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 10,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2497,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 423,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 434,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 279,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 11,
+              metrics: [
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 3481,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 424,
+                },
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2480,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 239,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 12,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2860,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1910,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 471,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 178,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 249,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          cameraLocationId: '5ceb8465caaeca3e052d6358',
+          metrics: [
+            {
+              year: 2015,
+              month: 1,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 2,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 3,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 4,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 5,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 6,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 7,
+              metrics: [],
+            },
+            {
+              year: 2015,
+              month: 8,
+              metrics: [
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 54,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 81,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 9,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 1408,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 45,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 3055,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 201,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 335,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 10,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2497,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 423,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 434,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 279,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 11,
+              metrics: [
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 3481,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 424,
+                },
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2480,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1944,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 239,
+                },
+              ],
+            },
+            {
+              year: 2015,
+              month: 12,
+              metrics: [
+                {
+                  species: '山羌',
+                  speciesId: '5cd661e332a98b60839c6caf',
+                  numberOfRecords: 2860,
+                },
+                {
+                  species: '測試',
+                  speciesId: '5cd661e332a98b60839c6cab',
+                  numberOfRecords: 1910,
+                },
+                {
+                  species: '獼猴',
+                  speciesId: '5cd661e332a98b60839c6cb1',
+                  numberOfRecords: 471,
+                },
+                {
+                  species: '鼬獾',
+                  speciesId: '5cd661e332a98b60839c6cb2',
+                  numberOfRecords: 178,
+                },
+                {
+                  species: '空拍',
+                  speciesId: '5cd661e332a98b60839c6caa',
+                  numberOfRecords: 249,
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    }, 500);
+  });
+  // const res = await fetchWrap({
+  //   url: `/api/v1/projects/${projectId}/camera-locations`,
+  //   method: 'GET',
+  // });
+  // return res;
+};
+
 export {
   getProjectStudyAreas,
   getAllProjectCameraLocations,
@@ -132,4 +1062,6 @@ export {
   getProjectCameraLocationsByName,
   lockProjectCameraLocations,
   unlockProjectCameraLocations,
+  getSpeciesGroupByStudyArea,
+  getSpeciesGroupByCameraLocation,
 };

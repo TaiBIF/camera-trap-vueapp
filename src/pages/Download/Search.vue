@@ -91,14 +91,14 @@
                 ></a>
               </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-12 text-right">
                 <a class="text-green btn pr-0" @click="addFormItem()">
                   <span class="icon"><i class="icon-add-green"></i></span>
                   <span class="text">新增資料來源</span>
                 </a>
               </div>
-            </div>
+            </div> -->
 
             <div class="row">
               <div class="col-12">
@@ -454,6 +454,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { getLanguage } from '@/utils/i18n';
 import { getProjectSpecies } from '@/service';
 import datePicker from 'vue2-datepicker';
+import idx from 'idx';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
 
@@ -476,6 +477,7 @@ export default {
         { label: '30 分鐘', value: 30 * 60 * 1000 },
         { label: '60 分鐘', value: 60 * 60 * 1000 },
       ],
+      projectSpeciesOptions: [], // for the calculate {Array<{label: 'string', value: 'string'}>}
       speciesOptions: [], // {Array<{label: 'string', value: 'string'}>}
       form: {
         selectedCalculateType: { label: '有效照片與目擊事件', value: 'oi' },
@@ -511,7 +513,7 @@ export default {
   },
   computed: {
     ...dataFields.mapGetters(['dataFields']),
-    ...projects.mapState(['projects', 'projectSpecies']),
+    ...projects.mapState(['projects']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
 
     projectOptions() {
@@ -522,12 +524,6 @@ export default {
       return this.projects.map(project => ({
         label: project.title,
         value: project.id,
-      }));
-    },
-    projectSpeciesOptions() {
-      return this.projectSpecies.map(x => ({
-        label: x.title[getLanguage()],
-        value: x.id,
       }));
     },
   },
@@ -586,7 +582,13 @@ export default {
         // eslint-disable-next-line no-unused-vars
         const [_, ...species] = await Promise.all(tasks);
         this.speciesOptions = [];
-        species.forEach(species => {
+        species.forEach((species, index) => {
+          if (index === 0) {
+            this.projectSpeciesOptions = species.items.map(x => ({
+              label: x.title[getLanguage()],
+              value: x.id,
+            }));
+          }
           species.items.forEach(x => {
             if (!this.speciesOptions.find(y => y.value === x.id)) {
               this.speciesOptions.push({
@@ -669,6 +671,9 @@ export default {
           x => x.selected.cameraLocation.value,
         ),
         species: this.form.selectedSpecies.map(x => x.value),
+        // 補上 projectId, studyAreaId 讓之後頁面可以從 api 取得資訊
+        projectId: idx(this.form.items, _ => _[0].selected.project.value),
+        studyAreaId: idx(this.form.items, _ => _[0].selected.studyArea.value),
       };
       if (this.form.startDate) {
         const time = new Date(this.form.startDate);

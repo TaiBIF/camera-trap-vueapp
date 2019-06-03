@@ -27,28 +27,16 @@
           <div class="col-4">
             <div class="item">
               <label>資料來源：</label>
-              <div class="content">
-                <span v-for="project in projects" :key="project.id">
-                  {{ project.title }}：<br />
-                  <span
-                    v-for="(cameraLocation, index) in project.cameraLocations"
-                    :key="cameraLocation.id"
-                  >
-                    {{
-                      cameraLocation.studyArea.parent &&
-                        cameraLocation.studyArea.parent.title[currentLanguage] +
-                          ' - '
-                    }}
-                    {{
-                      cameraLocation.studyArea.title[currentLanguage] + ' - '
-                    }}
-                    {{ cameraLocation.name }}
-                    <span v-if="index < project.cameraLocations.length - 1">
-                      |
-                    </span>
-                  </span>
-                  <br />
-                </span>
+              <div class="content" v-show="isInitDone">
+                <div
+                  :key="cameraLocation"
+                  v-for="cameraLocation in [...$route.query.cameraLocations]"
+                >
+                  {{ projectDetail.title }}：{{
+                    studyAreaTitle($route.query.studyAreaId)
+                  }}
+                  - {{ cameraLocationsTitle(cameraLocation) }}
+                </div>
               </div>
             </div>
             <div v-if="selectedSpecies.length" class="item">
@@ -88,7 +76,7 @@
       </div>
     </div>
 
-    <div class="sheet-container">
+    <div class="sheet-container" v-show="isInitDone">
       <AnnotationsSheet
         ref="sheet"
         :isEdit="isEdit"
@@ -105,7 +93,7 @@
         :historyShow="historyShow"
         :currentAnnotationIdx="currentAnnotationIdx"
         @currentAnnotationIdx="currentAnnotationIdx = $event"
-        @changeWidth="$refs.sheet.setSheetHeight()"
+        @changeWidth="setSheetHeight"
       />
     </div>
   </div>
@@ -114,7 +102,6 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { generateUrl } from '@/utils/fetch';
-import { getCameraLocation } from '@/service';
 import { getLanguage } from '@/utils/i18n';
 import AnnotationsSheet from '@/pages/Project/ProjectStudyAreas/AnnotationsSheet';
 import RightSide from '@/pages/Project/ProjectStudyAreas/RightSide.vue';
@@ -135,20 +122,24 @@ export default {
   data() {
     return {
       isLoading: true,
-      projects: [], // Camera locations grouped by the project.
-
+      isInitDone: false,
       isEdit: false,
       galleryShow: true,
       historyShow: true,
       currentAnnotationIdx: -1,
-      query: Object.assign({}, this.$route.query),
+      query: Object.assign({}, { size: 50 }, this.$route.query),
     };
+  },
+  watch: {
+    galleryShow: 'setSheetHeight',
+    historyShow: 'setSheetHeight',
   },
   computed: {
     ...account.mapGetters(['species']),
     ...annotations.mapGetters(['annotations']),
     ...dataFields.mapGetters(['dataFields']),
-
+    ...projects.mapGetters(['projectDetail']),
+    ...studyAreas.mapGetters(['studyAreaTitle', 'cameraLocationsTitle']),
     startTime() {
       if (!this.$route.query.startTime) {
         return '';
@@ -225,8 +216,11 @@ export default {
     ...dataFields.mapActions(['getAllDataFields']),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
-    ...studyAreas.mapMutations(['setCameraLocations', 'setStudyAreas']),
-    ...projects.mapMutations(['setProjectDetail']),
+    ...projects.mapActions(['getProjectDetail']),
+    ...studyAreas.mapActions([
+      'getProjectStudyAreas',
+      'getProjectCameraLocations',
+    ]),
 
     // AnnotationsSheet
     setPagination(val) {
@@ -253,82 +247,30 @@ export default {
       });
       this.isLoading = false;
     },
+    setSheetHeight() {
+      this.$refs.sheet.setSheetHeight();
+    },
   },
   async mounted() {
-    let cameraLocationIds;
-    if (!this.$route.query.cameraLocations) {
-      cameraLocationIds = [];
-    } else if (Array.isArray(this.$route.query.cameraLocations)) {
-      cameraLocationIds = this.$route.query.cameraLocations;
-    } else {
-      cameraLocationIds = [this.$route.query.cameraLocations];
-    }
-
     try {
-      const tasks = cameraLocationIds.map(x => getCameraLocation(x));
-      const [cameraLocations] = await Promise.all([
-        Promise.all(tasks),
+      await Promise.all([
         this.loadSpecies(),
         this.getAllDataFields(),
+        this.getProjectDetail(this.$route.query.projectId),
+        this.getProjectStudyAreas(this.$route.query.projectId),
+        this.getProjectCameraLocations({
+          projectId: this.$route.query.projectId,
+          studyAreaId: this.$route.query.studyAreaId,
+        }),
       ]);
-      this.setProjectDetail({
-        dataFields: this.dataFields.map(x => ({
-          ...x,
-          title: { [getLanguage()]: x.title },
-          description: { [getLanguage()]: x.description },
-        })),
-      });
-      this.setCameraLocations(cameraLocations);
-      const studyAreas = [];
-      cameraLocations.forEach(cameraLocation => {
-        // Group by the project.
-        let project = this.projects.find(
-          x => x.id === cameraLocation.project.id,
-        );
-        if (project) {
-          project.cameraLocations.push(cameraLocation);
-        } else {
-          project = cameraLocation.project;
-          project.cameraLocations = [cameraLocation];
-          this.projects.push(project);
-        }
 
-        // Set study areas.
-        if (cameraLocation.studyArea.parent) {
-          let parent = studyAreas.find(
-            x => x.id === cameraLocation.studyArea.parent.id,
-          );
-          if (parent) {
-            if (
-              !parent.children.find(x => x.id === cameraLocation.studyArea.id)
-            ) {
-              parent.children.push(cameraLocation.studyArea);
-            }
-          } else {
-            parent = cameraLocation.studyArea.parent;
-            parent.children = [cameraLocation.studyArea];
-            studyAreas.push(parent);
-          }
-        } else {
-          let parent = studyAreas.find(
-            x => x.id === cameraLocation.studyArea.id,
-          );
-          if (!parent) {
-            parent = cameraLocation.studyArea;
-            parent.children = [];
-            studyAreas.push(parent);
-          }
-        }
-      });
-      //console.log('sa', studyAreas);
-      // TODO: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value#Examples
-      //this.setStudyAreas(studyAreas);
-      await this.getAnnotations(this.$route.query);
-
-      this.isLoading = false;
+      await this.doSearch();
     } catch (error) {
-      this.isLoading = false;
       throw error;
+    } finally {
+      this.isLoading = false;
+      this.isInitDone = true;
+      this.setSheetHeight();
     }
   },
 };
