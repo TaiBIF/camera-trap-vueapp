@@ -16,6 +16,12 @@
                   v-model="newMember.user"
                   placeholder="請輸入成員 ORCiD 或電子郵件"
                 />
+                <div
+                  v-if="this.error !== undefined && this.error.status !== 200"
+                  class="d-block text-danger mt-1"
+                >
+                  請再次檢查資料是否正確
+                </div>
               </div>
               <div class="col-4">
                 <v-select
@@ -199,3 +205,17 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.action {
+  display: flex;
+  justify-content: space-between;
+
+  & > .error > span {
+    color: #d80c37;
+  }
+  & > .success > span {
+    color: #2a7f60;
+  }
+}
+</style>

@@ -1,10 +1,10 @@
 <template>
   <div class="action">
-    <div v-if="responseMessage === 200" class="success">
-      <span v-if="!!responseMessage">{{ responseMessage }}</span>
+    <div v-if="responseMessage.code === 200" class="success">
+      <span v-if="!!responseMessage.msg">{{ responseMessage.msg }}</span>
     </div>
-    <div v-if="responseMessage !== 200" class="error">
-      <span v-if="!!responseMessage">{{ responseMessage }}</span>
+    <div v-if="responseMessage.code !== 200" class="error">
+      <span v-if="!!responseMessage.msg">{{ responseMessage.msg }}</span>
     </div>
     <div>
       <div class="btn btn-default" @click="$emit('cancel')">
@@ -23,7 +23,6 @@
 </template>
 
 <script>
-// import getErrorMessage from '@/utils/errorMessage';
 import getResponseMessage from '@/utils/responseMessage';
 
 export default {
@@ -49,6 +48,7 @@ export default {
   computed: {
     responseMessage: function() {
       if (this.response && this.response.status) {
+        console.log(getResponseMessage(this.response.status));
         return getResponseMessage(this.response.status);
       }
       return '';
