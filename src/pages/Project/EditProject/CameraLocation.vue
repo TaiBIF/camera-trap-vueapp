@@ -350,12 +350,15 @@ export default {
           })),
         });
         this.error = undefined;
-        this.$router.push({
-          name: 'projectMember',
-          params: {
-            projectId: this.projectId,
-          },
-        });
+        /*
+        Disable auto redirect step function
+        */
+        // this.$router.push({
+        //   name: 'projectMember',
+        //   params: {
+        //     projectId: this.projectId,
+        //   },
+        // });
       } catch (e) {
         this.error = e;
       }

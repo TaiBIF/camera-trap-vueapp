@@ -200,12 +200,15 @@ export default {
           members: this.members,
         });
         this.error = undefined;
-        this.$router.push({
-          name: 'projectLicense',
-          params: {
-            projectId: this.projectId,
-          },
-        });
+        /*
+        Disable auto redirect to next step function
+        */
+        // this.$router.push({
+        //   name: 'projectLicense',
+        //   params: {
+        //     projectId: this.projectId,
+        //   },
+        // });
       } catch (e) {
         this.error = e;
       }

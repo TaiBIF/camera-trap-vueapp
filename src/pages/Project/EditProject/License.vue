@@ -60,14 +60,17 @@ export default {
         },
       );
       this.setLoading(false);
-      if (!this.error) {
-        this.$router.push({
-          name: 'projectInfo',
-          params: {
-            projectId: this.projectId,
-          },
-        });
-      }
+      /*
+      Disable auto redirect step function
+      */
+      // if (!this.error) {
+      //   this.$router.push({
+      //     name: 'projectInfo',
+      //     params: {
+      //       projectId: this.projectId,
+      //     },
+      //   });
+      // }
     },
   },
 };

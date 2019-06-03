@@ -97,14 +97,17 @@ export default {
         this.error = e;
       });
       this.setLoading(false);
-      if (!this.error) {
-        this.$router.push({
-          name: 'projectCameraLocation',
-          params: {
-            projectId: this.projectId,
-          },
-        });
-      }
+      /*
+      Disable auto redirect step function
+      */
+      // if (!this.error) {
+      //   this.$router.push({
+      //     name: 'projectCameraLocation',
+      //     params: {
+      //       projectId: this.projectId,
+      //     },
+      //   });
+      // }
     },
   },
 };
