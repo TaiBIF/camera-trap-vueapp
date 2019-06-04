@@ -1,7 +1,10 @@
 <template>
   <div class="action">
-    <div class="error">
-      <span v-if="!!responseMessage">{{ responseMessage }}</span>
+    <div v-if="status === undefined || !!responseMessage" class="error">
+      <span>{{ responseMessage }}</span>
+    </div>
+    <div v-if="status === 200" class="success">
+      <span>設定儲存成功</span>
     </div>
     <div>
       <div class="btn btn-default" @click="$emit('cancel')">
@@ -40,6 +43,10 @@ export default {
     disabledSubmit: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: Number,
+      default: undefined,
     },
   },
   computed: {

@@ -86,7 +86,12 @@
         </table>
       </div>
     </div>
-    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
+    <ActionBtns
+      @cancel="handleClickCancel"
+      @submit="doSubmit"
+      :status="status"
+      :error="error"
+    />
 
     <double-check-modal
       v-if="!!removeMemberTarget"
@@ -123,6 +128,7 @@ export default {
   data: function() {
     return {
       memberRole,
+      status: undefined,
       error: undefined,
       members: [],
       newMember: {
@@ -131,7 +137,6 @@ export default {
       },
       removeMemberTarget: undefined,
       isAddBtnClicked: false,
-      status: undefined,
     };
   },
   components: {
@@ -200,6 +205,7 @@ export default {
           projectId: this.projectId,
           members: this.members,
         });
+        this.status = 200;
         this.error = undefined;
         /*
         Disable auto redirect to next step function
