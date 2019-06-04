@@ -240,6 +240,7 @@ export default {
 
       await this.getAnnotations({
         cameraLocations: query.cameraLocations,
+        species: query.species,
         startTime: query.startTime,
         endTime: query.endTime,
         index: query.index,
