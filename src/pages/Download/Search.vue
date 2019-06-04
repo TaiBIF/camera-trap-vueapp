@@ -288,7 +288,7 @@
             <div class="gray-block">
               <div class="form-content">
                 <div class="row">
-                  <div class="col-3">
+                  <div class="col-12">
                     <div class="form-group">
                       <label class="required">計畫名稱：</label>
                       <v-select
@@ -299,7 +299,9 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                </div>
+                <div class="row">
+                  <div class="col-4">
                     <div class="form-group">
                       <label class="required">樣區：</label>
                       <v-select
@@ -313,7 +315,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col-4">
                     <div class="form-group">
                       <label>子樣區：</label>
                       <v-select
@@ -327,7 +329,7 @@
                       />
                     </div>
                   </div>
-                  <div class="col-3">
+                  <div class="col-4">
                     <div class="form-group">
                       <label class="required">相機位置：</label>
                       <v-select
@@ -345,7 +347,7 @@
             </div>
 
             <div class="row">
-              <div class="col-4">
+              <div class="col-12">
                 <div class="form-group">
                   <label class="required">物種：</label>
                   <v-select
