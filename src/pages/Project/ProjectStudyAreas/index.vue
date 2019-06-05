@@ -271,14 +271,18 @@ export default {
       projectId: this.projectId,
       studyAreaId: this.studyAreaId,
     });
+
+    this.updateDateRange();
   },
   watch: {
     galleryShow: 'setSheetHeight',
     historyShow: 'setSheetHeight',
+    projectDetail: 'updateDateRange',
     $route() {
       this.isEdit = false;
       this.query = Object.assign({}, defaultQuery);
       this.resetAnnotations();
+      this.updateDateRange();
     },
     studyAreaId: function() {
       this.getProjectCameraLocations({
@@ -304,6 +308,7 @@ export default {
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
     ...annotations.mapState(['annotationsTotal', 'requestProcessingCount']),
     ...account.mapGetters(['userId']),
+    ...projects.mapGetters(['projectDetail']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -368,6 +373,15 @@ export default {
     ]),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
+    updateDateRange() {
+      if (
+        this.projectDetail.oldestAnnotationTime &&
+        this.projectDetail.latestAnnotationTime
+      ) {
+        this.query.startDate = this.projectDetail.oldestAnnotationTime;
+        this.query.endDate = this.projectDetail.latestAnnotationTime;
+      }
+    },
     swapDate() {
       const { query } = this;
 
