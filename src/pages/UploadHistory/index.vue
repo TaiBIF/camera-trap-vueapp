@@ -120,7 +120,7 @@
                 target="_blank"
                 >確認覆蓋</a
               >
-              |
+              &nbsp;
               <a
                 href="javascript:void(0);"
                 class="link text-underline"
