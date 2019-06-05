@@ -9,7 +9,7 @@ const getUploadSessions = async () => {
 };
 
 // Overwrite the upload session
-const postUploadSession = async (
+const overwriteUploadSession = async (
   uploadSessionId,
   id,
   state,
@@ -60,4 +60,4 @@ const cancelUploadSession = async (
   return res;
 };
 
-export { getUploadSessions, postUploadSession, cancelUploadSession };
+export { getUploadSessions, overwriteUploadSession, cancelUploadSession };

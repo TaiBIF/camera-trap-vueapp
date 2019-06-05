@@ -217,7 +217,7 @@ export default {
       fileId,
     ) {
       const time = new Date();
-      await this.postUploadSession({
+      await this.overwriteUploadSession({
         id: this.projectId,
         body: {
           id: uploadSessionId,
