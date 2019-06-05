@@ -99,7 +99,7 @@
                   showInfoModal = true;
                   errorType = row.errorType;
                 "
-                class="link text-underline text-danger"
+                class="link text-underline"
               >
                 檢視錯誤</a
               >
