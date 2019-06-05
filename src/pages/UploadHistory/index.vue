@@ -117,10 +117,23 @@
                     row.file.id,
                   )
                 "
+                target="_blank"
                 >確認覆蓋</a
               >
               |
-              <a href="javascript:void(0);" class="link text-underline"
+              <a
+                href="javascript:void(0);"
+                class="link text-underline"
+                @click="
+                  cancelUploadSession(
+                    row.id,
+                    row.state,
+                    row.project.id,
+                    row.cameraLocation.id,
+                    row.file.id,
+                  )
+                "
+                target="_blank"
                 >取消覆蓋</a
               >
             </div>
@@ -188,7 +201,11 @@ export default {
     ...uploadSessions.mapState(['uploadSessions']),
   },
   methods: {
-    ...uploadSessions.mapActions(['getUploadSessions', 'postUploadSession']),
+    ...uploadSessions.mapActions([
+      'getUploadSessions',
+      'postUploadSession',
+      'cancelUploadSession',
+    ]),
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
     },
@@ -201,6 +218,28 @@ export default {
     ) {
       const time = new Date();
       await this.postUploadSession({
+        id: this.projectId,
+        body: {
+          id: uploadSessionId,
+          state,
+          project: projectId,
+          cameraLocation: cameraLocationId,
+          file: fileId,
+          createTime: time.toISOStreing(),
+        },
+      }).catch(e => {
+        this.error = e;
+      });
+    },
+    async cancelUploadSession(
+      uploadSessionId,
+      state,
+      projectId,
+      cameraLocationId,
+      fileId,
+    ) {
+      const time = new Date();
+      await this.cancelUploadSession({
         id: this.projectId,
         body: {
           id: uploadSessionId,

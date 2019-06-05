@@ -8,7 +8,7 @@ const getUploadSessions = async () => {
   return res;
 };
 
-// Overwrite annotations of the upload session
+// Overwrite the upload session
 const postUploadSession = async (
   uploadSessionId,
   id,
@@ -34,4 +34,30 @@ const postUploadSession = async (
   return res;
 };
 
-export { getUploadSessions, postUploadSession };
+// Cancel the upload session
+const cancelUploadSession = async (
+  uploadSessionId,
+  id,
+  state,
+  project,
+  cameraLocation,
+  file,
+  createTime,
+) => {
+  const url = `/api/v1/me/upload-sessions/${uploadSessionId}/_cancel`;
+  const res = await fetchWrap({
+    url,
+    method: 'POST',
+    body: {
+      id,
+      state,
+      project,
+      cameraLocation,
+      file,
+      createTime,
+    },
+  });
+  return res;
+};
+
+export { getUploadSessions, postUploadSession, cancelUploadSession };
