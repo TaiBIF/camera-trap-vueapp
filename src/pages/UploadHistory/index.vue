@@ -105,9 +105,24 @@
               >
             </div>
             <div v-if="row.state == 'wait-for-review'">
-              <a :href="``" class="link text-underline">確認覆蓋</a>
+              <a
+                href="javascript:void(0);"
+                class="link text-underline"
+                @click="
+                  overwriteUploadSession(
+                    row.id,
+                    row.state,
+                    row.project.id,
+                    row.cameraLocation.id,
+                    row.file.id,
+                  )
+                "
+                >確認覆蓋</a
+              >
               |
-              <a :href="``" class="link text-underline">取消覆蓋</a>
+              <a href="javascript:void(0);" class="link text-underline"
+                >取消覆蓋</a
+              >
             </div>
           </td>
         </tr>
@@ -167,14 +182,37 @@ export default {
   },
   mounted() {
     this.getUploadSessions();
+    this.postUploadSession();
   },
   computed: {
     ...uploadSessions.mapState(['uploadSessions']),
   },
   methods: {
-    ...uploadSessions.mapActions(['getUploadSessions']),
+    ...uploadSessions.mapActions(['getUploadSessions', 'postUploadSession']),
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
+    },
+    async overwriteUploadSession(
+      uploadSessionId,
+      state,
+      projectId,
+      cameraLocationId,
+      fileId,
+    ) {
+      const time = new Date();
+      await this.postUploadSession({
+        id: this.projectId,
+        body: {
+          id: uploadSessionId,
+          state,
+          project: projectId,
+          cameraLocation: cameraLocationId,
+          file: fileId,
+          createTime: time.toISOStreing(),
+        },
+      }).catch(e => {
+        this.error = e;
+      });
     },
   },
 };

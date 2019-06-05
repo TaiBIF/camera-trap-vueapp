@@ -8,4 +8,30 @@ const getUploadSessions = async () => {
   return res;
 };
 
-export { getUploadSessions };
+// Overwrite annotations of the upload session
+const postUploadSession = async (
+  uploadSessionId,
+  id,
+  state,
+  project,
+  cameraLocation,
+  file,
+  createTime,
+) => {
+  const url = `/api/v1/me/upload-sessions/${uploadSessionId}/_overwrite`;
+  const res = await fetchWrap({
+    url,
+    method: 'POST',
+    body: {
+      id,
+      state,
+      project,
+      cameraLocation,
+      file,
+      createTime,
+    },
+  });
+  return res;
+};
+
+export { getUploadSessions, postUploadSession };
