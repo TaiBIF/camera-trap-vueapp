@@ -81,6 +81,7 @@
     <ActionBtns
       @cancel="handleClickCancel"
       @submit="doSubmit"
+      :status="status"
       :error="error"
       :disabledSubmit="!canSubmit"
     />
@@ -118,6 +119,7 @@ export default {
     return {
       geodeticDatumEnum,
       errorMessage: undefined,
+      status: undefined,
       error: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
@@ -349,6 +351,7 @@ export default {
             geodeticDatum: this.geodeticDatum,
           })),
         });
+        this.status = 200;
         this.error = undefined;
         /*
         Disable auto redirect step function

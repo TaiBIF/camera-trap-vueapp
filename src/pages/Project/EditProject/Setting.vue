@@ -12,7 +12,12 @@
       :dailyTestTime="dailyTestTime"
       @change="dailyTestTime = $event"
     />
-    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
+    <ActionBtns
+      @cancel="handleClickCancel"
+      @submit="doSubmit"
+      :status="status"
+      :error="error"
+    />
   </div>
 </template>
 
@@ -29,18 +34,19 @@ const dataFields = createNamespacedHelpers('dataFields');
 const projects = createNamespacedHelpers('projects');
 
 export default {
+  data() {
+    return {
+      dailyTestTime: undefined,
+      tempDataFields: [],
+      status: undefined,
+      error: undefined,
+    };
+  },
   components: {
     DataFields,
     DataFieldsTemplate,
     CameraTestTime,
     ActionBtns,
-  },
-  data() {
-    return {
-      dailyTestTime: undefined,
-      tempDataFields: [],
-      error: undefined,
-    };
   },
   props: {
     setLoading: Function,
@@ -84,6 +90,7 @@ export default {
     },
     async doSubmit() {
       this.setLoading(true);
+      this.status = 200;
       this.error = undefined;
       await this.putProject({
         id: this.projectId,
