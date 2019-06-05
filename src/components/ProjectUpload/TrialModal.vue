@@ -55,7 +55,7 @@
               />
               <div class="caption">
                 <p>
-                  請將每個上傳檔案大小制於 2G
+                  請將每個上傳檔案大小限制於 2G
                   以內，單一次上傳中，檔案大小總合須小於 2G 。
                 </p>
                 <small class="text-gray">
