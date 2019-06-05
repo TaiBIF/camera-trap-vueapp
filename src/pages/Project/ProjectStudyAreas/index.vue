@@ -223,10 +223,12 @@ const account = createNamespacedHelpers('account');
 
 let debounceTimeId = undefined;
 
-const getTime = (day, time) => {
+const getTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
     .hour(time.HH)
-    .minute(time.mm);
+    .minute(time.mm)
+    .second(second)
+    .millisecond(millisecond);
 };
 
 const defaultQuery = {
@@ -324,7 +326,7 @@ export default {
     queryTimeRange: function() {
       const { query } = this;
       const startTime = getTime(query.startDate, query.startTime);
-      const endTime = getTime(query.endDate, query.endTime);
+      const endTime = getTime(query.endDate, query.endTime, 59, 999);
 
       return `${dateFormatYYYYMMDDHHmmss(
         startTime,
@@ -351,7 +353,7 @@ export default {
         studyAreaId: this.studyAreaId,
         cameraLocations: query.cameraLocations,
         startTime: getTime(query.startDate, query.startTime).toISOString(),
-        endTime: getTime(query.endDate, query.endTime).toISOString(),
+        endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
         size: query.size,
       };
@@ -387,7 +389,7 @@ export default {
 
       // 先判斷 date 如果 startTime > endTime 則先交換 date
       let startTime = getTime(query.startDate, query.startTime);
-      let endTime = getTime(query.endDate, query.endTime);
+      let endTime = getTime(query.endDate, query.endTime, 59, 999);
       if (startTime > endTime) {
         const tmpDate = query.startDate;
         query.startDate = query.endDate;
@@ -396,7 +398,7 @@ export default {
 
       // 如果已經交換 date 還是 startTime > endTime 則連 time 也交換
       startTime = getTime(query.startDate, query.startTime);
-      endTime = getTime(query.endDate, query.endTime);
+      endTime = getTime(query.endDate, query.endTime, 59, 999);
       if (startTime > endTime) {
         const tmpTime = query.startTime;
         query.startTime = query.endTime;
@@ -437,7 +439,7 @@ export default {
         ...{
           cameraLocations: query.cameraLocations,
           startTime: getTime(query.startDate, query.startTime).toISOString(),
-          endTime: getTime(query.endDate, query.endTime).toISOString(),
+          endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
           index: query.index,
           size: query.size,
         },
