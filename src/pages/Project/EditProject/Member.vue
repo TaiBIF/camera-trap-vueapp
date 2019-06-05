@@ -20,13 +20,13 @@
                   v-if="this.error === undefined && this.isAddBtnClicked"
                   class="d-block text-green mt-1"
                 >
-                  成員已暫時加入下方列表中，請按下右下方的"儲存設定"進行資料儲存
+                  成員已加入下方列表中，請按下"儲存設定"鈕進行資料儲存
                 </div>
                 <div
                   v-if="this.error !== undefined && this.error.status !== 200"
                   class="d-block text-danger mt-1"
                 >
-                  請再次檢查資料是否正確
+                  輸入的資料不正確，請再次確認
                 </div>
               </div>
               <div class="col-4">
