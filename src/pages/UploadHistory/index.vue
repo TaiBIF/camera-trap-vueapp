@@ -10,6 +10,7 @@
           <th>樣區</th>
           <th>相機位置</th>
           <th>上傳結果</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -42,54 +43,71 @@
           <td>{{ row.project.shortTitle }}</td>
           <td>{{ row.cameraLocation.studyArea.title['zh-TW'] }}</td>
           <td>{{ row.cameraLocation.name }}</td>
-          <td class="text-right">
+          <td style="white-space: nowrap;">
             <div v-if="row.state == 'success'" class="float-left">
               <span class="icon"><i class="icon-upload-success"></i></span>
               <span class="text">上傳成功</span>
             </div>
             <div v-if="row.state == 'processing'" class="float-left">
               <span class="icon"></span>
-              <span class="text">上傳中</span>
+              <span class="text">處理中</span>
             </div>
             <div v-if="row.state == 'failure'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
-              <a
-                @click="
-                  showInfoModal = true;
-                  errorType = row.errorType;
-                "
-                class="text-danger text-underline"
-              >
-                檢視錯誤</a
-              >
+              <span class="text text-danger">上傳失敗</span>
             </div>
-
+            <div v-if="row.state == 'wait-for-review'" class="float-left">
+              <span class="icon"><i class="icon-upload-fail"></i></span>
+              <span class="text">等待確認覆蓋或取消</span>
+            </div>
+          </td>
+          <td>
             <div
               v-if="
-                row.state === 'success' && row.file.type === 'annotation-csv'
+                row.state === 'success' && row.file.type !== 'annotation-csv'
               "
-              class="float-left"
             >
-              <a
-                :href="`/project/${row.project.id}/upload`"
-                class="link text-underline mr-2"
-                target="_blank"
-              >
-                補上傳影像檔
-              </a>
-            </div>
-            <div v-if="row.state === 'success'" class="float-right">
               <a
                 :href="
                   `/project/${row.project.id}/study-areas/${
                     row.cameraLocation.studyArea.id
                   }`
                 "
-                class="link text-underline mr-2"
+                class="link text-underline"
                 target="_blank"
               >
                 查看
               </a>
+            </div>
+            <div
+              v-if="
+                row.state === 'success' && row.file.type === 'annotation-csv'
+              "
+            >
+              <a
+                :href="`/project/${row.project.id}/upload`"
+                class="link text-underline"
+                target="_blank"
+              >
+                補上傳影像檔
+              </a>
+            </div>
+            <div v-if="row.state == 'failure'">
+              <a
+                href="javascript:void(0);"
+                @click="
+                  showInfoModal = true;
+                  errorType = row.errorType;
+                "
+                class="link text-underline text-danger"
+              >
+                檢視錯誤</a
+              >
+            </div>
+            <div v-if="row.state == 'wait-for-review'">
+              <a :href="``" class="link text-underline">確認覆蓋</a>
+              |
+              <a :href="``" class="link text-underline">取消覆蓋</a>
             </div>
           </td>
         </tr>
