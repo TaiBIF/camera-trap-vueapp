@@ -60,6 +60,9 @@ export default {
     EditFiles,
     UploadProcess,
   },
+  mounted() {
+    this.getProjectStudyAreas(this.projectId);
+  },
   data() {
     return {
       trialModalOpen: false,
@@ -70,6 +73,9 @@ export default {
   computed: {
     ...projects.mapGetters(['projectDetail']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
     disableUpload() {
       return (
         this.studyAreas.length === 0 || // 沒有樣區
@@ -80,6 +86,9 @@ export default {
         ) // 自己本身沒有相機位置以及子樣區也沒有相機位置
       );
     },
+  },
+  methods: {
+    ...studyAreas.mapActions(['getProjectStudyAreas']),
   },
 };
 </script>

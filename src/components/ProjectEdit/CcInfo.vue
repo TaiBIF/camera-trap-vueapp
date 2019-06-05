@@ -240,7 +240,7 @@ export default {
           },
         });
       } else {
-        this.$router.push({ name: 'projecOverview' });
+        this.$router.push({ name: 'projectOverview' });
       }
     },
     doDone() {
