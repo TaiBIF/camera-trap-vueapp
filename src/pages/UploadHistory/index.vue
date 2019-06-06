@@ -222,7 +222,6 @@ export default {
       fileId,
     ) {
       const id = uploadSessionId;
-      console.log(uploadSessionId);
       const time = new Date();
       await this.postUploadSession({
         id,
