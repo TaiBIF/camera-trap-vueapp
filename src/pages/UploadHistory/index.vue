@@ -57,7 +57,12 @@
               <span class="text">上傳失敗</span>
             </div>
             <div v-if="row.state == 'wait-for-review'" class="float-left">
-              <span class="icon"><i class="icon-upload-fail"></i></span>
+              <span class="icon"
+                ><i
+                  class="fas fa-exclamation-circle"
+                  style="font-size: 24px; color: #f1c40f;"
+                ></i
+              ></span>
               <span class="text">等待確認或取消覆蓋</span>
             </div>
           </td>
