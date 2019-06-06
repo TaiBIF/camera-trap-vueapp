@@ -10,7 +10,7 @@
           <th class="nowrap">樣區</th>
           <th class="nowrap">相機位置</th>
           <th class="nowrap">上傳結果</th>
-          <th width="120px">&nbsp;</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -44,26 +44,26 @@
           <td>{{ row.cameraLocation.studyArea.title['zh-TW'] }}</td>
           <td>{{ row.cameraLocation.name }}</td>
           <td style="white-space: nowrap;">
-            <div v-if="row.state == 'success'" class="float-left">
+            <div v-if="row.state === 'success'" class="float-left">
               <span class="icon"><i class="icon-upload-success"></i></span>
               <span class="text">上傳成功</span>
             </div>
-            <div v-if="row.state == 'processing'" class="float-left">
+            <div v-if="row.state === 'processing'" class="float-left">
               <span class="icon"></span>
               <span class="text">處理中</span>
             </div>
-            <div v-if="row.state == 'failure'" class="float-left">
+            <div v-if="row.state === 'failure'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
               <span class="text">上傳失敗</span>
             </div>
-            <div v-if="row.state == 'wait-for-review'" class="float-left">
+            <div v-if="row.state === 'wait-for-review'" class="float-left">
               <span class="icon"
                 ><i
                   class="fas fa-exclamation-circle"
                   style="font-size: 24px; color: #f1c40f;"
                 ></i
               ></span>
-              <span class="text">等待確認或取消覆蓋</span>
+              <span class="text">資料部分或全部重覆，您要？</span>
             </div>
           </td>
           <td>
@@ -97,7 +97,7 @@
                 補上傳影像檔
               </a>
             </div>
-            <div v-if="row.state == 'failure'">
+            <div v-if="row.state === 'failure'">
               <a
                 class="link"
                 @click="
@@ -108,10 +108,13 @@
                 檢視錯誤</a
               >
             </div>
-            <div v-if="row.state == 'wait-for-review'">
+            <div
+              v-if="row.state === 'wait-for-review'"
+              style="white-space: nowrap;"
+            >
               <a
                 class="link"
-                @click="
+                @click.prevent="
                   doOverwriteUploadSession(
                     row.id,
                     row.state,
@@ -121,9 +124,9 @@
                   )
                 "
                 target="_blank"
-                >確認覆蓋</a
+                >確認</a
               >
-              &nbsp;
+              |
               <a
                 class="link"
                 @click="
@@ -136,7 +139,7 @@
                   )
                 "
                 target="_blank"
-                >取消覆蓋</a
+                >取消</a
               >
             </div>
           </td>
@@ -218,12 +221,13 @@ export default {
       cameraLocationId,
       fileId,
     ) {
+      const id = uploadSessionId;
       console.log(uploadSessionId);
       const time = new Date();
       await this.postUploadSession({
-        uploadSessionId,
+        id,
         body: {
-          id: uploadSessionId,
+          id,
           state,
           project: projectId,
           cameraLocation: cameraLocationId,
@@ -241,11 +245,12 @@ export default {
       cameraLocationId,
       fileId,
     ) {
+      const id = uploadSessionId;
       const time = new Date();
       await this.cancelUploadSession({
-        uploadSessionId,
+        id,
         body: {
-          id: uploadSessionId,
+          id,
           state,
           project: projectId,
           cameraLocation: cameraLocationId,
