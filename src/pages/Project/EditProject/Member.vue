@@ -18,15 +18,17 @@
                 />
                 <div
                   v-if="this.error === undefined && this.isAddBtnClicked"
-                  class="d-block text-green mt-1"
+                  class="d-block mt-1"
                 >
-                  成員已加入下方列表中，請按下"儲存設定"鈕進行資料儲存
+                  <span class="icon"><i class="icon-upload-success"></i></span>
+                  <span class="text text-green">加入成員成功</span>
                 </div>
                 <div
                   v-if="this.error !== undefined && this.error.status !== 200"
-                  class="d-block text-danger mt-1"
+                  class="d-block mt-1"
                 >
-                  輸入的資料不正確，請再次確認
+                  <span class="icon"><i class="icon-upload-fail"></i></span>
+                  <span class="text text-danger">資料不正確，請重新輸入</span>
                 </div>
               </div>
               <div class="col-4">
