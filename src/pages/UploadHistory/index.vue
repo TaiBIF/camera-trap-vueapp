@@ -10,7 +10,7 @@
           <th class="nowrap">樣區</th>
           <th class="nowrap">相機位置</th>
           <th class="nowrap">上傳結果</th>
-          <th>&nbsp;</th>
+          <th width="120px">&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -54,11 +54,11 @@
             </div>
             <div v-if="row.state == 'failure'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
-              <span class="text text-danger">上傳失敗</span>
+              <span class="text">上傳失敗</span>
             </div>
             <div v-if="row.state == 'wait-for-review'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
-              <span class="text">等待確認覆蓋或取消</span>
+              <span class="text">等待確認或取消覆蓋</span>
             </div>
           </td>
           <td>
@@ -73,7 +73,7 @@
                     row.cameraLocation.studyArea.id
                   }`
                 "
-                class="link text-underline"
+                class="link"
                 target="_blank"
               >
                 查看
@@ -86,7 +86,7 @@
             >
               <a
                 :href="`/project/${row.project.id}/upload`"
-                class="link text-underline"
+                class="link"
                 target="_blank"
               >
                 補上傳影像檔
@@ -94,22 +94,20 @@
             </div>
             <div v-if="row.state == 'failure'">
               <a
-                href="javascript:void(0);"
+                class="link"
                 @click="
                   showInfoModal = true;
                   errorType = row.errorType;
                 "
-                class="link text-underline"
               >
                 檢視錯誤</a
               >
             </div>
             <div v-if="row.state == 'wait-for-review'">
               <a
-                href="javascript:void(0);"
-                class="link text-underline"
+                class="link"
                 @click="
-                  overwriteUploadSession(
+                  doOverwriteUploadSession(
                     row.id,
                     row.state,
                     row.project.id,
@@ -122,10 +120,9 @@
               >
               &nbsp;
               <a
-                href="javascript:void(0);"
-                class="link text-underline"
+                class="link"
                 @click="
-                  cancelUploadSession(
+                  doCancelUploadSession(
                     row.id,
                     row.state,
                     row.project.id,
@@ -191,11 +188,11 @@ export default {
     return {
       showInfoModal: false,
       errorType: '',
+      error: undefined,
     };
   },
   mounted() {
     this.getUploadSessions();
-    this.postUploadSession();
   },
   computed: {
     ...uploadSessions.mapState(['uploadSessions']),
@@ -209,29 +206,30 @@ export default {
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
     },
-    async overwriteUploadSession(
+    async doOverwriteUploadSession(
       uploadSessionId,
       state,
       projectId,
       cameraLocationId,
       fileId,
     ) {
+      console.log(uploadSessionId);
       const time = new Date();
-      await this.overwriteUploadSession({
-        id: this.projectId,
+      await this.postUploadSession({
+        uploadSessionId,
         body: {
           id: uploadSessionId,
           state,
           project: projectId,
           cameraLocation: cameraLocationId,
           file: fileId,
-          createTime: time.toISOStreing(),
+          createTime: time.toISOString(),
         },
       }).catch(e => {
         this.error = e;
       });
     },
-    async cancelUploadSession(
+    async doCancelUploadSession(
       uploadSessionId,
       state,
       projectId,
@@ -240,14 +238,14 @@ export default {
     ) {
       const time = new Date();
       await this.cancelUploadSession({
-        id: this.projectId,
+        uploadSessionId,
         body: {
           id: uploadSessionId,
           state,
           project: projectId,
           cameraLocation: cameraLocationId,
           file: fileId,
-          createTime: time.toISOStreing(),
+          createTime: time.toISOString(),
         },
       }).catch(e => {
         this.error = e;
@@ -260,5 +258,8 @@ export default {
 <style lang="scss" scoped>
 table.history th.nowrap {
   white-space: nowrap;
+}
+a.link:hover {
+  text-decoration: underline;
 }
 </style>
