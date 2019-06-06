@@ -9,55 +9,25 @@ const getUploadSessions = async () => {
 };
 
 // Overwrite the upload session
-const overwriteUploadSession = async (
-  uploadSessionId,
-  id,
-  state,
-  project,
-  cameraLocation,
-  file,
-  createTime,
-) => {
+const postUploadSession = async (uploadSessionId, body) => {
   const url = `/api/v1/me/upload-sessions/${uploadSessionId}/_overwrite`;
   const res = await fetchWrap({
     url,
     method: 'POST',
-    body: {
-      id,
-      state,
-      project,
-      cameraLocation,
-      file,
-      createTime,
-    },
+    body,
   });
   return res;
 };
 
 // Cancel the upload session
-const cancelUploadSession = async (
-  uploadSessionId,
-  id,
-  state,
-  project,
-  cameraLocation,
-  file,
-  createTime,
-) => {
+const cancelUploadSession = async (uploadSessionId, body) => {
   const url = `/api/v1/me/upload-sessions/${uploadSessionId}/_cancel`;
   const res = await fetchWrap({
     url,
     method: 'POST',
-    body: {
-      id,
-      state,
-      project,
-      cameraLocation,
-      file,
-      createTime,
-    },
+    body,
   });
   return res;
 };
 
-export { getUploadSessions, overwriteUploadSession, cancelUploadSession };
+export { getUploadSessions, postUploadSession, cancelUploadSession };
