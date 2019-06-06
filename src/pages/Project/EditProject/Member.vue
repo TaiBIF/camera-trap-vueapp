@@ -16,6 +16,20 @@
                   v-model="newMember.user"
                   placeholder="請輸入成員 ORCiD 或電子郵件"
                 />
+                <div
+                  v-if="this.error === undefined && this.isAddBtnClicked"
+                  class="d-block mt-1"
+                >
+                  <span class="icon"><i class="icon-upload-success"></i></span>
+                  <span class="text text-green">加入成員成功</span>
+                </div>
+                <div
+                  v-if="this.error !== undefined && this.error.status !== 200"
+                  class="d-block mt-1"
+                >
+                  <span class="icon"><i class="icon-upload-fail"></i></span>
+                  <span class="text text-danger">資料不正確，請重新輸入</span>
+                </div>
               </div>
               <div class="col-4">
                 <v-select
@@ -74,7 +88,12 @@
         </table>
       </div>
     </div>
-    <ActionBtns @cancel="handleClickCancel" @submit="doSubmit" :error="error" />
+    <ActionBtns
+      @cancel="handleClickCancel"
+      @submit="doSubmit"
+      :status="status"
+      :error="error"
+    />
 
     <double-check-modal
       v-if="!!removeMemberTarget"
@@ -111,6 +130,7 @@ export default {
   data: function() {
     return {
       memberRole,
+      status: undefined,
       error: undefined,
       members: [],
       newMember: {
@@ -118,6 +138,7 @@ export default {
         role: null,
       },
       removeMemberTarget: undefined,
+      isAddBtnClicked: false,
     };
   },
   components: {
@@ -171,6 +192,7 @@ export default {
           user: '',
           role: null,
         };
+        this.isAddBtnClicked = true;
       } catch (e) {
         this.error = e;
       }
@@ -185,13 +207,17 @@ export default {
           projectId: this.projectId,
           members: this.members,
         });
+        this.status = 200;
         this.error = undefined;
-        this.$router.push({
-          name: 'projectLicense',
-          params: {
-            projectId: this.projectId,
-          },
-        });
+        /*
+        Disable auto redirect to next step function
+        */
+        // this.$router.push({
+        //   name: 'projectLicense',
+        //   params: {
+        //     projectId: this.projectId,
+        //   },
+        // });
       } catch (e) {
         this.error = e;
       }
@@ -199,3 +225,17 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.action {
+  display: flex;
+  justify-content: space-between;
+
+  & > .error > span {
+    color: #d80c37;
+  }
+  & > .success > span {
+    color: #2a7f60;
+  }
+}
+</style>
