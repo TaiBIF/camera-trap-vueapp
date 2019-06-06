@@ -4,12 +4,12 @@
     <table class="table history">
       <thead>
         <tr>
-          <th width="180px">上傳時間</th>
-          <th>檔案名稱</th>
-          <th width="120px">所屬計畫</th>
-          <th>樣區</th>
-          <th>相機位置</th>
-          <th>上傳結果</th>
+          <th class="nowrap" width="180px">上傳時間</th>
+          <th class="nowrap">檔案名稱</th>
+          <th class="nowrap" width="120px">所屬計畫</th>
+          <th class="nowrap">樣區</th>
+          <th class="nowrap">相機位置</th>
+          <th class="nowrap">上傳結果</th>
           <th>&nbsp;</th>
         </tr>
       </thead>
@@ -256,3 +256,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+table.history th.nowrap {
+  white-space: nowrap;
+}
+</style>
