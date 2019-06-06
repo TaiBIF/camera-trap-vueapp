@@ -81,6 +81,7 @@
     <ActionBtns
       @cancel="handleClickCancel"
       @submit="doSubmit"
+      :status="status"
       :error="error"
       :disabledSubmit="!canSubmit"
     />
@@ -118,6 +119,7 @@ export default {
     return {
       geodeticDatumEnum,
       errorMessage: undefined,
+      status: undefined,
       error: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
@@ -349,13 +351,17 @@ export default {
             geodeticDatum: this.geodeticDatum,
           })),
         });
+        this.status = 200;
         this.error = undefined;
-        this.$router.push({
-          name: 'projectMember',
-          params: {
-            projectId: this.projectId,
-          },
-        });
+        /*
+        Disable auto redirect step function
+        */
+        // this.$router.push({
+        //   name: 'projectMember',
+        //   params: {
+        //     projectId: this.projectId,
+        //   },
+        // });
       } catch (e) {
         this.error = e;
       }

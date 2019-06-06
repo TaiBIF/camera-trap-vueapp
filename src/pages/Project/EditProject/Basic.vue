@@ -3,6 +3,7 @@
     <BasicInfo
       :project="temp"
       :areas="projectAreas"
+      :status="status"
       :error="error"
       @change="change"
       @done="submitProject"
@@ -22,6 +23,7 @@ export default {
   data: function() {
     return {
       temp: {},
+      status: undefined,
       error: undefined,
     };
   },
@@ -53,6 +55,7 @@ export default {
     },
     async submitProject() {
       this.setLoading(true);
+      this.status = 200;
       this.error = undefined;
       await this.putProject({
         id: this.projectId,
@@ -61,14 +64,17 @@ export default {
         this.error = e;
       });
       this.setLoading(false);
-      if (!this.error) {
-        this.$router.push({
-          name: 'projectSetting',
-          params: {
-            projectId: this.projectId,
-          },
-        });
-      }
+      /*
+      Disable auto redirect step function
+      */
+      // if (!this.error) {
+      //   this.$router.push({
+      //     name: 'projectSetting',
+      //     params: {
+      //       projectId: this.projectId,
+      //     },
+      //   });
+      // }
     },
   },
 };

@@ -184,6 +184,7 @@
       <ActionBtns
         @cancel="handleClickCancel"
         @submit="doDone"
+        :status="status"
         :error="error"
         :disabledSubmit="isOverPublicLimit || !project.publishTime"
         :submitBtnContext="doneBtnText"
@@ -200,6 +201,10 @@ import moment from 'moment';
 export default {
   props: {
     project: Object,
+    status: {
+      type: Number,
+      default: undefined,
+    },
     error: Object,
     doneBtnText: {
       type: String,

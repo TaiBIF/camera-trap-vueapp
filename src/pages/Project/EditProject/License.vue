@@ -3,6 +3,7 @@
     <CcInfo
       :project="temp"
       :areas="projectAreas"
+      :status="status"
       :error="error"
       @change="change"
       @done="submitProject"
@@ -22,6 +23,7 @@ export default {
   data: function() {
     return {
       temp: {},
+      status: undefined,
       error: undefined,
     };
   },
@@ -53,6 +55,7 @@ export default {
     },
     async submitProject() {
       this.setLoading(true);
+      this.status = 200;
       this.error = undefined;
       await this.putProject({ id: this.projectId, body: this.temp }).catch(
         e => {
@@ -60,14 +63,17 @@ export default {
         },
       );
       this.setLoading(false);
-      if (!this.error) {
-        this.$router.push({
-          name: 'projectInfo',
-          params: {
-            projectId: this.projectId,
-          },
-        });
-      }
+      /*
+      Disable auto redirect step function
+      */
+      // if (!this.error) {
+      //   this.$router.push({
+      //     name: 'projectInfo',
+      //     params: {
+      //       projectId: this.projectId,
+      //     },
+      //   });
+      // }
     },
   },
 };

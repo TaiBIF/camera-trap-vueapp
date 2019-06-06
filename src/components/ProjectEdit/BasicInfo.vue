@@ -266,6 +266,7 @@
       <ActionBtns
         @cancel="handleClickCancel"
         @submit="doDone"
+        :status="status"
         :error="error"
         :submitBtnContext="doneBtnText"
       />
@@ -297,6 +298,10 @@ export default {
     areas: {
       type: Array,
       default: () => [],
+    },
+    status: {
+      type: Number,
+      default: undefined,
     },
     error: {
       type: Object,

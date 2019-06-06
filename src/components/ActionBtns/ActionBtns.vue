@@ -1,7 +1,10 @@
 <template>
   <div class="action">
-    <div class="error">
-      <span v-if="!!errorMessage">{{ errorMessage }}</span>
+    <div v-if="status === undefined || !!responseMessage" class="error">
+      <span>{{ responseMessage }}</span>
+    </div>
+    <div v-if="status === 200" class="success">
+      <span>設定儲存成功</span>
     </div>
     <div>
       <div class="btn btn-default" @click="$emit('cancel')">
@@ -20,7 +23,7 @@
 </template>
 
 <script>
-import getErrorMessage from '@/utils/errorMessage';
+import getResponseMessage from '@/utils/responseMessage';
 
 export default {
   name: 'ActionBtns',
@@ -33,7 +36,7 @@ export default {
       type: String,
       default: '儲存設定',
     },
-    error: {
+    response: {
       type: Object,
       default: undefined,
     },
@@ -41,12 +44,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    status: {
+      type: Number,
+      default: undefined,
+    },
   },
   computed: {
-    errorMessage: function() {
-      if (this.error && this.error.status)
-        return getErrorMessage(this.error.status);
-
+    responseMessage: function() {
+      if (this.response && this.response.status) {
+        return getResponseMessage(this.response.status);
+      }
       return '';
     },
   },
@@ -60,6 +67,9 @@ export default {
 
   & > .error > span {
     color: #d80c37;
+  }
+  & > .success > span {
+    color: #2a7f60;
   }
 }
 </style>
