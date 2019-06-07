@@ -340,9 +340,9 @@ export default {
     disabledEdit: function() {
       return (
         this.annotationsTotal === 0 ||
-        this.cameraLocations.some(
-          v => v.isLocked === true && v.lockUser.id !== this.userId,
-        )
+        this.cameraLocations
+          .filter(v => this.query.cameraLocations.includes(v.id))
+          .some(v => v.isLocked === true && v.lockUser.id !== this.userId)
       );
     },
     exportCSVLink: function() {
