@@ -195,6 +195,12 @@
       @submit="setSelectedCamera"
       @close="CameraModalOpen = false"
     />
+
+    <info-modal :open="lockByOtherModal" @close="lockByOtherModal = false">
+      <p class="text-gray">
+        此相機位置剛進入鎖定狀態，無法進入編輯模式。
+      </p>
+    </info-modal>
   </div>
 </template>
 
@@ -210,6 +216,7 @@ import {
   subNYears,
 } from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
@@ -254,9 +261,11 @@ export default {
     RightSide,
     VueTimepicker,
     DatePicker,
+    InfoModal,
   },
   data() {
     return {
+      lockByOtherModal: false,
       isLoading: false,
       isEdit: false,
       CameraModalOpen: false,
@@ -358,7 +367,11 @@ export default {
   methods: {
     ...dataFields.mapActions(['getDataFields']),
     ...projects.mapActions(['getProjectSpecies']),
-    ...studyAreas.mapActions(['setLockProjectCameraLocations']),
+    ...studyAreas.mapActions([
+      'getProjectStudyAreas',
+      'getProjectCameraLocations',
+      'setLockProjectCameraLocations',
+    ]),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     updateDateRange() {
@@ -401,14 +414,36 @@ export default {
       this.doSearch();
     },
     async setEdit(bool) {
-      await this.setLockProjectCameraLocations({
-        projectId: this.projectId,
-        studyAreaId: this.studyAreaId,
-        cameraLocations: this.query.cameraLocations,
-        isLock: bool,
-      });
+      if (bool === true) {
+        await Promise.all([
+          this.getProjectStudyAreas(this.projectId),
+          this.getProjectCameraLocations({
+            projectId: this.projectId,
+            studyAreaId: this.studyAreaId,
+          }),
+        ]);
 
-      this.isEdit = bool;
+        if (this.disabledEdit === false) {
+          await this.setLockProjectCameraLocations({
+            projectId: this.projectId,
+            studyAreaId: this.studyAreaId,
+            cameraLocations: this.query.cameraLocations,
+            isLock: bool,
+          });
+          this.isEdit = true;
+        } else {
+          this.lockByOtherModal = true;
+        }
+      } else {
+        await this.setLockProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.studyAreaId,
+          cameraLocations: this.query.cameraLocations,
+          isLock: bool,
+        });
+
+        this.isEdit = false;
+      }
     },
     async doSearch() {
       this.currentAnnotationIdx = -1;
