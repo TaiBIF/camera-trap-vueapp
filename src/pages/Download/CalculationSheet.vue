@@ -44,7 +44,7 @@ export default {
             `${
               dutyHours === 0
                 ? '-'
-                : Math.floor(this.calculatorData.validQuantity / dutyHours)
+                : this.calculatorData.validQuantity / dutyHours
             } 張/小時`,
           ],
           [
@@ -52,7 +52,7 @@ export default {
             `${
               dutyHours === 0
                 ? '-'
-                : Math.floor(this.calculatorData.eventQuantity / dutyHours)
+                : this.calculatorData.eventQuantity / dutyHours
             } 次/小時`,
           ],
         ];
