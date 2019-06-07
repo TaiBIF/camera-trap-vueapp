@@ -464,6 +464,9 @@ export default {
       'deleteAnnotations',
       'cloneAnnotations',
     ]),
+    resetPagination(page = 0) {
+      this.currentPage = page + 1;
+    },
     setIdleTimeout() {
       clearTimeout(this.idleTimeevent);
       this.idleTimeevent = setTimeout(() => {
