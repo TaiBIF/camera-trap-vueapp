@@ -269,11 +269,6 @@ export default {
   mounted() {
     this.getDataFields();
     this.getProjectSpecies(this.projectId);
-    this.getProjectCameraLocations({
-      projectId: this.projectId,
-      studyAreaId: this.studyAreaId,
-    });
-
     this.updateDateRange();
   },
   watch: {
@@ -285,12 +280,6 @@ export default {
       this.query = Object.assign({}, defaultQuery);
       this.resetAnnotations();
       this.updateDateRange();
-    },
-    studyAreaId: function() {
-      this.getProjectCameraLocations({
-        projectId: this.projectId,
-        studyAreaId: this.studyAreaId,
-      });
     },
     'query.cameraLocations': function() {
       debounceTimeId && window.clearTimeout(debounceTimeId);
@@ -369,10 +358,7 @@ export default {
   methods: {
     ...dataFields.mapActions(['getDataFields']),
     ...projects.mapActions(['getProjectSpecies']),
-    ...studyAreas.mapActions([
-      'getProjectCameraLocations',
-      'setLockProjectCameraLocations',
-    ]),
+    ...studyAreas.mapActions(['setLockProjectCameraLocations']),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     updateDateRange() {
