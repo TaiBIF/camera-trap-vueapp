@@ -414,15 +414,15 @@ export default {
       this.query.size = val.pageSize;
       this.doSearch();
     },
-    setEdit(bool) {
-      this.isEdit = bool;
-
-      this.setLockProjectCameraLocations({
+    async setEdit(bool) {
+      await this.setLockProjectCameraLocations({
         projectId: this.projectId,
         studyAreaId: this.studyAreaId,
         cameraLocations: this.query.cameraLocations,
         isLock: bool,
       });
+
+      this.isEdit = bool;
     },
     async doSearch() {
       this.currentAnnotationIdx = -1;

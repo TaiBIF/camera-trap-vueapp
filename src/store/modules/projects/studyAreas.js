@@ -228,6 +228,7 @@ const actions = {
       ),
     );
     dispatch('getProjectCameraLocations', { projectId, studyAreaId });
+    dispatch('getProjectStudyAreas', projectId);
   },
   async loadSpeciesGroupByStudyArea({ commit }, projectId) {
     const data = await getSpeciesGroupByStudyArea(projectId);
