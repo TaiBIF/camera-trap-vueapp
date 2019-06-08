@@ -84,7 +84,7 @@
                 }"
                 v-for="file in fileList"
                 :key="file.upload.uuid"
-                @click="selectRow(file.upload.uuid)"
+                @click="selectRow(file.upload.uuid, $event)"
               >
                 <td>
                   <span
@@ -301,12 +301,47 @@ export default {
         this.fileList.filter(({ upload: { uuid } }) => uuid !== targetId),
       );
     },
-    selectRow(uuid) {
-      const idx = this.selectedFileList.indexOf(uuid);
-      if (idx !== -1) {
-        this.selectedFileList.splice(idx, 1);
+    selectRow(uuid, e) {
+      const shift = e.shiftKey;
+      const ctrl = e.ctrlKey || e.metaKey;
+
+      if (shift && !ctrl && this.selectedFileList.length > 0) {
+        // 按下 shift 多選
+        const startIdx = R.findIndex(
+          R.pathEq(['upload', 'uuid'], this.selectedFileList[0]),
+          this.fileList,
+        );
+        const endIdx = R.findIndex(
+          R.pathEq(['upload', 'uuid'], uuid),
+          this.fileList,
+        );
+
+        if (startIdx !== -1 && endIdx !== -1) {
+          const firstIdx = startIdx; // 保持第一個不變
+          const start = Math.min(startIdx, endIdx);
+          const end = Math.max(startIdx, endIdx) + 1;
+
+          this.selectedFileList = this.fileList.slice(start, end).reduce(
+            (acc, currentVal, currentIndex) => {
+              if (currentIndex + start !== firstIdx) {
+                acc.push(currentVal.upload.uuid);
+              }
+              return acc;
+            },
+            [this.selectedFileList[0]],
+          );
+        }
+      } else if (!shift && ctrl) {
+        // 按下 ctrl 多選
+        const idx = this.selectedFileList.indexOf(uuid);
+        if (idx !== -1) {
+          this.selectedFileList.splice(idx, 1);
+        } else {
+          this.selectedFileList.push(uuid);
+        }
       } else {
-        this.selectedFileList.push(uuid);
+        // 直接單選
+        this.selectedFileList = [uuid];
       }
     },
     async setStudyArea(val) {
