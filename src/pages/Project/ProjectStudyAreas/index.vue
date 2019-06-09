@@ -141,7 +141,7 @@
                   ></vue-timepicker>
                 </div>
                 <a
-                  @click="doSearch"
+                  @click="clickSearch"
                   class="btn btn-sm btn-green"
                   :style="{ margin: '4px' }"
                   :disabled="!canSearch"
@@ -289,12 +289,14 @@ export default {
       this.query = Object.assign({}, defaultQuery);
       this.resetAnnotations();
       this.updateDateRange();
+      this.resetPagination();
     },
     'query.cameraLocations': function() {
       debounceTimeId && window.clearTimeout(debounceTimeId);
 
       debounceTimeId = setTimeout(() => {
         debounceTimeId = undefined;
+        this.query.index = 0;
         this.doSearch();
       }, 2000);
     },
@@ -408,6 +410,9 @@ export default {
       this.query.cameraLocations = val;
       this.CameraModalOpen = false;
     },
+    resetPagination() {
+      this.$refs.sheet.resetPagination(this.query.index);
+    },
     setPagination(val) {
       this.query.index = val.currentPage - 1;
       this.query.size = val.pageSize;
@@ -445,7 +450,12 @@ export default {
         this.isEdit = false;
       }
     },
+    clickSearch() {
+      this.query.index = 0;
+      this.doSearch();
+    },
     async doSearch() {
+      this.resetPagination();
       this.currentAnnotationIdx = -1;
       if (this.query.cameraLocations.length === 0) {
         this.resetAnnotations();
