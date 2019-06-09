@@ -1,24 +1,16 @@
 import {
-  cancelUploadSession,
   getUploadSessions,
-  postUploadSession,
+  postUploadSessionCancelled,
+  postUploadSessionOverwritten,
 } from '@/service';
 
 const state = {
   uploadSessions: [],
-  uploadSessionOverwritten: [],
-  uploadSessionCancelled: [],
 };
 
 const mutations = {
   setUploadSessions(state, payload) {
     state.uploadSessions = payload;
-  },
-  postUploadSession(state, payload) {
-    state.uploadSessionOverwritten = payload;
-  },
-  cancelUploadSession(state, payload) {
-    state.uploadSessionCancelled = payload;
   },
 };
 
@@ -27,13 +19,17 @@ const actions = {
     const data = await getUploadSessions();
     commit('setUploadSessions', data);
   },
-  async postUploadSession({ commit }) {
-    const data = await postUploadSession();
-    commit('postUploadSession', data);
+  async postUploadSessionCancelled({ commit }, { id, body }) {
+    const data = await postUploadSessionCancelled(id, {
+      ...body,
+    });
+    commit('setUploadSessions', data);
   },
-  async cancelUploadSession({ commit }) {
-    const data = await cancelUploadSession();
-    commit('cancelUploadSession', data);
+  async postUploadSessionOverwritten({ commit }, { id, body }) {
+    const data = await postUploadSessionOverwritten(id, {
+      ...body,
+    });
+    commit('setUploadSessions', data);
   },
 };
 

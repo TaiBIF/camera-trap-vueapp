@@ -9,7 +9,7 @@ const getUploadSessions = async () => {
 };
 
 // Overwrite the upload session
-const postUploadSession = async ({ id, body }) => {
+const postUploadSessionOverwritten = async (id, body) => {
   const res = await fetchWrap({
     url: `/api/v1/me/upload-sessions/${id}/_overwrite`,
     method: 'POST',
@@ -19,7 +19,7 @@ const postUploadSession = async ({ id, body }) => {
 };
 
 // Cancel the upload session
-const cancelUploadSession = async ({ id, body }) => {
+const postUploadSessionCancelled = async (id, body) => {
   const res = await fetchWrap({
     url: `/api/v1/me/upload-sessions/${id}/_cancel`,
     method: 'POST',
@@ -28,4 +28,8 @@ const cancelUploadSession = async ({ id, body }) => {
   return res;
 };
 
-export { getUploadSessions, postUploadSession, cancelUploadSession };
+export {
+  getUploadSessions,
+  postUploadSessionOverwritten,
+  postUploadSessionCancelled,
+};
