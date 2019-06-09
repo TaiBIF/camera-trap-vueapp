@@ -19,6 +19,7 @@ import {
   putProjectSpecies,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
+import routerParams from '@/utils/routerParams';
 
 // 計畫資料
 
@@ -35,9 +36,12 @@ const state = {
 };
 
 const getters = {
+  rawProjectDetail: state => (projectId = routerParams.projectId) => {
+    return state.projectDetail[projectId] || {};
+  },
   // dataFields.description 內有多語系，處理只回傳當前語系內容
-  projectDetail: state =>
-    produce(JSON.parse(JSON.stringify(state.projectDetail)), draft => {
+  projectDetail: (state, getters) =>
+    produce(JSON.parse(JSON.stringify(getters.rawProjectDetail())), draft => {
       draft.dataFields &&
         draft.dataFields.forEach(
           v => (v.description = v.description[getLanguage()]),
@@ -55,9 +59,9 @@ const getters = {
       }))
       .sort((a, b) => a.index - b.index);
   },
-  projectDataFields: state =>
-    state.projectDetail.dataFields
-      ? state.projectDetail.dataFields.map(v => ({
+  projectDataFields: (state, getters) =>
+    getters.rawProjectDetail().dataFields
+      ? getters.rawProjectDetail().dataFields.map(v => ({
           ...v,
           title: v.title[getLanguage()],
           description: v.description[getLanguage()],
@@ -70,15 +74,17 @@ const getters = {
    * researcher (計畫研究員)
    * executor (計畫執行者)
    */
-  isProjectManager: state => userId => {
-    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+  isProjectManager: (state, getters) => userId => {
+    const projectMembers =
+      idx(getters.rawProjectDetail(), _ => _.members) || [];
     const permission = projectMembers.find(({ user }) => user.id === userId);
 
     if (permission && permission.role === 'manager') return true;
     return false;
   },
-  isProjectResearcher: state => userId => {
-    const projectMembers = idx(state, _ => _.projectDetail.members) || [];
+  isProjectResearcher: (state, getters) => userId => {
+    const projectMembers =
+      idx(getters.rawProjectDetail(), _ => _.members) || [];
     const permission = projectMembers.find(({ user }) => user.id === userId);
 
     if (permission && permission.role === 'researcher') return true;
@@ -129,10 +135,10 @@ const getters = {
         lastUpdate: dateFormatYYYYMMDD(lastData),
       };
     }),
-  getLatestAnnotationYear: state => {
+  getLatestAnnotationYear: (state, getters) => {
     const latestAnnotationTime = idx(
-      state,
-      _ => _.projectDetail.latestAnnotationTime,
+      getters.rawProjectDetail(),
+      _ => _.latestAnnotationTime,
     );
     if (!latestAnnotationTime) return null;
     return parseInt(dateFormatYYYY(latestAnnotationTime), 10);
@@ -150,10 +156,10 @@ const mutations = {
     state.projectsTotal = payload;
   },
   setProjectDetail(state, data) {
-    state.projectDetail = data;
+    Vue.set(state.projectDetail, data.id, data);
   },
-  updateProjectMember(state, members) {
-    state.projectDetail.members = members;
+  updateProjectMember(state, { projectId, members }) {
+    Vue.set(state.projectDetail[projectId], 'members', members);
   },
   setProjectSpecies(state, data) {
     state.projectSpecies = data;
@@ -234,7 +240,7 @@ const actions = {
       ...body,
       role: idx(body, _ => _.role.key),
     });
-    commit('updateProjectMember', data);
+    commit('updateProjectMember', { projectId: id, members: data });
   },
   async putProjectMember({ commit }, { projectId, members }) {
     const data = await putProjectMember(
@@ -244,7 +250,7 @@ const actions = {
         role: v.role.key,
       })),
     );
-    commit('updateProjectMember', data);
+    commit('updateProjectMember', { projectId, members: data });
   },
   async getProjectSpecies({ commit }, id) {
     const data = await getProjectSpecies(id);
