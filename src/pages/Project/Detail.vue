@@ -55,7 +55,9 @@ export default {
       return this.$route.params.projectId;
     },
     selectedStudyAreaId: function() {
-      return this.$route.params.selectedStudyAreaId;
+      return (
+        this.$route.params.selectedStudyAreaId || this.$route.params.studyAreaId
+      );
     },
   },
   methods: {
@@ -68,6 +70,7 @@ export default {
     ]),
     fetchProjectCameraLocations() {
       if (this.selectedStudyAreaId && this.selectedStudyAreaId !== 'all') {
+        this.getProjectStudyAreas(this.projectId);
         this.getProjectCameraLocations({
           projectId: this.projectId,
           studyAreaId: this.selectedStudyAreaId,
