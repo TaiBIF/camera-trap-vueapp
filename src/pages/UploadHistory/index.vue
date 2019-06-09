@@ -1,15 +1,16 @@
 <template>
-  <div class="container">
+  <div class="container" v-bind:class="{ loading: isLoading }">
     <h1 class="text-green">上傳紀錄</h1>
     <table class="table history">
       <thead>
         <tr>
-          <th width="180px">上傳時間</th>
-          <th>檔案名稱</th>
-          <th width="120px">所屬計畫</th>
-          <th>樣區</th>
-          <th>相機位置</th>
-          <th>上傳結果</th>
+          <th class="nowrap" width="180px">上傳時間</th>
+          <th class="nowrap">檔案名稱</th>
+          <th class="nowrap" width="120px">所屬計畫</th>
+          <th class="nowrap">樣區</th>
+          <th class="nowrap">相機位置</th>
+          <th class="nowrap">上傳結果</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
@@ -45,59 +46,102 @@
           <td>{{ row.project.shortTitle }}</td>
           <td>{{ row.cameraLocation.studyArea.title['zh-TW'] }}</td>
           <td>{{ row.cameraLocation.name }}</td>
-          <td class="text-right">
-            <div v-if="row.state == 'success'" class="float-left">
+          <td style="white-space: nowrap;">
+            <div v-if="row.state === 'success'" class="float-left">
               <span class="icon"><i class="icon-upload-success"></i></span>
               <span class="text">上傳成功</span>
             </div>
-            <div v-if="row.state == 'processing'" class="float-left">
+            <div v-if="row.state === 'processing'" class="float-left">
               <span class="icon"></span>
               <span class="text">處理中</span>
             </div>
-            <div v-if="row.state == 'failure'" class="float-left">
+            <div v-if="row.state === 'failure'" class="float-left">
               <span class="icon"><i class="icon-upload-fail"></i></span>
-              <a
-                @click="
-                  showInfoModal = true;
-                  errorType = row.errorType;
-                "
-                class="text-danger text-underline"
-              >
-                檢視錯誤</a
-              >
+              <span class="text">上傳失敗</span>
             </div>
-
+            <div v-if="row.state === 'wait-for-review'" class="float-left">
+              <span class="icon"
+                ><i
+                  class="fas fa-exclamation-circle"
+                  style="font-size: 24px; color: #f1c40f;"
+                ></i
+              ></span>
+              <span class="text">資料有重覆，您要？</span>
+            </div>
+            <div v-if="row.state === 'cancel'" class="float-left">
+              <span class="icon"><i class="icon-upload-success"></i></span>
+              <span class="text">取消上傳</span>
+            </div>
+          </td>
+          <td>
             <div
               v-if="
-                row.state === 'success' && row.file.type === 'annotation-csv'
+                (row.state === 'success' || row.state === 'cancel') &&
+                  row.file.type !== 'annotation-csv'
               "
-              class="float-left"
             >
-              <a
-                :href="`/project/${row.project.id}/upload`"
-                class="link text-underline mr-2"
-                target="_blank"
-              >
-                補上傳影像檔
-              </a>
-            </div>
-            <div v-if="row.state === 'success'" class="float-right">
               <a
                 :href="
                   `/project/${row.project.id}/study-areas/${
                     row.cameraLocation.studyArea.id
                   }`
                 "
-                class="link text-underline mr-2"
+                class="link"
                 target="_blank"
               >
                 查看
+              </a>
+            </div>
+            <div
+              v-if="
+                (row.state === 'success' || row.state === 'cancel') &&
+                  row.file.type === 'annotation-csv'
+              "
+            >
+              <a
+                :href="`/project/${row.project.id}/upload`"
+                class="link"
+                target="_blank"
+              >
+                補上傳影像檔
+              </a>
+            </div>
+            <div v-if="row.state === 'failure'">
+              <a
+                class="link"
+                @click="
+                  showInfoModal = true;
+                  errorType = row.errorType;
+                "
+              >
+                檢視錯誤</a
+              >
+            </div>
+            <div
+              v-if="row.state === 'wait-for-review'"
+              style="white-space: nowrap;"
+            >
+              <a
+                class="link"
+                @click.prevent="overwriteUploadSession(row.id)"
+              >
+                覆蓋
+              </a>
+              |
+              <a
+                class="link"
+                @click.prevent="cancelUploadSession(row.id)"
+                >取消
               </a>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div class="col-12 pt-3">
+      <router-view :setLoading="setLoading" />
+    </div>
 
     <info-modal
       v-if="!!showInfoModal"
@@ -148,6 +192,8 @@ export default {
     return {
       showInfoModal: false,
       errorType: '',
+      error: undefined,
+      isLoading: false,
     };
   },
   mounted() {
@@ -157,10 +203,46 @@ export default {
     ...uploadSessions.mapState(['uploadSessions']),
   },
   methods: {
-    ...uploadSessions.mapActions(['getUploadSessions']),
+    ...uploadSessions.mapActions([
+      'getUploadSessions',
+      'postUploadSessionOverwritten',
+      'postUploadSessionCancelled',
+    ]),
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
+    },
+    async overwriteUploadSession(id) {
+      this.setLoading(true);
+      try {
+        await this.postUploadSessionOverwritten({id});
+        this.getUploadSessions();
+      } catch (e) {
+        this.error = e;
+      }
+      this.setLoading(false);
+    },
+    async cancelUploadSession(id) {
+      this.setLoading(true);
+      try {
+        await this.postUploadSessionCancelled({id});
+        this.getUploadSessions();
+      } catch (e) {
+        this.error = e;
+      }
+      this.setLoading(false);
+    },
+    setLoading(v) {
+      this.isLoading = v;
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+table.history th.nowrap {
+  white-space: nowrap;
+}
+a.link:hover {
+  text-decoration: underline;
+}
+</style>
