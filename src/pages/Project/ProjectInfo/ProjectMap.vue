@@ -311,11 +311,13 @@ export default {
       return 'byCameraLocation';
     },
     areas: function() {
-      return this.studyAreas.map(({ title, id, children, position }) => ({
-        title,
-        position,
-        path: idx(children, _ => _[0].id) || id, // if area have children, use first child id as path
-      }));
+      return this.studyAreas
+        .filter(({ position }) => position.lat && position.lng)
+        .map(({ title, id, children, position }) => ({
+          title,
+          position,
+          path: idx(children, _ => _[0].id) || id, // if area have children, use first child id as path
+        }));
     },
     cameras: function() {
       return this.cameraLocations.map(
@@ -388,18 +390,20 @@ export default {
     mapCenter: function() {
       // project level: calculate center base on all parent studyAreas
       if (this.selectedStudyAreaId === 'all') {
-        return this.areas.reduce(
-          (res, { position }) => {
-            const { lat, lng } = position;
-            res.lat += lat / this.areas.length;
-            res.lng += lng / this.areas.length;
-            return res;
-          },
-          {
-            lat: 0,
-            lng: 0,
-          },
-        );
+        return this.areas
+          .filter(({ position }) => position.lat && position.lng)
+          .reduce(
+            (res, { position }) => {
+              const { lat, lng } = position;
+              res.lat += lat / this.areas.length;
+              res.lng += lng / this.areas.length;
+              return res;
+            },
+            {
+              lat: 0,
+              lng: 0,
+            },
+          );
       }
       if (!this.selectedCameraId) {
         // studyArea level: calculate center base on all cameraLocation in this studyArea
