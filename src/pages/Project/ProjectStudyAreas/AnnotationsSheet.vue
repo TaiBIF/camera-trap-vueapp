@@ -57,7 +57,13 @@
       <div class="float-left">
         <small class="text-gray">單頁顯示</small>
         <small class="select">
-          <select name="" id="" class="form-control" v-model="pageSize">
+          <select
+            name=""
+            id=""
+            class="form-control"
+            v-model="pageSize"
+            :style="{ padding: '0px 5px' }"
+          >
             <option :key="opt" :value="opt" v-for="opt in [10, 50, 100, 500]">{{
               opt
             }}</option>
