@@ -195,6 +195,12 @@
       @submit="setSelectedCamera"
       @close="CameraModalOpen = false"
     />
+
+    <info-modal :open="lockByOtherModal" @close="lockByOtherModal = false">
+      <p class="text-gray">
+        此相機位置剛進入鎖定狀態，無法進入編輯模式。
+      </p>
+    </info-modal>
   </div>
 </template>
 
@@ -210,6 +216,7 @@ import {
   subNYears,
 } from '@/utils/dateHelper.js';
 import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
@@ -254,9 +261,11 @@ export default {
     RightSide,
     VueTimepicker,
     DatePicker,
+    InfoModal,
   },
   data() {
     return {
+      lockByOtherModal: false,
       isLoading: false,
       isEdit: false,
       CameraModalOpen: false,
@@ -269,11 +278,6 @@ export default {
   mounted() {
     this.getDataFields();
     this.getProjectSpecies(this.projectId);
-    this.getProjectCameraLocations({
-      projectId: this.projectId,
-      studyAreaId: this.studyAreaId,
-    });
-
     this.updateDateRange();
   },
   watch: {
@@ -285,12 +289,6 @@ export default {
       this.query = Object.assign({}, defaultQuery);
       this.resetAnnotations();
       this.updateDateRange();
-    },
-    studyAreaId: function() {
-      this.getProjectCameraLocations({
-        projectId: this.projectId,
-        studyAreaId: this.studyAreaId,
-      });
     },
     'query.cameraLocations': function() {
       debounceTimeId && window.clearTimeout(debounceTimeId);
@@ -342,9 +340,9 @@ export default {
     disabledEdit: function() {
       return (
         this.annotationsTotal === 0 ||
-        this.cameraLocations.some(
-          v => v.isLocked === true && v.lockUser.id !== this.userId,
-        )
+        this.cameraLocations
+          .filter(v => this.query.cameraLocations.includes(v.id))
+          .some(v => v.isLocked === true && v.lockUser.id !== this.userId)
       );
     },
     exportCSVLink: function() {
@@ -370,6 +368,7 @@ export default {
     ...dataFields.mapActions(['getDataFields']),
     ...projects.mapActions(['getProjectSpecies']),
     ...studyAreas.mapActions([
+      'getProjectStudyAreas',
       'getProjectCameraLocations',
       'setLockProjectCameraLocations',
     ]),
@@ -414,15 +413,37 @@ export default {
       this.query.size = val.pageSize;
       this.doSearch();
     },
-    setEdit(bool) {
-      this.isEdit = bool;
+    async setEdit(bool) {
+      if (bool === true) {
+        await Promise.all([
+          this.getProjectStudyAreas(this.projectId),
+          this.getProjectCameraLocations({
+            projectId: this.projectId,
+            studyAreaId: this.studyAreaId,
+          }),
+        ]);
 
-      this.setLockProjectCameraLocations({
-        projectId: this.projectId,
-        studyAreaId: this.studyAreaId,
-        cameraLocations: this.query.cameraLocations,
-        isLock: bool,
-      });
+        if (this.disabledEdit === false) {
+          await this.setLockProjectCameraLocations({
+            projectId: this.projectId,
+            studyAreaId: this.studyAreaId,
+            cameraLocations: this.query.cameraLocations,
+            isLock: bool,
+          });
+          this.isEdit = true;
+        } else {
+          this.lockByOtherModal = true;
+        }
+      } else {
+        await this.setLockProjectCameraLocations({
+          projectId: this.projectId,
+          studyAreaId: this.studyAreaId,
+          cameraLocations: this.query.cameraLocations,
+          isLock: bool,
+        });
+
+        this.isEdit = false;
+      }
     },
     async doSearch() {
       this.currentAnnotationIdx = -1;

@@ -38,7 +38,10 @@
             >
               <i class="icon-folder"></i>
             </span>
-            <span class="text">{{ row.file.filename }}</span>
+            <span class="text"
+              >{{ row.file.originalFilename }}<br />FileId:
+              {{ row.file.id }}</span
+            >
           </td>
           <td>{{ row.project.shortTitle }}</td>
           <td>{{ row.cameraLocation.studyArea.title['zh-TW'] }}</td>
