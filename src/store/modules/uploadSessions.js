@@ -19,16 +19,12 @@ const actions = {
     const data = await getUploadSessions();
     commit('setUploadSessions', data);
   },
-  async postUploadSessionCancelled({ commit }, { id, body }) {
-    const data = await postUploadSessionCancelled(id, {
-      ...body,
-    });
+  async postUploadSessionOverwritten({ commit }, { id }) {
+    const data = await postUploadSessionOverwritten(id);
     commit('setUploadSessions', data);
   },
-  async postUploadSessionOverwritten({ commit }, { id, body }) {
-    const data = await postUploadSessionOverwritten(id, {
-      ...body,
-    });
+  async postUploadSessionCancelled({ commit }, { id }) {
+    const data = await postUploadSessionCancelled(id);
     commit('setUploadSessions', data);
   },
 };

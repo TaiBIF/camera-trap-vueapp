@@ -66,11 +66,11 @@
                   style="font-size: 24px; color: #f1c40f;"
                 ></i
               ></span>
-              <span class="text">資料部分或全部重覆，您要？</span>
+              <span class="text">資料有重覆，您要？</span>
             </div>
             <div v-if="row.state === 'cancel'" class="float-left">
               <span class="icon"><i class="icon-upload-success"></i></span>
-              <span class="text">取消覆蓋</span>
+              <span class="text">取消上傳</span>
             </div>
           </td>
           <td>
@@ -123,30 +123,15 @@
             >
               <a
                 class="link"
-                @click.prevent="
-                  overwriteUploadSession(
-                    row.id,
-                    row.state,
-                    row.project.id,
-                    row.file.id,
-                  )
-                "
+                @click.prevent="overwriteUploadSession(row.id)"
               >
-                確認覆蓋
+                覆蓋
               </a>
               |
               <a
                 class="link"
-                @click.prevent="
-                  cancelUploadSession(
-                    row.id,
-                    row.state,
-                    row.project.id,
-                    row.cameraLocation.id,
-                    row.file.id,
-                  )
-                "
-                >取消覆蓋
+                @click.prevent="cancelUploadSession(row.id)"
+                >取消
               </a>
             </div>
           </td>
@@ -226,42 +211,20 @@ export default {
     dateFormatYYYYMMDDHHmmss(dateString) {
       return dateFormatYYYYMMDDHHmmss(dateString);
     },
-    async overwriteUploadSession(id, state, project, cameraLocation, file) {
-      const time = new Date();
+    async overwriteUploadSession(id) {
       this.setLoading(true);
       try {
-        await this.postUploadSessionOverwritten({
-          id,
-          body: {
-            id,
-            state,
-            project,
-            cameraLocation,
-            file,
-            createTime: time.toISOString(),
-          },
-        });
+        await this.postUploadSessionOverwritten({id});
         this.getUploadSessions();
       } catch (e) {
         this.error = e;
       }
       this.setLoading(false);
     },
-    async cancelUploadSession(id, state, project, cameraLocation, file) {
-      const time = new Date();
+    async cancelUploadSession(id) {
       this.setLoading(true);
       try {
-        await this.postUploadSessionCancelled({
-          id,
-          body: {
-            id,
-            state,
-            project,
-            cameraLocation,
-            file,
-            createTime: time.toISOString(),
-          },
-        });
+        await this.postUploadSessionCancelled({id});
         this.getUploadSessions();
       } catch (e) {
         this.error = e;
