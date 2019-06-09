@@ -25,8 +25,8 @@ import { getLanguage } from '@/utils/i18n';
 const state = {
   projects: [],
   projectsTotal: 0,
-  projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
-  projectSpecies: [], // 計畫物種列表
+  /* todo */ projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
+  /* todo */ projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
   retrievalData: {
     lastUpdate: '',

@@ -21,8 +21,8 @@ import { setTwoDigitFormat } from '@/utils/dateHelper';
 // 計畫內的樣區資訊，全放在 project 會過大
 
 const state = {
-  studyAreas: [], // 計畫樣區列表
-  cameraLocations: [], // 指定樣區內的相機位置列表，只保存最後一次的查詢結果
+  /* todo */ studyAreas: [], // 計畫樣區列表
+  /* todo */ cameraLocations: [], // 指定樣區內的相機位置列表，只保存最後一次的查詢結果
   speciesGroup: {
     byStudyArea: [], // 各樣區的前五大物種與回收影像數量
     byCameraLocation: [], // 各相機的前五大物種與回收影像數量
