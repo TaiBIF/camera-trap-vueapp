@@ -237,10 +237,10 @@ export default {
 
       this.isLoading = true;
       this.currentAnnotationIdx = -1;
-
       await this.getAnnotations({
         cameraLocations: query.cameraLocations,
         species: query.species,
+        fields: query.fields,
         startTime: query.startTime,
         endTime: query.endTime,
         index: query.index,
