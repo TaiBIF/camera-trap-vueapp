@@ -121,16 +121,11 @@
               v-if="row.state === 'wait-for-review'"
               style="white-space: nowrap;"
             >
-              <a
-                class="link"
-                @click.prevent="overwriteUploadSession(row.id)"
-              >
+              <a class="link" @click.prevent="overwriteUploadSession(row.id)">
                 覆蓋
               </a>
               |
-              <a
-                class="link"
-                @click.prevent="cancelUploadSession(row.id)"
+              <a class="link" @click.prevent="cancelUploadSession(row.id)"
                 >取消
               </a>
             </div>
@@ -214,7 +209,7 @@ export default {
     async overwriteUploadSession(id) {
       this.setLoading(true);
       try {
-        await this.postUploadSessionOverwritten({id});
+        await this.postUploadSessionOverwritten({ id });
         this.getUploadSessions();
       } catch (e) {
         this.error = e;
@@ -224,7 +219,7 @@ export default {
     async cancelUploadSession(id) {
       this.setLoading(true);
       try {
-        await this.postUploadSessionCancelled({id});
+        await this.postUploadSessionCancelled({ id });
         this.getUploadSessions();
       } catch (e) {
         this.error = e;
