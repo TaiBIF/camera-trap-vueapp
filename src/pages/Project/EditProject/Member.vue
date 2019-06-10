@@ -209,15 +209,6 @@ export default {
         });
         this.status = 200;
         this.error = undefined;
-        /*
-        Disable auto redirect to next step function
-        */
-        // this.$router.push({
-        //   name: 'projectLicense',
-        //   params: {
-        //     projectId: this.projectId,
-        //   },
-        // });
       } catch (e) {
         this.error = e;
       }

@@ -63,17 +63,6 @@ export default {
         },
       );
       this.setLoading(false);
-      /*
-      Disable auto redirect step function
-      */
-      // if (!this.error) {
-      //   this.$router.push({
-      //     name: 'projectInfo',
-      //     params: {
-      //       projectId: this.projectId,
-      //     },
-      //   });
-      // }
     },
   },
 };

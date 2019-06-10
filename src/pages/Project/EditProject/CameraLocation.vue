@@ -353,15 +353,6 @@ export default {
         });
         this.status = 200;
         this.error = undefined;
-        /*
-        Disable auto redirect step function
-        */
-        // this.$router.push({
-        //   name: 'projectMember',
-        //   params: {
-        //     projectId: this.projectId,
-        //   },
-        // });
       } catch (e) {
         this.error = e;
       }
