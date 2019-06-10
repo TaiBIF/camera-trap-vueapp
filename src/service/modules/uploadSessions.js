@@ -7,6 +7,10 @@ const getUploadSessions = async () => {
   });
 };
 
+// Upload sessions POST endpoints specify no request object.
+// _overwrite http://bit.ly/2DMpjQR
+// _cancel http://bit.ly/2IWj29k
+
 // Overwrite the upload session
 const postUploadSessionOverwritten = async (id) => {
   return await fetchWrap({
