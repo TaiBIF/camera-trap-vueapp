@@ -32,9 +32,9 @@ export default {
   computed: {
     data() {
       if (this.calculateType === 'oi') {
-        const dutyHours = Math.floor(
-          this.calculatorData.cameraLocationWorkDuration / 60 / 60 / 1000,
-        );
+        console.log(this.calculatorData);
+        const dutyHours =
+          this.calculatorData.cameraLocationWorkDuration / 60 / 60 / 1000;
         return [
           ['相機工作時數', `${dutyHours} 小時`],
           ['有效照片', `${this.calculatorData.validQuantity} 張`],
