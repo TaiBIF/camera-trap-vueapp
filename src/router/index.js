@@ -12,21 +12,25 @@ export default new Router({
       name: 'intro',
       component: () => import('@/pages/Intro.vue'),
     },
+    // 計畫總覽
     {
       path: '/project',
       name: 'project',
       component: () => import('@/pages/Project/index.vue'),
       children: [
+        // 計畫總覽
         {
           path: 'overview',
           name: 'projectOverview',
           component: () => import('@/pages/Project/Overview.vue'),
         },
+        // 新增計畫
         {
           path: 'create',
           name: 'projectCreate',
           component: () => import('@/pages/Project/Create.vue'),
         },
+        // 計畫詳情
         {
           path: ':projectId',
           component: () => import('@/pages/Project/Detail.vue'),
@@ -61,12 +65,14 @@ export default new Router({
                 },
               ],
             },
+            // 計畫管理
             {
               path: 'edit',
               name: 'projectEdit',
               meta: { projectAside: false },
               component: () => import('@/pages/Project/EditProject/index.vue'),
               children: [
+                // 基本資料
                 {
                   path: 'basic',
                   name: 'projectBasic',
@@ -74,6 +80,7 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/Basic.vue'),
                 },
+                // 編輯設定
                 {
                   path: 'setting',
                   name: 'projectSetting',
@@ -81,6 +88,7 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/Setting.vue'),
                 },
+                // 相機位置管理
                 {
                   path: 'camera-location',
                   name: 'projectCameraLocation',
@@ -88,6 +96,7 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
+                // 計畫成員
                 {
                   path: 'member',
                   name: 'projectMember',
@@ -95,6 +104,7 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/Member.vue'),
                 },
+                // 創用CC授權
                 {
                   path: 'license',
                   name: 'projectLicense',
