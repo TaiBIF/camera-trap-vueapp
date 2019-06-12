@@ -1,6 +1,6 @@
 export const acceptDef = {
   image: 'image/jpeg,image/pjpeg,image/png',
-  csv: 'text/csv,application/vnd.ms-excel',
+  csv: 'text/csv,application/vnd.ms-excel,text/plain',
   zip: 'application/zip,application/x-zip-compressed',
   video:
     'video/mp4,application/x-troff-msvideo,video/avi,video/msvideo,video/x-msvideo,video/quicktime,video/mpeg',
