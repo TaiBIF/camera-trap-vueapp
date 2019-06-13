@@ -42,7 +42,7 @@ export default {
     },
     disabledSubmit: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     status: {
       type: Number,

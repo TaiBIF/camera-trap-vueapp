@@ -18,6 +18,7 @@
                 v-validate="'required'"
                 v-model="project.title"
                 :class="{ 'is-invalid': errors.has('project_title') }"
+                @change="enableSubmit"
               />
               <span
                 v-show="errors.has('project_title')"
@@ -269,12 +270,14 @@
         :status="status"
         :error="error"
         :submitBtnContext="doneBtnText"
+        :disabledSubmit="this.disabledSubmit"
       />
     </form>
   </div>
 </template>
 
 <script>
+import $ from 'jquery';
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
@@ -286,6 +289,7 @@ export default {
   data() {
     return {
       previewImg: null,
+      disabledSubmit: true,
     };
   },
   components: {
@@ -294,7 +298,7 @@ export default {
     ActionBtns,
   },
   props: {
-    project: Object,
+    project: Object, // 儲存目前計畫管理所輸入的資料
     areas: {
       type: Array,
       default: () => [],
@@ -393,6 +397,14 @@ export default {
         if (result) this.$emit('done');
         else return false;
       });
+    },
+    enableSubmit(event) {
+      const project = Object.assign({}, this.$parent.projectDetail);
+      if (event && event.target.value !== project.title) {
+        return (this.disabledSubmit = false);
+      } else {
+        return (this.disabledSubmit = true);
+      }
     },
   },
 };

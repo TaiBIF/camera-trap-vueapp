@@ -31,7 +31,7 @@ export default {
     setLoading: Function,
   },
   mounted() {
-    this.temp = Object.assign({}, this.projectDetail);
+    this.temp = Object.assign({}, this.projectDetail); // 取得位於 store 的 projectDetail 資料
   },
   watch: {
     projectDetail: function(val) {
