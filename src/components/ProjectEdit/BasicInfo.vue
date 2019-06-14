@@ -18,7 +18,6 @@
                 v-validate="'required'"
                 v-model="project.title"
                 :class="{ 'is-invalid': errors.has('project_title') }"
-                @change="enableSubmit"
               />
               <span
                 v-show="errors.has('project_title')"
@@ -270,14 +269,13 @@
         :status="status"
         :error="error"
         :submitBtnContext="doneBtnText"
-        :disabledSubmit="this.disabledSubmit"
+        :disabledSubmit="!!disabledSubmit"
       />
     </form>
   </div>
 </template>
 
 <script>
-import $ from 'jquery';
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
@@ -314,6 +312,14 @@ export default {
     doneBtnText: {
       type: String,
       default: '儲存設定',
+    },
+  },
+  watch: {
+    project: {
+      handler() {
+        this.checkFormValue();
+      },
+      deep: true,
     },
   },
   computed: {
@@ -384,10 +390,11 @@ export default {
       return moment(v).format('YYYY-MM-DD');
     },
     setProjectTime(key, t) {
-      this.changeProps(key, moment(t).toISOString());
+      this.changeProps(key, moment(t).toISOString(), t);
     },
-    changeProps(key, value) {
+    changeProps(key, value, event) {
       this.$emit('change', Object.assign({}, this.project, { [key]: value }));
+      this.enableSubmit(event);
     },
     doDone() {
       if (this.isUploadTypeError || this.isUploadSizeError) {
@@ -398,13 +405,40 @@ export default {
         else return false;
       });
     },
-    enableSubmit(event) {
-      const project = Object.assign({}, this.$parent.projectDetail);
-      if (event && event.target.value !== project.title) {
-        return (this.disabledSubmit = false);
-      } else {
-        return (this.disabledSubmit = true);
+    checkFormValue() {
+      const projectDetail = Object.assign({}, this.$parent.projectDetail);
+      const oldBasicInfo = {
+        title: projectDetail.title,
+        shortTitle: projectDetail.shortTitle,
+        funder: projectDetail.funder,
+        code: projectDetail.code,
+        principalInvestigator: projectDetail.principalInvestigator,
+        startTime: projectDetail.startTime,
+        endTime: projectDetail.endTime,
+        areas: projectDetail.areas,
+        description: projectDetail.description,
+        note: projectDetail.note,
+        cover: projectDetail.cover,
+      };
+      const projectInput = this.project;
+      const newBasicInfo = {
+        title: projectInput.title,
+        shortTitle: projectInput.shortTitle,
+        funder: projectInput.funder,
+        code: projectInput.code,
+        principalInvestigator: projectInput.principalInvestigator,
+        startTime: projectInput.startTime,
+        endTime: projectInput.endTime,
+        areas: projectInput.areas,
+        description: projectInput.description,
+        note: projectInput.note,
+        cover: projectInput.cover,
+      };
+      let isEqual = true;
+      if (JSON.stringify(oldBasicInfo) !== JSON.stringify(newBasicInfo)) {
+        isEqual = false;
       }
+      this.disabledSubmit = isEqual;
     },
   },
 };
