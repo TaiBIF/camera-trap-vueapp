@@ -11,7 +11,11 @@
                     {{ projectDetail.title }}
                   </h1>
                 </div>
-                <div class="col-3 text-right" v-if="showManageLink">
+                <div
+                  class="col-3 text-right"
+                  v-if="showManageLink"
+                  style="white-space: nowrap;"
+                >
                   <router-link
                     :to="{
                       name: 'projectBasic',
@@ -22,7 +26,9 @@
                     class="float-right btn btn-green-border btn-sm"
                   >
                     <i class="fa fa-pencil-alt mr-2"></i>
-                    <span class="text">計畫管理</span></router-link
+                    <span class="text" style="white-space: nowrap;"
+                      >計畫管理</span
+                    ></router-link
                   >
                 </div>
               </div>
