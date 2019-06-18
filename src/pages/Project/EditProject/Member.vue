@@ -93,6 +93,7 @@
       @submit="doSubmit"
       :status="status"
       :error="error"
+      :disabledSubmit="!!disabledSubmit"
     />
 
     <double-check-modal
@@ -139,6 +140,7 @@ export default {
       },
       removeMemberTarget: undefined,
       isAddBtnClicked: false,
+      disabledSubmit: false,
     };
   },
   components: {
