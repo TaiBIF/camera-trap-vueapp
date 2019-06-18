@@ -5,6 +5,7 @@
       :tempDataFields="tempDataFields"
       @change="tempDataFields = $event"
       @request="requestField"
+      @handleSubmitBtnState="handleSubmitBtnState"
     />
     <DataFieldsTemplate />
     <CameraTestTime
@@ -17,6 +18,7 @@
       @submit="doSubmit"
       :status="status"
       :error="error"
+      :disabledSubmit="!!disabledSubmit"
     />
   </div>
 </template>
@@ -40,6 +42,7 @@ export default {
       tempDataFields: [],
       status: undefined,
       error: undefined,
+      disabledSubmit: true,
     };
   },
   components: {
@@ -81,6 +84,9 @@ export default {
           projectId: this.projectId,
         },
       });
+    },
+    handleSubmitBtnState(isChanged) {
+      this.disabledSubmit = !isChanged;
     },
     async requestField(payload) {
       await this.postDataFields({

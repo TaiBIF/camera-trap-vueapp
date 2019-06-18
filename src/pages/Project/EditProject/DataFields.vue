@@ -139,6 +139,7 @@ export default {
       showSpeciesEdit: false,
       showNewFieldForm: false,
       removeFieldTarget: undefined,
+      newFieldsNum: 0,
     };
   },
   props: {
@@ -152,7 +153,6 @@ export default {
     fieldWithoutProject: function() {
       // 沒有被專案或是暫時新增所使用的 fields ，這些才可以在新增欄位時被選取
       const tempDataFieldsIds = this.tempDataFields.map(v => v.id);
-
       return this.dataFields.filter(v => !tempDataFieldsIds.includes(v.id));
     },
     noDraggableFields: function() {
@@ -168,17 +168,29 @@ export default {
     },
   },
   methods: {
+    initFieldsNum() {
+      this.newFieldsNum = this.fieldWithoutProject.length;
+    },
     addField(id) {
       const target = this.fieldWithoutProject.find(v => v.id === id);
+      this.newFieldsNum++;
+      this.isEditSettingChanged();
       this.$emit('change', [...this.tempDataFields, target]);
     },
     deleteFields(id) {
       this.$emit('change', this.tempDataFields.filter(v => v.id !== id));
+      this.newFieldsNum--;
+      this.isEditSettingChanged();
       this.removeFieldTarget = undefined;
     },
     requestField(payload) {
       this.$emit('request', payload);
       this.showNewFieldForm = false;
+    },
+    isEditSettingChanged() {
+      const isChanged =
+        this.newFieldsNum !== this.fieldWithoutProject.length ? true : false;
+      this.$emit('handleSubmitBtnState', isChanged);
     },
   },
 };
