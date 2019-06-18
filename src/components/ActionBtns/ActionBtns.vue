@@ -14,7 +14,7 @@
         type="submit"
         class="btn btn-orange"
         @click.stop.prevent="$emit('submit')"
-        :disabled="disabledSubmit"
+        :disabled="!!disabledSubmit"
       >
         {{ submitBtnContext }}
       </button>

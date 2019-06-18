@@ -317,7 +317,7 @@ export default {
   watch: {
     project: {
       handler() {
-        this.checkFormValue();
+        this.isBasicInfoChanged();
       },
       deep: true,
     },
@@ -405,7 +405,7 @@ export default {
         else return false;
       });
     },
-    checkFormValue() {
+    isBasicInfoChanged() {
       const projectDetail = Object.assign({}, this.$parent.projectDetail);
       const oldBasicInfo = {
         title: projectDetail.title,
@@ -434,6 +434,7 @@ export default {
         note: projectInput.note,
         cover: projectInput.cover,
       };
+
       let isEqual = true;
       if (JSON.stringify(oldBasicInfo) !== JSON.stringify(newBasicInfo)) {
         isEqual = false;
