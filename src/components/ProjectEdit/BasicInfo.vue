@@ -435,11 +435,11 @@ export default {
         cover: projectInput.cover,
       };
 
-      let isEqual = true;
+      let isChanged = false;
       if (JSON.stringify(oldBasicInfo) !== JSON.stringify(newBasicInfo)) {
-        isEqual = false;
+        isChanged = true;
       }
-      this.disabledSubmit = isEqual;
+      this.disabledSubmit = !isChanged;
     },
   },
 };
