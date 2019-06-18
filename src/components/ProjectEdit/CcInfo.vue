@@ -186,7 +186,9 @@
         @submit="doDone"
         :status="status"
         :error="error"
-        :disabledSubmit="isOverPublicLimit || !project.publishTime"
+        :disabledSubmit="
+          isOverPublicLimit || !project.publishTime || !!disabledSubmit
+        "
         :submitBtnContext="doneBtnText"
       />
     </form>
@@ -199,6 +201,12 @@ import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 
 export default {
+  data: function() {
+    return {
+      temp: {},
+      disabledSubmit: true,
+    };
+  },
   props: {
     project: Object,
     status: {
@@ -209,6 +217,14 @@ export default {
     doneBtnText: {
       type: String,
       default: '儲存設定',
+    },
+  },
+  watch: {
+    project: {
+      handler() {
+        this.isLicenseInfoChanged();
+      },
+      deep: true,
     },
   },
   components: {
@@ -252,6 +268,29 @@ export default {
       if (!this.isOverPublicLimit && this.project.publishTime) {
         this.$emit('done');
       }
+    },
+    isLicenseInfoChanged() {
+      const temp = Object.assign({}, this.$parent.projectDetail);
+      const oldLicenseInfo = {
+        interpretiveDataLicense: temp.interpretiveDataLicense,
+        identificationInformationLicense: temp.identificationInformationLicense,
+        videoMaterialLicense: temp.videoMaterialLicense,
+        publishTime: temp.publishTime,
+      };
+      const project = this.project;
+      const newLicenseInfo = {
+        interpretiveDataLicense: project.interpretiveDataLicense,
+        identificationInformationLicense:
+          project.identificationInformationLicense,
+        videoMaterialLicense: project.videoMaterialLicense,
+        publishTime: project.publishTime,
+      };
+
+      let isChanged = false;
+      if (JSON.stringify(oldLicenseInfo) !== JSON.stringify(newLicenseInfo)) {
+        isChanged = true;
+      }
+      this.disabledSubmit = !isChanged;
     },
   },
 };
