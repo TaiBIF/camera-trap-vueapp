@@ -13,6 +13,7 @@
             :isEditMode="true"
             @selectArea="selectStudyArea"
             @addArea="addStudyArea"
+            @handleSubmitBtnState="handleSubmitBtnState"
           />
         </div>
         <div class="maintain p-0">
@@ -83,7 +84,7 @@
       @submit="doSubmit"
       :status="status"
       :error="error"
-      :disabledSubmit="!canSubmit"
+      :disabledSubmit="!(canSubmit || !disabledSubmit)"
     />
   </div>
 </template>
@@ -251,6 +252,7 @@ export default {
         ],
         data: [],
       },
+      disabledSubmit: true,
     };
   },
   props: {
@@ -353,15 +355,6 @@ export default {
         });
         this.status = 200;
         this.error = undefined;
-        /*
-        Disable auto redirect step function
-        */
-        // this.$router.push({
-        //   name: 'projectMember',
-        //   params: {
-        //     projectId: this.projectId,
-        //   },
-        // });
       } catch (e) {
         this.error = e;
       }
@@ -369,6 +362,9 @@ export default {
     updateSheetSize() {
       this.$refs.sheet &&
         this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
+    },
+    handleSubmitBtnState(isChanged) {
+      this.disabledSubmit = !isChanged;
     },
   },
 };

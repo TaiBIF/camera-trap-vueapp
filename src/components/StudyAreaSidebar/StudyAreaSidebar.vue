@@ -130,6 +130,7 @@ export default {
         const parentId = event.target.getAttribute('data-parent-id');
         if (value) {
           this.$emit('addArea', value, parentId);
+          this.$emit('handleSubmitBtnState', true);
           event.target.value = '';
         }
       }

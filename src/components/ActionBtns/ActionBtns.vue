@@ -14,7 +14,7 @@
         type="submit"
         class="btn btn-orange"
         @click.stop.prevent="$emit('submit')"
-        :disabled="disabledSubmit"
+        :disabled="!!disabledSubmit"
       >
         {{ submitBtnContext }}
       </button>
@@ -42,7 +42,7 @@ export default {
     },
     disabledSubmit: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     status: {
       type: Number,

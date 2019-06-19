@@ -5,6 +5,7 @@
       :tempDataFields="tempDataFields"
       @change="tempDataFields = $event"
       @request="requestField"
+      @handleSubmitBtnState="handleSubmitBtnState"
     />
     <DataFieldsTemplate />
     <CameraTestTime
@@ -17,6 +18,7 @@
       @submit="doSubmit"
       :status="status"
       :error="error"
+      :disabledSubmit="!!disabledSubmit"
     />
   </div>
 </template>
@@ -40,6 +42,7 @@ export default {
       tempDataFields: [],
       status: undefined,
       error: undefined,
+      disabledSubmit: true,
     };
   },
   components: {
@@ -82,6 +85,9 @@ export default {
         },
       });
     },
+    handleSubmitBtnState(isChanged) {
+      this.disabledSubmit = !isChanged;
+    },
     async requestField(payload) {
       await this.postDataFields({
         ...payload,
@@ -103,17 +109,6 @@ export default {
         this.error = e;
       });
       this.setLoading(false);
-      /*
-      Disable auto redirect step function
-      */
-      // if (!this.error) {
-      //   this.$router.push({
-      //     name: 'projectCameraLocation',
-      //     params: {
-      //       projectId: this.projectId,
-      //     },
-      //   });
-      // }
     },
   },
 };

@@ -93,6 +93,7 @@
       @submit="doSubmit"
       :status="status"
       :error="error"
+      :disabledSubmit="!!disabledSubmit"
     />
 
     <double-check-modal
@@ -139,6 +140,7 @@ export default {
       },
       removeMemberTarget: undefined,
       isAddBtnClicked: false,
+      disabledSubmit: false,
     };
   },
   components: {
@@ -209,15 +211,6 @@ export default {
         });
         this.status = 200;
         this.error = undefined;
-        /*
-        Disable auto redirect to next step function
-        */
-        // this.$router.push({
-        //   name: 'projectLicense',
-        //   params: {
-        //     projectId: this.projectId,
-        //   },
-        // });
       } catch (e) {
         this.error = e;
       }

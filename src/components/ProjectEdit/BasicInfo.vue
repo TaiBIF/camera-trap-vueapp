@@ -269,6 +269,7 @@
         :status="status"
         :error="error"
         :submitBtnContext="doneBtnText"
+        :disabledSubmit="!!disabledSubmit"
       />
     </form>
   </div>
@@ -286,6 +287,7 @@ export default {
   data() {
     return {
       previewImg: null,
+      disabledSubmit: true,
     };
   },
   components: {
@@ -294,7 +296,7 @@ export default {
     ActionBtns,
   },
   props: {
-    project: Object,
+    project: Object, // 儲存目前計畫管理所輸入的資料
     areas: {
       type: Array,
       default: () => [],
@@ -310,6 +312,14 @@ export default {
     doneBtnText: {
       type: String,
       default: '儲存設定',
+    },
+  },
+  watch: {
+    project: {
+      handler() {
+        this.isBasicInfoChanged();
+      },
+      deep: true,
     },
   },
   computed: {
@@ -380,10 +390,11 @@ export default {
       return moment(v).format('YYYY-MM-DD');
     },
     setProjectTime(key, t) {
-      this.changeProps(key, moment(t).toISOString());
+      this.changeProps(key, moment(t).toISOString(), t);
     },
-    changeProps(key, value) {
+    changeProps(key, value, event) {
       this.$emit('change', Object.assign({}, this.project, { [key]: value }));
+      this.enableSubmit(event);
     },
     doDone() {
       if (this.isUploadTypeError || this.isUploadSizeError) {
@@ -393,6 +404,42 @@ export default {
         if (result) this.$emit('done');
         else return false;
       });
+    },
+    isBasicInfoChanged() {
+      const projectDetail = Object.assign({}, this.$parent.projectDetail);
+      const oldBasicInfo = {
+        title: projectDetail.title,
+        shortTitle: projectDetail.shortTitle,
+        funder: projectDetail.funder,
+        code: projectDetail.code,
+        principalInvestigator: projectDetail.principalInvestigator,
+        startTime: projectDetail.startTime,
+        endTime: projectDetail.endTime,
+        areas: projectDetail.areas,
+        description: projectDetail.description,
+        note: projectDetail.note,
+        cover: projectDetail.cover,
+      };
+      const projectInput = this.project;
+      const newBasicInfo = {
+        title: projectInput.title,
+        shortTitle: projectInput.shortTitle,
+        funder: projectInput.funder,
+        code: projectInput.code,
+        principalInvestigator: projectInput.principalInvestigator,
+        startTime: projectInput.startTime,
+        endTime: projectInput.endTime,
+        areas: projectInput.areas,
+        description: projectInput.description,
+        note: projectInput.note,
+        cover: projectInput.cover,
+      };
+
+      let isChanged = false;
+      if (JSON.stringify(oldBasicInfo) !== JSON.stringify(newBasicInfo)) {
+        isChanged = true;
+      }
+      this.disabledSubmit = !isChanged;
     },
   },
 };
