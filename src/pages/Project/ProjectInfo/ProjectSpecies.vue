@@ -197,7 +197,6 @@ export default {
             namecodeList: namecodeList,
           };
 
-          console.log(taicolData);
           r.push({
             species: x.species,
             taicolData: taicolData,
