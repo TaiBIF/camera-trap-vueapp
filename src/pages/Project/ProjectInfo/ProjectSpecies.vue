@@ -66,11 +66,31 @@
         </div>
       </div>
     </div>
+
+    <h4>TaiCol 臺灣物種名錄對照</h4>
+    <hr>
+    <div class="row">
+    <table>
+        <thead>
+        <tr><th>紀錄物種</th><th>物種名錄中文名稱</th><th>Namecode</th></tr>
+        </thead>
+        <tbody>
+        <tr
+          class="speices-item"
+          v-for="(item, id) in namecodeSpecies"
+          :key="`namecode-speices-item-${id}`"
+          >
+          <td>{{ item[0] }}</td><td>{{ item[1][0] }}</td><td>{{ item[1][1].join(',') }}</td>
+      </tr>
+      </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import speciesNamecodeMapping from '@/constant/speciesNamecodeMapping.js'
 import VueHighcharts from 'vue2-highcharts';
 import chartColors from '@/constant/chartColors';
 
@@ -139,6 +159,16 @@ export default {
     totalSpeciesPhotos: function() {
       return this.identifiedSpecies.reduce((sum, { count }) => sum + count, 0);
     },
+    namecodeSpecies: function() {
+      let r = []
+      this.identifiedSpecies.forEach((v, i) => {
+        const mapped = speciesNamecodeMapping[v['_id']];
+        if (mapped) {
+          r.push([v.species, mapped]);
+        }
+      });
+      return r
+    }
   },
   mounted() {
     this.loadIdentifiedSpecies(this.projectId);
