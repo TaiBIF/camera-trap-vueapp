@@ -74,19 +74,35 @@
         <thead>
           <tr>
             <th>紀錄物種</th>
-            <th>物種名錄中文名稱</th>
+            <th>中文名稱</th>
             <th>Namecode</th>
+            <th>名錄連結</th>
           </tr>
         </thead>
         <tbody>
           <tr
             class="speices-item"
-            v-for="(item, id) in namecodeSpecies"
+            v-for="(data, id) in namecodeSpecies"
             :key="`namecode-speices-item-${id}`"
           >
-            <td>{{ item[0] }}</td>
-            <td>{{ item[1][0] }}</td>
-            <td>{{ item[1][1].join(',') }}</td>
+            <td>{{ data.species }}</td>
+            <td>{{ data.taicolData.title }}</td>
+            <td>
+              <div
+                v-for="(taicol, id) in data.taicolData.namecodeList"
+                :key="`name-code-list-${id}`"
+              >
+                {{ taicol.namecode }}
+              </div>
+            </td>
+            <td>
+              <div
+                v-for="(taicol, id) in data.taicolData.namecodeList"
+                :key="`name-code-list-${id}`"
+              >
+                <a :href="taicol.url" target="_blank">連結</a>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -170,7 +186,22 @@ export default {
       this.identifiedSpecies.forEach(x => {
         const mapped = speciesNamecodeMapping[x['_id']];
         if (mapped) {
-          r.push([x.species, mapped]);
+          const namecodeList = mapped[1].map(data => {
+            return {
+              namecode: data,
+              url: `http://taibnet.sinica.edu.tw/chi/taibnet_species_detail.php?name_code=${data}&tree=y`,
+            };
+          });
+          const taicolData = {
+            title: mapped[0],
+            namecodeList: namecodeList,
+          };
+
+          console.log(taicolData);
+          r.push({
+            species: x.species,
+            taicolData: taicolData,
+          });
         }
       });
       return r;
