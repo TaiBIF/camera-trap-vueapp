@@ -66,6 +66,47 @@
         </div>
       </div>
     </div>
+
+    <h4>TaiCol 臺灣物種名錄對照</h4>
+    <hr />
+    <div class="row">
+      <table>
+        <thead>
+          <tr>
+            <th>紀錄物種</th>
+            <th>中文名稱</th>
+            <th>Namecode</th>
+            <th>名錄連結</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="speices-item"
+            v-for="(data, id) in namecodeSpecies"
+            :key="`namecode-speices-item-${id}`"
+          >
+            <td>{{ data.species }}</td>
+            <td>{{ data.taicolData.title }}</td>
+            <td>
+              <div
+                v-for="(taicol, id) in data.taicolData.namecodeList"
+                :key="`name-code-list-${id}`"
+              >
+                {{ taicol.namecode }}
+              </div>
+            </td>
+            <td>
+              <div
+                v-for="(taicol, id) in data.taicolData.namecodeList"
+                :key="`name-code-list-${id}`"
+              >
+                <a :href="taicol.url" target="_blank">連結</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -73,6 +114,7 @@
 import { createNamespacedHelpers } from 'vuex';
 import VueHighcharts from 'vue2-highcharts';
 import chartColors from '@/constant/chartColors';
+import speciesNamecodeMapping from '@/constant/speciesNamecodeMapping.js';
 
 const projects = createNamespacedHelpers('projects');
 
@@ -138,6 +180,30 @@ export default {
     },
     totalSpeciesPhotos: function() {
       return this.identifiedSpecies.reduce((sum, { count }) => sum + count, 0);
+    },
+    namecodeSpecies: function() {
+      let r = [];
+      this.identifiedSpecies.forEach(x => {
+        const mapped = speciesNamecodeMapping[x['_id']];
+        if (mapped) {
+          const namecodeList = mapped[1].map(data => {
+            return {
+              namecode: data,
+              url: `http://taibnet.sinica.edu.tw/chi/taibnet_species_detail.php?name_code=${data}&tree=y`,
+            };
+          });
+          const taicolData = {
+            title: mapped[0],
+            namecodeList: namecodeList,
+          };
+
+          r.push({
+            species: x.species,
+            taicolData: taicolData,
+          });
+        }
+      });
+      return r;
     },
   },
   mounted() {
