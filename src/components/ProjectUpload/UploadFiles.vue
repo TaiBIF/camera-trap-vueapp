@@ -85,9 +85,10 @@ export default {
       // 跳出視窗選取會套用 accepted 設定，但是拖拉不會
       this.$emit(
         'change',
-        [...files].filter(
-          ({ type }) => type !== '' && uploadAccept.includes(type),
-        ),
+        [...files].filter(({ type }) => {
+          console.log('file type', type);
+          return type !== '' && uploadAccept.includes(type);
+        }),
       );
     },
     setDisabled() {
