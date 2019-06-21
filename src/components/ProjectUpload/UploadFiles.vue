@@ -85,9 +85,13 @@ export default {
       // 跳出視窗選取會套用 accepted 設定，但是拖拉不會
       this.$emit(
         'change',
-        [...files].filter(({ type }) => {
-          console.log('file type', type);
-          return type !== '' && uploadAccept.includes(type);
+        [...files].filter(({ type, name }) => {
+          if (navigator.appVersion.indexOf('Win') != -1) {
+            // windows (Chrome) cannot detact csv file type, ignore checked upload cce
+            return type == '' && name.toLowerCase().indexOf('.csv') >= 0;
+          } else {
+            return type !== '' && uploadAccept.includes(type);
+          }
         }),
       );
     },
