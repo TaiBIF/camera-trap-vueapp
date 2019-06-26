@@ -13,6 +13,7 @@
             :isEditMode="true"
             @selectArea="selectStudyArea"
             @addArea="addStudyArea"
+            @editArea="editStudyArea"
             @handleSubmitBtnState="handleSubmitBtnState"
           />
         </div>
@@ -307,6 +308,7 @@ export default {
   methods: {
     ...studyAreas.mapActions([
       'postProjectStudyAreas',
+      'putProjectStudyAreas',
       'getProjectCameraLocations',
       'modifyProjectCameraLocations',
     ]),
@@ -330,6 +332,20 @@ export default {
         });
         this.error = undefined;
       } catch (e) {
+        this.error = e;
+      }
+      this.setLoading(false);
+    },
+    async editStudyArea(title, areaId) {
+      this.setLoading(true);
+      try {
+        await this.putProjectStudyAreas({
+          id: this.projectId,
+          area: { title },
+          areaId: areaId
+        });
+        this.error = undefined;
+      } catch (e) {console.log(e);
         this.error = e;
       }
       this.setLoading(false);
@@ -364,6 +380,7 @@ export default {
         this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
     },
     handleSubmitBtnState(isChanged) {
+    console.log(isChanged, 'xxxx');
       this.disabledSubmit = !isChanged;
     },
   },
