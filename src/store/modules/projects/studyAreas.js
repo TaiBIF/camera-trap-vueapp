@@ -12,8 +12,8 @@ import {
   lockProjectCameraLocations,
   postProjectCameraLocations,
   postProjectStudyAreas,
-  putProjectStudyAreas,
   putProjectCameraLocations,
+  putProjectStudyAreas,
   unlockProjectCameraLocations,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
@@ -186,7 +186,7 @@ const actions = {
         [getLanguage()]: area.title,
       },
     };
-    const data = await putProjectStudyAreas(id, body, areaId);
+    await putProjectStudyAreas(id, body, areaId);
     dispatch('getProjectStudyAreas', id);
   },
   async getProjectCameraLocations({ commit }, { projectId, studyAreaId }) {

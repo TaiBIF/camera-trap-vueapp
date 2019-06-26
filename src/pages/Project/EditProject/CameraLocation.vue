@@ -342,10 +342,10 @@ export default {
         await this.putProjectStudyAreas({
           id: this.projectId,
           area: { title },
-          areaId: areaId
+          areaId: areaId,
         });
         this.error = undefined;
-      } catch (e) {console.log(e);
+      } catch (e) {
         this.error = e;
       }
       this.setLoading(false);
@@ -380,7 +380,6 @@ export default {
         this.$refs.sheet.hotInstance.updateSettings(this.HandsontableSetting);
     },
     handleSubmitBtnState(isChanged) {
-    console.log(isChanged, 'xxxx');
       this.disabledSubmit = !isChanged;
     },
   },
