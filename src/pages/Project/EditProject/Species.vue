@@ -37,6 +37,11 @@
                       </span>
                     </div>
                     <div class="col-3 text-right">
+                      <a
+                        @click="removeSpeciesIndex = idx"
+                        >
+                        <i class="icon-remove-sm"></i>
+                      </a>
                       <a class="d-inline-block align-middle ml-2 drag-item">
                         <i class="icon-splitter"></i>
                       </a>
@@ -65,6 +70,22 @@
         </div>
       </div>
     </div>
+
+    <double-check-modal
+      v-if="!!removeSpeciesIndex"
+      :open="!!removeSpeciesIndex"
+      @close="removeSpeciesIndex = undefined"
+      @submit="deleteSpecies(removeSpeciesIndex)"
+    >
+      <img
+        src="/assets/common/error-img.png"
+        width="221"
+        srcset="/assets/common/error-img@2x.png"
+      />
+  <h1 class="text-green">
+        您確定要刪除「{{ tempSpecies[removeSpeciesIndex].title }}」嗎 ?
+      </h1>
+    </double-check-modal>
   </div>
 </template>
 
@@ -73,17 +94,20 @@ import { createNamespacedHelpers } from 'vuex';
 import draggable from 'vuedraggable';
 
 import SpeciesTooltip from '@/constant/SpeciesTooltip.js';
+import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
 
 const projects = createNamespacedHelpers('projects');
 
 export default {
   components: {
     draggable,
+    DoubleCheckModal,
   },
   data: function() {
     return {
       tempSpecies: [],
       tooltipNote: SpeciesTooltip,
+      removeSpeciesIndex: undefined,
     };
   },
   mounted() {
@@ -108,6 +132,10 @@ export default {
         title: '',
         tempId: Date.now(), // use timestamp as temperate id as key in v-for loop
       });
+    },
+    deleteSpecies(index) {
+      this.tempSpecies.splice(index, 1);
+      this.removeSpeciesIndex = undefined;
     },
     async sumbitSpecies() {
       await this.putProjectSpecies({
