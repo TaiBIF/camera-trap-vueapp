@@ -37,9 +37,7 @@
                       </span>
                     </div>
                     <div class="col-3 text-right">
-                      <a
-                        @click="removeSpeciesIndex = idx"
-                        >
+                      <a @click="removeSpeciesIndex = idx">
                         <i class="icon-remove-sm"></i>
                       </a>
                       <a class="d-inline-block align-middle ml-2 drag-item">
@@ -82,7 +80,7 @@
         width="221"
         srcset="/assets/common/error-img@2x.png"
       />
-  <h1 class="text-green">
+      <h1 class="text-green">
         您確定要刪除「{{ tempSpecies[removeSpeciesIndex].title }}」嗎 ?
       </h1>
     </double-check-modal>
@@ -93,8 +91,8 @@
 import { createNamespacedHelpers } from 'vuex';
 import draggable from 'vuedraggable';
 
-import SpeciesTooltip from '@/constant/SpeciesTooltip.js';
 import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';
+import SpeciesTooltip from '@/constant/SpeciesTooltip.js';
 
 const projects = createNamespacedHelpers('projects');
 
