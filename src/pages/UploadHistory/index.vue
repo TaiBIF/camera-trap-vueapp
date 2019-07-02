@@ -164,6 +164,12 @@
         <span v-else-if="errorType === 'permission-denied'">
           沒有權限
         </span>
+        <span v-else-if="errorType === 'missing-fields-study-area'">
+          缺少樣區或子樣區欄位
+        </span>
+        <span v-else-if="errorType === 'missing-fields-camera-location'">
+          有多筆相機位置
+        </span>
         <span v-else-if="errorType === 'others'">
           其他錯誤
         </span>
