@@ -13,6 +13,7 @@
             :isEditMode="true"
             @selectArea="selectStudyArea"
             @addArea="addStudyArea"
+            @editArea="editStudyArea"
             @handleSubmitBtnState="handleSubmitBtnState"
           />
         </div>
@@ -307,6 +308,7 @@ export default {
   methods: {
     ...studyAreas.mapActions([
       'postProjectStudyAreas',
+      'putProjectStudyAreas',
       'getProjectCameraLocations',
       'modifyProjectCameraLocations',
     ]),
@@ -327,6 +329,20 @@ export default {
         await this.postProjectStudyAreas({
           id: this.projectId,
           area: { title, parent },
+        });
+        this.error = undefined;
+      } catch (e) {
+        this.error = e;
+      }
+      this.setLoading(false);
+    },
+    async editStudyArea(title, areaId) {
+      this.setLoading(true);
+      try {
+        await this.putProjectStudyAreas({
+          id: this.projectId,
+          area: { title },
+          areaId: areaId,
         });
         this.error = undefined;
       } catch (e) {

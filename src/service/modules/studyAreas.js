@@ -20,6 +20,16 @@ const postProjectStudyAreas = async (id, body) => {
   return res;
 };
 
+// PUT /projects/{projectId}/study-areas/
+const putProjectStudyAreas = async (id, body, areaId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/study-areas/${areaId}`,
+    method: 'PUT',
+    body,
+  });
+  return res;
+};
+
 // GET /projects/{projectId}/study-areas/{studyAreaId}/camera-locations http://bit.ly/2V8eUK0
 const getProjectCameraLocations = async (projectId, StudyAreaId) => {
   const res = await fetchWrap({
@@ -141,6 +151,7 @@ export {
   getProjectStudyAreas,
   getAllProjectCameraLocations,
   postProjectStudyAreas,
+  putProjectStudyAreas,
   getProjectCameraLocations,
   postProjectCameraLocations,
   putProjectCameraLocations,

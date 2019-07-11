@@ -13,6 +13,7 @@ import {
   postProjectCameraLocations,
   postProjectStudyAreas,
   putProjectCameraLocations,
+  putProjectStudyAreas,
   unlockProjectCameraLocations,
 } from '@/service';
 import { getLanguage } from '@/utils/i18n';
@@ -176,6 +177,16 @@ const actions = {
       },
     };
     await postProjectStudyAreas(id, body);
+    dispatch('getProjectStudyAreas', id);
+  },
+  async putProjectStudyAreas({ dispatch }, { id, area, areaId }) {
+    const body = {
+      ...area,
+      title: {
+        [getLanguage()]: area.title,
+      },
+    };
+    await putProjectStudyAreas(id, body, areaId);
     dispatch('getProjectStudyAreas', id);
   },
   async getProjectCameraLocations({ commit }, { projectId, studyAreaId }) {
