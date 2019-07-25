@@ -86,9 +86,12 @@ export default {
       this.$emit(
         'change',
         [...files].filter(({ type, name }) => {
-          if (navigator.appVersion.indexOf('Win') != -1) {
+          if (
+            navigator.appVersion.indexOf('Win') != -1 &&
+            name.toLowerCase().indexOf('.csv') >= 0
+          ) {
             // windows (Chrome) cannot detact csv file type, ignore checked upload cce
-            return type == '' && name.toLowerCase().indexOf('.csv') >= 0;
+            return true;
           } else {
             return type !== '' && uploadAccept.includes(type);
           }
