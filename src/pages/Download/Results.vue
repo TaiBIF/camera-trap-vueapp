@@ -245,6 +245,8 @@ export default {
         endTime: query.endTime,
         index: query.index,
         size: query.size,
+        timeRangeStart: query.timeRangeStart,
+        timeRangeEnd: query.timeRangeEnd,
       });
       this.isLoading = false;
     },
