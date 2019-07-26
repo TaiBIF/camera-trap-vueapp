@@ -63,6 +63,16 @@
                   {{ projectAreas }}
                 </div>
               </div>
+              <div class="row">
+                <div class="col-sm-4 col-md-3 text-gray">Darwin Core Archive</div>
+                <div class="col-sm-8 col-md-9">
+                  <a
+                    class="link text-underline text-green"
+                    :href="downloadDwCALink"
+                    target="_blank"
+                    >下載</a>
+                </div>
+              </div>
             </div>
             <div class="col-4 text-center pt-5 divider">
               <router-link
@@ -157,6 +167,11 @@ export default {
       return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
         this.projectId
       }/example.csv`;
+    },
+    downloadDwCALink() {
+      return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
+        this.projectId
+      }/dwca`;
     },
   },
 };
