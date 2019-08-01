@@ -5,7 +5,7 @@ import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
 const getAnnotationQuery = file => {
   let annotationType = '';
-
+  console.log('file type: ', file.type);
   if (file.type === 'text/csv') {
     annotationType = 'annotation-csv';
   } else if (file.type === 'application/zip') {
