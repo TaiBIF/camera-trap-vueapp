@@ -188,9 +188,7 @@ export default {
       this.showNewFieldForm = false;
     },
     isEditSettingChanged() {
-      const isChanged =
-        this.newFieldsNum !== this.fieldWithoutProject.length ? true : false;
-      this.$emit('handleSubmitBtnState', isChanged);
+      this.$emit('handleSubmitBtnState', this.newFieldsNum !== 0);
     },
   },
 };
