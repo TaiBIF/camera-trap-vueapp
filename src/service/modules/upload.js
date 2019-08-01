@@ -67,6 +67,7 @@ const uploadFileByCameraLocation = async (cameraLocationId, file, signal) => {
   });
 
   const url = `/api/v1/files?${query}`;
+  console.log('----', query);
   const data = await fetchUpload({
     url,
     body: formData,
