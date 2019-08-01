@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="project-funder" class="col-2 required"
+            <label for="project-funder" class="col-2"
               >委辦單位：</label
             >
             <div class="col-4">
@@ -73,7 +73,6 @@
                 v-model="project.funder"
                 placeholder="請輸入委辦單位"
                 class="form-control"
-                v-validate="'required'"
                 :class="{ 'is-invalid': errors.has('project_funder') }"
               />
               <span
@@ -85,13 +84,12 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="project-code" class="col-2 required">計畫編號：</label>
+            <label for="project-code" class="col-2">計畫編號：</label>
             <div class="col-4">
               <input
                 type="text"
                 id="project-code"
                 name="project_code"
-                v-validate="'required'"
                 v-model="project.code"
                 placeholder="請輸入計畫編號"
                 class="form-control"
