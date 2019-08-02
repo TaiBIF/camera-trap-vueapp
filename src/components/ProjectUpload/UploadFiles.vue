@@ -88,7 +88,8 @@ export default {
         [...files].filter(({ type, name }) => {
           if (
             navigator.appVersion.indexOf('Win') != -1 &&
-            name.toLowerCase().indexOf('.csv') >= 0
+            name.toLowerCase().indexOf('.csv') >= 0 &&
+            type == ''
           ) {
             // windows (Chrome) cannot detact csv file type, ignore checked upload cce
             return true;
