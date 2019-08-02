@@ -1,7 +1,7 @@
+import { acceptDef } from '@/constant/uploadAccept.js';
+import fetchWrap, { fetchUpload } from '@/utils/fetch';
 import moment from 'moment';
 import queryString from 'query-string';
-import {acceptDef} from '@/constant/uploadAccept.js';
-import fetchWrap, { fetchUpload } from '@/utils/fetch';
 
 const getAnnotationQuery = file => {
   let annotationType = '';
@@ -12,10 +12,11 @@ const getAnnotationQuery = file => {
         break;
       }
     }
-  }
-  else if ( navigator.appVersion.indexOf('Win') != -1 &&
-       name.toLowerCase().indexOf('.csv') >= 0 &&
-       file.type === '') {
+  } else if (
+    navigator.appVersion.indexOf('Win') != -1 &&
+    name.toLowerCase().indexOf('.csv') >= 0 &&
+    file.type === ''
+  ) {
     // HACK: for windows upload .csv file
     annotationType = 'annotation-csv';
   }
