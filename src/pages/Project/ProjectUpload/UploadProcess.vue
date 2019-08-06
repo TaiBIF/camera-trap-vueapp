@@ -255,6 +255,9 @@ export default {
               // 不是主動取消才要改變狀態
               this.setFileType(index, uploadStatus.uploadError, error.message);
             }
+            this.showInfoModal = true;
+            this.uploadErrorType = 'other-error';
+            this.uploadErrorOtherText = error;
           }
         }
       }

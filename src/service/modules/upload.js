@@ -1,23 +1,27 @@
+import { acceptDef } from '@/constant/uploadAccept.js';
+import fetchWrap, { fetchUpload } from '@/utils/fetch';
 import moment from 'moment';
 import queryString from 'query-string';
 
-import fetchWrap, { fetchUpload } from '@/utils/fetch';
-
 const getAnnotationQuery = file => {
   let annotationType = '';
-  console.log('file type: ', file.type);
-  if (file.type === 'text/csv') {
-    annotationType = 'annotation-csv';
-  } else if (file.type === 'application/zip') {
-    annotationType = 'annotation-zip';
-  } else if ('image/jpeg,image/png'.includes(file.type)) {
-    annotationType = 'annotation-image';
+  if (file.type !== '') {
+    for (let i in acceptDef) {
+      if (acceptDef[i].includes(file.type)) {
+        annotationType = `annotation-${i}`;
+        break;
+      }
+    }
   } else if (
-    'video/quicktime,video/mp4,video/mpeg,video/avi'.includes(file.type)
+    navigator.appVersion.indexOf('Win') != -1 &&
+    name.toLowerCase().indexOf('.csv') >= 0 &&
+    file.type === ''
   ) {
-    annotationType = 'annotation-video';
+    // HACK: for windows upload .csv file
+    annotationType = 'annotation-csv';
   }
 
+  annotationType = '';
   if (annotationType === '') {
     throw 'no annotation-type (not support)';
   }
@@ -67,7 +71,6 @@ const uploadFileByCameraLocation = async (cameraLocationId, file, signal) => {
   });
 
   const url = `/api/v1/files?${query}`;
-  console.log('----', query);
   const data = await fetchUpload({
     url,
     body: formData,
