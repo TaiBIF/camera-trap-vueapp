@@ -140,6 +140,18 @@
           </div>
         </div>
       </div>
+
+      <div v-else-if="notification.type === 'dwc-files-ready'">
+        <div class="notification-item-content">
+          <div class="notification-item-date">
+            {{ dateFormatYYYYMMDDHHmmss(notification.createTime) }}
+          </div>
+          <div class="notification-item-message">
+            {{ notification.message['zh-TW'] }}
+          </div>
+        </div>
+      </div>
+
       <div v-else-if="notification.type === 'system'">
         <div class="notification-item-content">
           <div class="notification-item-date">
