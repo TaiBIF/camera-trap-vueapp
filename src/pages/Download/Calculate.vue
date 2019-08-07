@@ -150,12 +150,40 @@
       <!-- end panel-body -->
     </div>
     <!-- end panel -->
-    <div class="sheet-container">
-      <CalculationSheet
-        ref="sheet"
-        :calculatorData="calculator"
-        :calculateType="calculateType"
-      />
+    <div class="row" v-if="calculateType === 'ltd'">
+      <div class="col-4">
+        <h3>逐日</h3>
+        <div class="sheet-container">
+          <CalculationSheet
+            ref="sheet"
+            :calculatorData="calculator.byDate"
+            :calculateType="calculateType"
+            />
+        </div>
+      </div>
+      <div class="col-4">
+        <h3>逐月</h3>
+        <div class="sheet-container2">
+          <CalculationSheet
+            ref="sheet2"
+            :calculatorData="calculator.byMonth"
+            :calculateType="calculateType"
+            :byMonth=true
+            />
+        </div>
+      </div>
+    </div>
+
+    <div class="row" v-if="calculateType === 'oi'">
+      <div class="col-4">
+        <div class="sheet-container">
+          <CalculationSheet
+            ref="sheet"
+            :calculatorData="calculator"
+            :calculateType="calculateType"
+            />
+        </div>
+      </div>
     </div>
   </div>
 </template>
