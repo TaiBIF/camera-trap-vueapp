@@ -21,7 +21,6 @@ const getAnnotationQuery = file => {
     annotationType = 'annotation-csv';
   }
 
-  annotationType = '';
   if (annotationType === '') {
     throw 'no annotation-type (not support)';
   }
