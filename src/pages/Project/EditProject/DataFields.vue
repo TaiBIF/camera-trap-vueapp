@@ -166,6 +166,7 @@ export default {
         return this.tempDataFields.filter(v => v.systemCode === undefined);
       },
       set(v) {
+        this.isEditSettingChanged();
         this.$emit('change', [...this.noDraggableFields, ...v]);
       },
     },
@@ -191,7 +192,7 @@ export default {
       this.showNewFieldForm = false;
     },
     isEditSettingChanged() {
-      this.$emit('handleSubmitBtnState', this.newFieldsNum !== 0);
+      this.$emit('handleSubmitBtnState', true);
     },
   },
 };
