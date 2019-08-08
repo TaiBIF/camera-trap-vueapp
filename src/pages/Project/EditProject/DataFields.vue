@@ -42,7 +42,10 @@
                 <div class="col-2">{{ field.title }}</div>
                 <div class="col-2">{{ DataFieldEnum[field.widgetType] }}</div>
                 <div class="text-gray col-6">
-                  <span>{{ field.description }}</span>
+                  <span v-if="field.widgetType === 'select'">
+                    {{ field.options.map(x => x['zh-TW']).join(' , ') }}
+                  </span>
+                  <span v-else>{{ field.description }}</span>
                 </div>
                 <div class="text-right col-2">
                   <a
