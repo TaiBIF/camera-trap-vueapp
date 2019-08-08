@@ -112,6 +112,7 @@
                 @click="
                   showInfoModal = true;
                   errorType = row.errorType;
+                  errorMessage = row.errorMessage;
                 "
               >
                 檢視錯誤</a
@@ -170,6 +171,9 @@
         <span v-else-if="errorType === 'missing-fields-camera-location'">
           有多筆相機位置
         </span>
+        <span v-else-if="errorType === 'missing-fields'">
+          缺少欄位: {{ errorMessage }}
+        </span>
         <span v-else-if="errorType === 'others'">
           其他錯誤
         </span>
@@ -193,6 +197,7 @@ export default {
     return {
       showInfoModal: false,
       errorType: '',
+      errorMessage: '',
       error: undefined,
       isLoading: false,
     };
