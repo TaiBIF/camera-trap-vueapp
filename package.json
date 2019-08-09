@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@handsontable/vue": "^4.0.0",
+    "@types/leaflet": "^1.5.0",
     "babel-plugin-idx": "^2.4.0",
     "bootstrap": "^4.3.1",
     "filesize": "^4.1.2",
     "handsontable": "^7.0.2",
+    "highcharts": "^6.2.0",
     "idx": "^2.5.5",
     "immer": "^2.1.4",
     "jquery": "^3.4.1",
