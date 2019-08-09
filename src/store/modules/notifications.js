@@ -20,7 +20,16 @@ const getters = {
     })),
   notifications: state =>
     state.notifications.map(
-      ({ id, type, dataField, sender, uploadSession, createTime, isRead }) => {
+      ({
+        id,
+        type,
+        dataField,
+        sender,
+        uploadSession,
+        createTime,
+        isRead,
+        message,
+      }) => {
         const result = {
           id,
           type,
@@ -28,6 +37,7 @@ const getters = {
           isRead,
           dataField: {},
           sender: {},
+          message: {},
           uploadSession: {
             project: {},
             studyArea: {},
@@ -44,6 +54,11 @@ const getters = {
         if (sender) {
           result.sender = sender;
         }
+
+        if (message) {
+          result.message = message;
+        }
+
         if (uploadSession) {
           const { project, cameraLocation } = uploadSession;
           const { studyArea, name, settingTime } = cameraLocation || {};

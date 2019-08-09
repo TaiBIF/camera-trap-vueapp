@@ -64,13 +64,29 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-4 col-md-3 text-gray">Darwin Core Archive</div>
-                <div class="col-sm-8 col-md-9">
+                <div class="col-sm-4 col-md-3 text-gray">
+                  Darwin Core Archive
+                </div>
+                <div class="col-sm-8 col-md-9" v-if="!isPrepareDwCA">
                   <a
+                    v-if="projectDetail.dwc"
                     class="link text-underline text-green"
                     :href="downloadDwCALink"
                     target="_blank"
-                    >下載</a>
+                  >
+                    最新版本: {{ dwcLatestTime }} 下載
+                  </a>
+                  <br v-if="projectDetail.dwc" />
+                  <a
+                    class="link text-underline text-green"
+                    @click="prepareDwCA()"
+                    target="_blank"
+                  >
+                    產生新版
+                  </a>
+                </div>
+                <div class="col-sm-8 col-md-9" v-if="isPrepareDwCA">
+                  產生完畢後將另發通知
                 </div>
               </div>
             </div>
@@ -130,6 +146,8 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
+import fetchWrap from '@/utils/fetch';
+import moment from 'moment';
 
 const projects = createNamespacedHelpers('projects');
 const account = createNamespacedHelpers('account');
@@ -139,6 +157,7 @@ export default {
   data() {
     return {
       currentTab: 0,
+      isPrepareDwCA: false,
     };
   },
   computed: {
@@ -172,6 +191,18 @@ export default {
       return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
         this.projectId
       }/dwca`;
+    },
+    dwcLatestTime() {
+      return moment(this.projectDetail.dwc).format('YYYY-MM-DD hh:mm:ss');
+    },
+  },
+  methods: {
+    prepareDwCA() {
+      fetchWrap({
+        method: 'POST',
+        url: `/api/v1/projects/${this.projectId}/dwca`,
+      });
+      this.isPrepareDwCA = true;
     },
   },
 };

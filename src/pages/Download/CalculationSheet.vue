@@ -15,6 +15,7 @@ export default {
   props: {
     calculateType: String,
     calculatorData: [Object, Array],
+    byMonth: Boolean,
   },
   data: function() {
     return {
@@ -32,7 +33,6 @@ export default {
   computed: {
     data() {
       if (this.calculateType === 'oi') {
-        console.log(this.calculatorData);
         const dutyHours =
           this.calculatorData.cameraLocationWorkDuration / 60 / 60 / 1000;
         return [
@@ -61,7 +61,7 @@ export default {
       return this.calculatorData.map(x => {
         const duration = new Date(x.duration);
         return [
-          moment(x.time).format('YY/M/D'),
+          (this.byMonth === true) ? String(x.time) : moment(x.time).format('YY/M/D'),
           x.duration == null
             ? '沒有照片'
             : `${duration.getUTCHours()} 小時 ${`${duration.getUTCMinutes()}`.padStart(
