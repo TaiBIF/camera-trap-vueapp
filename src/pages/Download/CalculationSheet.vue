@@ -60,13 +60,15 @@ export default {
 
       return this.calculatorData.map(x => {
         const duration = new Date(x.duration);
-        const  itemLabel = (this.byMonth === true) ?
-              itemLabel = String(x.time) : itemLabel = moment(x.time).format('YY/M/D');
+        let  itemLabel = (this.byMonth === true) ?
+            itemLabel = String(x.time) : itemLabel = moment(x.time).format('YY/M/D');
         let itemValue = x.duration === null ? '沒有照片' : `${duration.getUTCHours()} 小時 ${`${duration.getUTCMinutes()}`.padStart(2, '0',)} 分`;
         if (this.byMonth === true) {
           itemValue = `${x['days']} 天${itemValue}`;
         }
-        return [itemLabel, itemValue];
+        return [
+          itemLabel, itemValue
+        ];
       });
     },
   },
