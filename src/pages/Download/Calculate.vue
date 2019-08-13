@@ -158,7 +158,7 @@
             ref="sheet"
             :calculatorData="calculator.byDate"
             :calculateType="calculateType"
-            />
+          />
         </div>
       </div>
       <div class="col-4">
@@ -168,8 +168,8 @@
             ref="sheet2"
             :calculatorData="calculator.byMonth"
             :calculateType="calculateType"
-            :byMonth=true
-            />
+            :byMonth="true"
+          />
         </div>
       </div>
     </div>
@@ -181,7 +181,7 @@
             ref="sheet"
             :calculatorData="calculator"
             :calculateType="calculateType"
-            />
+          />
         </div>
       </div>
     </div>
