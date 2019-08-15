@@ -3,11 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "precommit": "lint-staged",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:staging": "vue-cli-service build --mode staging",
     "lint": "vue-cli-service lint",
     "storybook": "start-storybook"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.vue": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "dependencies": {
     "@handsontable/vue": "^4.0.0",
@@ -56,6 +67,8 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-sort-imports-es6-autofix": "^0.4.0",
     "eslint-plugin-vue": "^5.0.0",
+    "husky": "^3.0.3",
+    "lint-staged": "^9.2.1",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "storybook-vue-router": "^1.0.3",
