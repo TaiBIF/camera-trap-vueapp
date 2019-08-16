@@ -208,7 +208,7 @@ export default {
   },
   data() {
     return {
-      uploadAccept: [acceptDef.image, acceptDef.video].join(''),
+      uploadAccept: [acceptDef.image, acceptDef.video].join(','),
       galleryWidth: 450,
       isDrag: false,
       playbackRate: 1,
