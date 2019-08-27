@@ -145,7 +145,7 @@ export default {
           '<span style="color: red;">*</span>經度 (X)',
           '<span style="color: red;">*</span>緯度 (Y)',
           '海拔 (公尺)',
-          '植被',
+          '植被類型',
           '土地覆蓋類型',
         ],
         columns: [
