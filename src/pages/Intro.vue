@@ -11,6 +11,12 @@
         </div>
       </div>
     </section>
+    <carousel-3d :autoplay="true" :height="320" :width="460" :border="0">
+      <slide v-for="(slide, i) in slides" :index="i" :key="i">
+        <img src="https://placehold.it/460x320" />
+      </slide>
+    </carousel-3d>
+
     <section class="important">
       <div class="container">
         <h1 class="text-green text-center">
@@ -342,16 +348,17 @@
 </template>
 
 <script>
+import { Carousel3d, Slide } from 'vue-carousel-3d';
 import { createNamespacedHelpers } from 'vuex';
 import LoginModal from '@/components/Modal/LoginModal';
-
 const account = createNamespacedHelpers('account');
 
 export default {
-  components: { LoginModal },
+  components: { LoginModal, Carousel3d, Slide },
   data() {
     return {
       loginModalOpen: false,
+      slides: 7,
     };
   },
   computed: {
