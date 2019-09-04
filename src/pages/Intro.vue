@@ -11,6 +11,22 @@
         </div>
       </div>
     </section>
+    <section class="important">
+      <div class="container">
+        <div class="row service-items">
+          <ve-histogram
+            class="col-xs-12 col-sm-12 col-md-4"
+            :data="histogramData"
+            :settings="histogramData.showLine"
+          ></ve-histogram>
+          <ve-bar class="col-xs-12 col-sm-12 col-md-4" :data="barData"></ve-bar>
+          <ve-pipe
+            class="col-xs-12 col-sm-12 col-md-4"
+            :data="pipeData"
+          ></ve-pipe>
+        </div>
+      </div>
+    </section>
     <carousel-3d :autoplay="true" :height="320" :width="460" :border="0">
       <slide v-for="(slide, i) in slides" :index="i" :key="i">
         <img src="https://placehold.it/460x320" />
@@ -351,14 +367,54 @@
 import { Carousel3d, Slide } from 'vue-carousel-3d';
 import { createNamespacedHelpers } from 'vuex';
 import LoginModal from '@/components/Modal/LoginModal';
+import veBar from 'v-charts/lib/bar.common.min';
+import veHistogram from 'v-charts/lib/histogram.common.min';
+import vePipe from 'v-charts/lib/pie.common.min';
 const account = createNamespacedHelpers('account');
 
 export default {
-  components: { LoginModal, Carousel3d, Slide },
+  components: { LoginModal, Carousel3d, Slide, veBar, vePipe, veHistogram },
   data() {
+    // this.chartSettings = {
+    //   showLine: ['下单用户'],
+    // };
     return {
       loginModalOpen: false,
       slides: 7,
+      barData: {
+        columns: ['日期', '访问用户', '下单用户', '下单率'],
+        rows: [
+          { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
+          { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
+          { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
+          { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
+          { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
+          { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+        ],
+      },
+      pipeData: {
+        columns: ['日期', '访问用户'],
+        rows: [
+          { 日期: '1/1', 访问用户: 1393 },
+          { 日期: '1/2', 访问用户: 3530 },
+          { 日期: '1/3', 访问用户: 2923 },
+          { 日期: '1/4', 访问用户: 1723 },
+          { 日期: '1/5', 访问用户: 3792 },
+          { 日期: '1/6', 访问用户: 4593 },
+        ],
+      },
+      histogramData: {
+        showLine: ['下单用户'],
+        columns: ['日期', '访问用户', '下单用户', '下单率'],
+        rows: [
+          { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
+          { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
+          { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
+          { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
+          { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
+          { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+        ],
+      },
     };
   },
   computed: {
