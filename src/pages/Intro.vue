@@ -13,6 +13,69 @@
     </section>
     <section class="important">
       <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6">
+            <h6>點擊地圖區塊進行資料探索</h6>
+            <l-map
+              style="height: 600px; width: 100%"
+              :zoom="zoom"
+              :center="center"
+              :options="options"
+              @update:zoom="zoomUpdated"
+              @update:center="centerUpdated"
+              @update:bounds="boundsUpdated"
+            >
+              <l-geo-json
+                v-if="clickSampleArea && !clickSampleArea.name"
+                ref="geo"
+                :geojson="geojson"
+                :options="geoOptions"
+              />
+              <l-tile-layer v-else :url="url" :attribution="attribution" />
+              <l-circle-marker
+                v-for="l in locations"
+                :key="l.id"
+                :lat-lng="l.latlng"
+                :radius="l.id"
+                color="orange"
+                :fillOpacity="1"
+                fillColor="orange"
+                @click="handleCircleMarkerClick(l.id)"
+              >
+                <l-tooltip
+                  :content="l.text"
+                  :options="{
+                    direction: 'top',
+                  }"
+                />
+              </l-circle-marker>
+            </l-map>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 text-right">
+            <div v-if="clickRegion && !clickRegion.name">
+              <h2 class="text-green">
+                <big>自動相機資料庫</big><br />
+                共享的資料平台
+              </h2>
+              <p class="desp pl-5 text-left">
+                Camera Trap提供研究人員自動相機影像統一倉儲、管理、
+                查詢及分析的便利性，透過公開資源的共享，與其他專業人士交流、探索生態與開創更多研究可能性。
+              </p>
+            </div>
+            <div v-else>
+              <h2 class="text-green text-left">
+                <big>{{ clickRegion.name }}</big
+                ><br />
+                山羌、台灣藍鵲
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="important">
+      <div class="container">
         <div class="row service-items">
           <ve-histogram
             class="col-xs-12 col-sm-12 col-md-4"
@@ -365,20 +428,140 @@
 
 <script>
 import { Carousel3d, Slide } from 'vue-carousel-3d';
+import {
+  // LCircle,
+  LCircleMarker,
+  // LControl,
+  LGeoJson,
+  // LIconDefault,
+  // LLayerGroup,
+  LMap,
+  // LMarker,
+  // LPolygon,
+  // LPopup,
+  LTileLayer,
+  LTooltip,
+} from 'vue2-leaflet';
 import { createNamespacedHelpers } from 'vuex';
+import { latLng } from 'leaflet';
+import $ from 'jquery';
 import LoginModal from '@/components/Modal/LoginModal';
 import veBar from 'v-charts/lib/bar.common.min';
 import veHistogram from 'v-charts/lib/histogram.common.min';
 import vePipe from 'v-charts/lib/pie.common.min';
+import 'leaflet/dist/leaflet.css';
 const account = createNamespacedHelpers('account');
 
 export default {
-  components: { LoginModal, Carousel3d, Slide, veBar, vePipe, veHistogram },
+  components: {
+    LoginModal,
+    Carousel3d,
+    Slide,
+    veBar,
+    vePipe,
+    veHistogram,
+    LGeoJson,
+    // LIconDefault,
+    // LCircle,
+    // LControl,
+    // LLayerGroup,
+    LCircleMarker,
+    LMap,
+    // LPopup,
+    // LMarker,
+    // LPolygon,
+    LTileLayer,
+    LTooltip,
+  },
   data() {
     // this.chartSettings = {
     //   showLine: ['下单用户'],
     // };
     return {
+      locations: [],
+      clickRegion: {
+        name: '',
+        event: {},
+      },
+      clickSampleArea: {
+        name: '',
+      },
+      geoOptions: {
+        style: {
+          color: 'white',
+          fillColor: '#7C9C2D',
+        },
+        weight: 1.2,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: e => {
+              if (this.clickRegion.name !== feature.properties.name) {
+                e.target.setStyle({
+                  fillColor: 'green',
+                });
+              }
+            },
+            mouseout: e => {
+              if (this.clickRegion.name !== feature.properties.name) {
+                e.target.setStyle({
+                  fillColor: '#7C9C2D',
+                });
+              }
+            },
+            click: e => {
+              const rand = n => {
+                let max = n + 0.1;
+                let min = n - 0.1;
+                return Math.random() * (max - min) + min;
+              };
+              if (this.clickRegion.event.target) {
+                this.clickRegion.event.target.setStyle({
+                  fillColor: '#7C9C2D',
+                });
+              }
+
+              e.target.setStyle({
+                fillColor: '#7CEC2D',
+              });
+              this.clickRegion.event = e;
+              console.log('e', e);
+              this.clickRegion.name = feature.properties.name;
+              this.locations = [];
+              for (let i = 0; i < 10; i++) {
+                this.locations.push({
+                  id: i,
+                  latlng: latLng(rand(e.latlng.lat), rand(e.latlng.lng)),
+                  text: `玉里站${i} \n
+                  ${i * 10} 個相機位置，${i * 1.5} 萬筆資料`,
+                });
+              }
+              console.log(this.locations);
+              console.log(this.$refs.clusterRef);
+              // fetch api
+            },
+          });
+        },
+      },
+      geojson: {
+        features: [],
+        type: 'FeatureCollection',
+      },
+      zoom: 7,
+      options: {
+        zoomControl: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        touchZoom: false,
+        dragging: false,
+      },
+      url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      attribution:
+        '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+      bounds: null,
+      center: {
+        lat: 23.5,
+        lng: 121.2,
+      },
       loginModalOpen: false,
       slides: 7,
       barData: {
@@ -421,6 +604,21 @@ export default {
     ...account.mapGetters(['isLogin']),
   },
   methods: {
+    handleCircleMarkerClick(id) {
+      // 進入花蓮
+      console.log('-id', id);
+      this.clickSampleArea.name = id;
+    },
+    click() {},
+    zoomUpdated(e) {
+      this.zoom = e;
+    },
+    centerUpdated(center) {
+      this.center = center;
+    },
+    boundsUpdated(bounds) {
+      this.bounds = bounds;
+    },
     handleClickStartUse() {
       if (this.isLogin) {
         this.$router.push({ name: 'projectOverview' });
@@ -429,5 +627,13 @@ export default {
       }
     },
   },
+  async created() {
+    $.getJSON(
+      'https://raw.githubusercontent.com/g0v/twgeojson/master/json/twCounty2010.geo.json',
+      {},
+      geojson => (this.geojson = geojson),
+    );
+  },
 };
 </script>
+<style scoped></style>
