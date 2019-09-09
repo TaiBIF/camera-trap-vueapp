@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */ /*
+eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
 <template>
   <div class="page-intro">
     <section class="banner">
@@ -15,23 +17,37 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-6">
-            <h6>點擊地圖區塊進行資料探索</h6>
+            <h6 v-if="map.mode === 'studyArea'" @click="backTo('region')">
+              返回
+            </h6>
+            <h6 v-else>點擊地圖區塊進行資料探索</h6>
             <l-map
+              v-show="map.mode === 'studyArea'"
               style="height: 600px; width: 100%"
               :zoom="zoom"
               :center="center"
-              :options="options"
               @update:zoom="zoomUpdated"
               @update:center="centerUpdated"
               @update:bounds="boundsUpdated"
+              :options="controlableMapOptions"
+            >
+              <l-tile-layer :url="url" :attribution="attribution" />
+            </l-map>
+            <l-map
+              v-show="map.mode === 'region' || map.mode === 'none'"
+              style="height: 600px; width: 100%"
+              :zoom="7"
+              :center="{
+                lat: 23.5,
+                lng: 121.2,
+              }"
+              :options="mapOptions"
             >
               <l-geo-json
-                v-if="clickSampleArea && !clickSampleArea.name"
-                ref="geo"
+                ref="geoRef"
                 :geojson="geojson"
                 :options="geoOptions"
               />
-              <l-tile-layer v-else :url="url" :attribution="attribution" />
               <l-circle-marker
                 v-for="l in locations"
                 :key="l.id"
@@ -40,7 +56,7 @@
                 color="orange"
                 :fillOpacity="1"
                 fillColor="orange"
-                @click="handleCircleMarkerClick(l.id)"
+                @click="handleStudyAreaClick(l.id)"
               >
                 <l-tooltip
                   :content="l.text"
@@ -52,7 +68,7 @@
             </l-map>
           </div>
           <div class="col-xs-12 col-sm-12 col-md-6 text-right">
-            <div v-if="clickRegion && !clickRegion.name">
+            <div v-if="map.mode === 'none'">
               <h2 class="text-green">
                 <big>自動相機資料庫</big><br />
                 共享的資料平台
@@ -62,12 +78,15 @@
                 查詢及分析的便利性，透過公開資源的共享，與其他專業人士交流、探索生態與開創更多研究可能性。
               </p>
             </div>
-            <div v-else>
+            <div v-else-if="map.mode === 'region'">
               <h2 class="text-green text-left">
-                <big>{{ clickRegion.name }}</big
+                <big>{{ map.region.name }}</big
                 ><br />
                 山羌、台灣藍鵲
               </h2>
+            </div>
+            <div v-else-if="map.mode === 'studyArea'">
+              <ve-histogram :data="histogramData"></ve-histogram>
             </div>
           </div>
         </div>
@@ -80,7 +99,6 @@
           <ve-histogram
             class="col-xs-12 col-sm-12 col-md-4"
             :data="histogramData"
-            :settings="histogramData.showLine"
           ></ve-histogram>
           <ve-bar class="col-xs-12 col-sm-12 col-md-4" :data="barData"></ve-bar>
           <ve-pipe
@@ -474,17 +492,35 @@ export default {
     LTooltip,
   },
   data() {
-    // this.chartSettings = {
-    //   showLine: ['下单用户'],
-    // };
+    this.chartSettings = {
+      showLine: ['下单用户'],
+    };
     return {
       locations: [],
-      clickRegion: {
-        name: '',
-        event: {},
+      map: {
+        // none, region, studyArea,
+        mode: 'none',
+        region: {
+          name: '',
+          event: {},
+        },
+        studyArea: {
+          name: '',
+        },
       },
-      clickSampleArea: {
-        name: '',
+      mapOptions: {
+        zoomControl: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        touchZoom: false,
+        dragging: false,
+      },
+      controlableMapOptions: {
+        zoomControl: true,
+        doubleClickZoom: true,
+        scrollWheelZoom: true,
+        touchZoom: true,
+        dragging: true,
       },
       geoOptions: {
         style: {
@@ -495,48 +531,47 @@ export default {
         onEachFeature: (feature, layer) => {
           layer.on({
             mouseover: e => {
-              if (this.clickRegion.name !== feature.properties.name) {
+              if (this.map.region.name !== feature.properties.name) {
                 e.target.setStyle({
                   fillColor: 'green',
                 });
               }
             },
             mouseout: e => {
-              if (this.clickRegion.name !== feature.properties.name) {
+              if (this.map.region.name !== feature.properties.name) {
                 e.target.setStyle({
                   fillColor: '#7C9C2D',
                 });
               }
             },
             click: e => {
+              this.map.mode = 'region';
               const rand = n => {
                 let max = n + 0.1;
                 let min = n - 0.1;
                 return Math.random() * (max - min) + min;
               };
-              if (this.clickRegion.event.target) {
-                this.clickRegion.event.target.setStyle({
+              if (this.map.region.event.target) {
+                this.map.region.event.target.setStyle({
                   fillColor: '#7C9C2D',
                 });
               }
-
               e.target.setStyle({
                 fillColor: '#7CEC2D',
               });
-              this.clickRegion.event = e;
-              console.log('e', e);
-              this.clickRegion.name = feature.properties.name;
-              this.locations = [];
+              Object.assign(this.map.region.event, {}, e);
+              this.map.region.name = feature.properties.name;
+              const locations = [];
               for (let i = 0; i < 10; i++) {
-                this.locations.push({
+                locations.push({
                   id: i,
                   latlng: latLng(rand(e.latlng.lat), rand(e.latlng.lng)),
                   text: `玉里站${i} \n
                   ${i * 10} 個相機位置，${i * 1.5} 萬筆資料`,
                 });
               }
+              this.locations = locations;
               console.log(this.locations);
-              console.log(this.$refs.clusterRef);
               // fetch api
             },
           });
@@ -547,13 +582,6 @@ export default {
         type: 'FeatureCollection',
       },
       zoom: 7,
-      options: {
-        zoomControl: false,
-        doubleClickZoom: false,
-        scrollWheelZoom: false,
-        touchZoom: false,
-        dragging: false,
-      },
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -587,7 +615,6 @@ export default {
         ],
       },
       histogramData: {
-        showLine: ['下单用户'],
         columns: ['日期', '访问用户', '下单用户', '下单率'],
         rows: [
           { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
@@ -600,14 +627,25 @@ export default {
       },
     };
   },
+  watch: {
+    'map.mode': function(mode) {
+      // if (mode === 'none') {
+      // } else if (mode === 'region') {
+      // } else if (mode === 'studyArea') {
+      // }
+      return mode;
+    },
+  },
   computed: {
     ...account.mapGetters(['isLogin']),
   },
   methods: {
-    handleCircleMarkerClick(id) {
+    handleStudyAreaClick(id) {
+      this.map.mode = 'studyArea';
+      console.log('==', this.map.mode);
       // 進入花蓮
       console.log('-id', id);
-      this.clickSampleArea.name = id;
+      this.map.studyArea.name = id;
     },
     click() {},
     zoomUpdated(e) {
@@ -626,6 +664,9 @@ export default {
         this.loginModalOpen = true;
       }
     },
+    backTo(mode) {
+      this.map.mode = mode;
+    },
   },
   async created() {
     $.getJSON(
@@ -636,4 +677,13 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style lang="sass" scoped>
+/*.leaflet-pane*/
+/*  .leaflet-tooltip-pane*/
+/*    .leaflet-tooltip*/
+
+/*      &.leaflet-tooltip-top*/
+
+
+/*        &:before*/
+</style>
