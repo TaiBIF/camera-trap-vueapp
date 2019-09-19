@@ -10,3 +10,4 @@ export * from './modules/dataFields';
 export * from './modules/forest';
 export * from './modules/uploadSessions';
 export * from './modules/calculator';
+export * from './modules/projectCamera';
