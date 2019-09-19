@@ -37,7 +37,10 @@
             </button>
           </div>
           <div class="camera-list" v-else-if="true">
-            <project-camera-list :projectCameraListData="projectCameras" />
+            <project-camera-list
+              :projectCameraListData="projectCameras"
+              @deleteProjectCamera="deleteProjectCameraRequest"
+            />
           </div>
           <div class="sheet-view show" v-else></div>
         </div>
@@ -74,10 +77,17 @@ export default {
     },
   },
   methods: {
-    ...projectCamera.mapActions(['getProjectCameras']),
+    ...projectCamera.mapActions(['getProjectCameras', 'deleteProjectCamera']),
     async getProjectCameraRequest() {
       await this.getProjectCameras({
         projectId: this.projectId,
+      });
+    },
+
+    deleteProjectCameraRequest(id) {
+      this.deleteProjectCamera({
+        projectId: this.projectId,
+        cameraId: id,
       });
     },
   },

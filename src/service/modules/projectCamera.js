@@ -8,4 +8,12 @@ const getProjectCameras = async projectId => {
   return data;
 };
 
-export { getProjectCameras };
+const deleteProjectCamera = async (projectId, cameraId) => {
+  const data = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/cameras/${cameraId}`,
+    method: 'DELETE',
+  });
+  return data;
+};
+
+export { getProjectCameras, deleteProjectCamera };
