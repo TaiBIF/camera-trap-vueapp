@@ -2,9 +2,26 @@
   <div>
     <div class="panel">
       <div class="panel-heading">
-        <h4>相機管理</h4>
+        <h4 v-show="!showEditProjectCameras">相機管理</h4>
+        <div v-show="showEditProjectCameras">
+          <h4>
+            編輯相機
+          </h4>
+          <button
+            class="float-right btn btn-light-green"
+            @click="editProjectsCameraRequest"
+          >
+            完成
+          </button>
+          <button
+            class="float-right btn btn-white-border"
+            @click="closeEditProjectCameras"
+          >
+            取消
+          </button>
+        </div>
       </div>
-      <div>
+      <div class="project-camera-context">
         <div class="p-0">
           <div class="empty-result" v-if="false">
             <img
@@ -36,10 +53,25 @@
               新增相機
             </button>
           </div>
-          <div class="camera-list" v-else-if="true">
+          <div class="project-camera-list" v-else-if="!showEditProjectCameras">
             <project-camera-list
               :projectCameraListData="projectCameras"
               @deleteProjectCamera="deleteProjectCameraRequest"
+            />
+            <div class="project-camera-list-footer mt-5 p-3">
+              <button
+                type="submit"
+                class="btn btn-orange"
+                @click="openEditProjectCameras"
+              >
+                編輯相機
+              </button>
+            </div>
+          </div>
+          <div class="project-camera-edit" v-else-if="showEditProjectCameras">
+            <edit-project-camera
+              :projectCameraListData="editProjectCameraList"
+              :setEditProjectCameraList="setEditProjectCameraList"
             />
           </div>
           <div class="sheet-view show" v-else></div>
@@ -61,6 +93,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
+import EditProjectCamera from '@/components/CameraManagement/EditProjectCamera.vue';
 import ProjectCameraList from '@/components/CameraManagement/ProjectCameraList.vue';
 
 const projectCamera = createNamespacedHelpers('projectCamera');
@@ -68,22 +101,43 @@ const projectCamera = createNamespacedHelpers('projectCamera');
 export default {
   components: {
     ProjectCameraList,
+    EditProjectCamera,
   },
 
   computed: {
-    ...projectCamera.mapState(['projectCameras']),
+    ...projectCamera.mapState(['projectCameras', 'editProjectCameraList']),
     projectId: function() {
       return this.$route.params.projectId;
     },
   },
+  data: function() {
+    return {
+      showEditProjectCameras: false,
+    };
+  },
   methods: {
-    ...projectCamera.mapActions(['getProjectCameras', 'deleteProjectCamera']),
+    ...projectCamera.mapActions([
+      'getProjectCameras',
+      'setEditProjectCameraList',
+      'editProjectCameras',
+      'deleteProjectCamera',
+    ]),
     async getProjectCameraRequest() {
       await this.getProjectCameras({
         projectId: this.projectId,
       });
     },
-
+    openEditProjectCameras() {
+      this.setEditProjectCameraList(this.projectCameras);
+      this.showEditProjectCameras = true;
+    },
+    closeEditProjectCameras() {
+      this.showEditProjectCameras = false;
+    },
+    editProjectsCameraRequest() {
+      this.editProjectCameras(this.editProjectCameraList);
+      this.closeEditProjectCameras();
+    },
     deleteProjectCameraRequest(id) {
       this.deleteProjectCamera({
         projectId: this.projectId,
@@ -96,3 +150,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.project-camera-context {
+  height: 455px;
+  overflow: auto;
+}
+.project-camera-list-footer {
+  float: right;
+}
+</style>
