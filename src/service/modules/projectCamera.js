@@ -8,6 +8,15 @@ const getProjectCameras = async projectId => {
   return data;
 };
 
+const addProjectCamera = async (projectId, body) => {
+  const data = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/cameras`,
+    method: 'POST',
+    body,
+  });
+  return data;
+};
+
 const editProjectCamera = async ({ project, id, ...body }) => {
   const data = await fetchWrap({
     url: `/api/v1/projects/${project}/cameras/${id}`,
@@ -25,4 +34,9 @@ const deleteProjectCamera = async (projectId, cameraId) => {
   return data;
 };
 
-export { getProjectCameras, editProjectCamera, deleteProjectCamera };
+export {
+  getProjectCameras,
+  addProjectCamera,
+  editProjectCamera,
+  deleteProjectCamera,
+};

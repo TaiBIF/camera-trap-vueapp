@@ -2,7 +2,34 @@
   <div>
     <div class="panel">
       <div class="panel-heading">
-        <h4 v-show="!showEditProjectCameras">相機管理</h4>
+        <div v-show="!showAddProjectCameras && !showEditProjectCameras">
+          <h4>
+            相機管理
+          </h4>
+          <button
+            class="float-right btn btn-light-green"
+            @click="openAddProjectCameras"
+          >
+            新增相機
+          </button>
+        </div>
+        <div v-show="showAddProjectCameras">
+          <h4>
+            本單位相機
+          </h4>
+          <button
+            class="float-right btn btn-light-green"
+            @click="addProjectsCameraRequest"
+          >
+            新增
+          </button>
+          <button
+            class="float-right btn btn-white-border"
+            @click="closeAddProjectCameras"
+          >
+            取消
+          </button>
+        </div>
         <div v-show="showEditProjectCameras">
           <h4>
             編輯相機
@@ -53,6 +80,13 @@
               新增相機
             </button>
           </div>
+          <div class="project-camera-add" v-else-if="showAddProjectCameras">
+            <add-project-camera
+              :cameraListData="cameras"
+              :addProjectCameraList="addProjectCameraList"
+              :setAddProjectCameraList="setAddProjectCameraList"
+            />
+          </div>
           <div class="project-camera-list" v-else-if="!showEditProjectCameras">
             <project-camera-list
               :projectCameraListData="projectCameras"
@@ -74,7 +108,6 @@
               :setEditProjectCameraList="setEditProjectCameraList"
             />
           </div>
-          <div class="sheet-view show" v-else></div>
         </div>
       </div>
     </div>
@@ -93,40 +126,69 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
+import AddProjectCamera from '@/components/CameraManagement/AddProjectCamera.vue';
 import EditProjectCamera from '@/components/CameraManagement/EditProjectCamera.vue';
 import ProjectCameraList from '@/components/CameraManagement/ProjectCameraList.vue';
 
+const camera = createNamespacedHelpers('camera');
 const projectCamera = createNamespacedHelpers('projectCamera');
 
 export default {
   components: {
+    AddProjectCamera,
     ProjectCameraList,
     EditProjectCamera,
   },
 
   computed: {
-    ...projectCamera.mapState(['projectCameras', 'editProjectCameraList']),
+    ...camera.mapState(['cameras']),
+    ...projectCamera.mapState([
+      'projectCameras',
+      'addProjectCameraList',
+      'editProjectCameraList',
+    ]),
     projectId: function() {
       return this.$route.params.projectId;
     },
   },
   data: function() {
     return {
+      showAddProjectCameras: false,
       showEditProjectCameras: false,
     };
   },
   methods: {
+    ...camera.mapActions(['getCameras']),
     ...projectCamera.mapActions([
       'getProjectCameras',
+      'setAddProjectCameraList',
+      'addProjectCameras',
       'setEditProjectCameraList',
       'editProjectCameras',
       'deleteProjectCamera',
     ]),
+    // get project camera
     async getProjectCameraRequest() {
       await this.getProjectCameras({
         projectId: this.projectId,
       });
     },
+    // add project camera
+    openAddProjectCameras() {
+      this.setAddProjectCameraList([]);
+      this.showAddProjectCameras = true;
+    },
+    closeAddProjectCameras() {
+      this.showAddProjectCameras = false;
+    },
+    addProjectsCameraRequest() {
+      this.addProjectCameras({
+        projectId: this.projectId,
+        payload: this.addProjectCameraList,
+      });
+      this.closeAddProjectCameras();
+    },
+    // edit project camera
     openEditProjectCameras() {
       this.setEditProjectCameraList(this.projectCameras);
       this.showEditProjectCameras = true;
@@ -138,6 +200,7 @@ export default {
       this.editProjectCameras(this.editProjectCameraList);
       this.closeEditProjectCameras();
     },
+    // delete project camera
     deleteProjectCameraRequest(id) {
       this.deleteProjectCamera({
         projectId: this.projectId,
@@ -146,6 +209,7 @@ export default {
     },
   },
   mounted() {
+    this.getCameras();
     this.getProjectCameraRequest();
   },
 };
