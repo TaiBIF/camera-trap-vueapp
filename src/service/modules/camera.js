@@ -1,9 +1,15 @@
 import fetchWrap from '@/utils/fetch';
 
-const getCameras = async () =>
+const getCameras = async (filters = '') =>
   await fetchWrap({
-    url: `/api/v1/cameras`,
+    url: `/api/v1/cameras${filters}`,
     method: 'GET',
   });
 
-export { getCameras };
+const getCameraType = async (type, filters = '') =>
+  await fetchWrap({
+    url: `/api/v1/cameras-${type}${filters}`,
+    method: 'GET',
+  });
+
+export { getCameras, getCameraType };
