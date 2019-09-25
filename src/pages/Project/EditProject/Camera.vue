@@ -64,9 +64,17 @@
             <div class="mt-5">
               <small class="text-gray">
                 STEP 1. 將相機資料整理為excel表格
-                <a href="#">下載示範表格</a>
-                STEP 2. 將相機資料傳至CameraTrap@gmail.com
-                <a href="#">傳送檔案</a>
+                <a
+                  href="/static/example-camera-info.xlsx"
+                  class="text-green text-underline mr-3"
+                  target="_blank"
+                  >下載示範表格</a
+                >
+                STEP 2. 將相機資料傳至<a
+                  href="mailto:CameraTrap@gmail.com"
+                  class="text-green text-underline"
+                  >CameraTrap@gmail.com</a
+                >
               </small>
             </div>
           </div>
@@ -110,13 +118,21 @@
         </div>
       </div>
     </div>
-    <div class="step" v-show="true">
+    <div class="step" v-show="!showEmptyCamera">
       <small class="text-gray">
         <b>找不到您要的相機資料？<br /></b>
         STEP 1. 將相機資料整理為excel表格
-        <a href="#">下載示範表格</a>
-        STEP 2. 將相機資料傳至CameraTrap@gmail.com
-        <a href="#">傳送檔案</a>
+        <a
+          href="/static/example-camera-info.xlsx"
+          class="text-green text-underline mr-3"
+          target="_blank"
+          >下載示範表格</a
+        >
+        STEP 2. 將相機資料傳至<a
+          href="mailto:CameraTrap@gmail.com"
+          class="text-green text-underline"
+          >CameraTrap@gmail.com</a
+        >
       </small>
     </div>
   </div>

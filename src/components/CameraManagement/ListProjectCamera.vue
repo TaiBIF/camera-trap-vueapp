@@ -125,6 +125,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.list-project-camera {
+  min-height: 335px;
+}
 .camera-detail {
   border-style: solid;
   border-width: 2px;
