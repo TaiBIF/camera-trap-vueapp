@@ -82,9 +82,11 @@
           </div>
           <div class="project-camera-add" v-else-if="showAddProjectCameras">
             <add-project-camera
-              :cameraListData="cameras"
+              :cameraListData="camerasByFilter"
               :addProjectCameraList="addProjectCameraList"
               :setAddProjectCameraList="setAddProjectCameraList"
+              :getCamerasByFilter="getCamerasByFilter"
+              :getCameraType="getCameraType"
             />
           </div>
           <div class="project-camera-list" v-else-if="!showEditProjectCameras">
@@ -141,7 +143,7 @@ export default {
   },
 
   computed: {
-    ...camera.mapState(['cameras']),
+    ...camera.mapState(['cameras', 'camerasByFilter']),
     ...projectCamera.mapState([
       'projectCameras',
       'addProjectCameraList',
@@ -158,7 +160,12 @@ export default {
     };
   },
   methods: {
-    ...camera.mapActions(['getCameras']),
+    ...camera.mapActions([
+      'getCameras',
+      'setCamerasByFilter',
+      'getCamerasByFilter',
+      'getCameraType',
+    ]),
     ...projectCamera.mapActions([
       'getProjectCameras',
       'setAddProjectCameraList',
@@ -175,6 +182,7 @@ export default {
     },
     // add project camera
     openAddProjectCameras() {
+      this.setCamerasByFilter(this.cameras);
       this.setAddProjectCameraList([]);
       this.showAddProjectCameras = true;
     },
