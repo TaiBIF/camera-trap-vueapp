@@ -2,18 +2,19 @@
   <div>
     <div class="panel">
       <div class="panel-heading">
-        <div v-show="!showAddProjectCameras && !showEditProjectCameras">
+        <div v-show="!showAddProjectCamera && !showEditProjectCamera">
           <h4>
             相機管理
           </h4>
           <button
             class="float-right btn btn-light-green"
             @click="openAddProjectCameras"
+            v-show="showListProjectCamera"
           >
             新增相機
           </button>
         </div>
-        <div v-show="showAddProjectCameras">
+        <div v-show="showAddProjectCamera">
           <h4>
             本單位相機
           </h4>
@@ -30,7 +31,7 @@
             取消
           </button>
         </div>
-        <div v-show="showEditProjectCameras">
+        <div v-show="showEditProjectCamera">
           <h4>
             編輯相機
           </h4>
@@ -50,7 +51,7 @@
       </div>
       <div class="project-camera-context">
         <div class="p-0">
-          <div class="empty-result" v-if="false">
+          <div class="empty-result" v-if="showEmptyCamera">
             <img
               src="/assets/common/empty-site.png"
               width="174"
@@ -69,18 +70,18 @@
               </small>
             </div>
           </div>
-          <div class="empty-result" v-else-if="false">
+          <div class="empty-result" v-else-if="showEmptyProjectCamera">
             <img
               src="/assets/common/empty-site.png"
               width="174"
               srcset="/assets/common/empty-site@2x.png"
             />
             <h3 class="text-gray mt-3">您目前沒有任何相機</h3>
-            <button type="submit" class="btn btn-orange" @click="handleSubmit">
+            <button class="btn btn-orange" @click="openAddProjectCameras">
               新增相機
             </button>
           </div>
-          <div class="project-camera-add" v-else-if="showAddProjectCameras">
+          <div class="project-camera-add" v-else-if="showAddProjectCamera">
             <add-project-camera
               :cameraListData="camerasByFilter"
               :addProjectCameraList="addProjectCameraList"
@@ -89,22 +90,18 @@
               :getCameraType="getCameraType"
             />
           </div>
-          <div class="project-camera-list" v-else-if="!showEditProjectCameras">
-            <project-camera-list
+          <div class="project-camera-list" v-else-if="showListProjectCamera">
+            <list-project-camera
               :projectCameraListData="projectCameras"
               @deleteProjectCamera="deleteProjectCameraRequest"
             />
             <div class="project-camera-list-footer mt-5 p-3">
-              <button
-                type="submit"
-                class="btn btn-orange"
-                @click="openEditProjectCameras"
-              >
+              <button class="btn btn-orange" @click="openEditProjectCameras">
                 編輯相機
               </button>
             </div>
           </div>
-          <div class="project-camera-edit" v-else-if="showEditProjectCameras">
+          <div class="project-camera-edit" v-else-if="showEditProjectCamera">
             <edit-project-camera
               :projectCameraListData="editProjectCameraList"
               :setEditProjectCameraList="setEditProjectCameraList"
@@ -130,7 +127,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 import AddProjectCamera from '@/components/CameraManagement/AddProjectCamera.vue';
 import EditProjectCamera from '@/components/CameraManagement/EditProjectCamera.vue';
-import ProjectCameraList from '@/components/CameraManagement/ProjectCameraList.vue';
+import ListProjectCamera from '@/components/CameraManagement/ListProjectCamera.vue';
 
 const camera = createNamespacedHelpers('camera');
 const projectCamera = createNamespacedHelpers('projectCamera');
@@ -138,7 +135,7 @@ const projectCamera = createNamespacedHelpers('projectCamera');
 export default {
   components: {
     AddProjectCamera,
-    ProjectCameraList,
+    ListProjectCamera,
     EditProjectCamera,
   },
 
@@ -155,8 +152,11 @@ export default {
   },
   data: function() {
     return {
-      showAddProjectCameras: false,
-      showEditProjectCameras: false,
+      showEmptyCamera: false,
+      showEmptyProjectCamera: false,
+      showAddProjectCamera: false,
+      showListProjectCamera: false,
+      showEditProjectCamera: false,
     };
   },
   methods: {
@@ -184,25 +184,28 @@ export default {
     openAddProjectCameras() {
       this.setCamerasByFilter(this.cameras);
       this.setAddProjectCameraList([]);
-      this.showAddProjectCameras = true;
+      this.showEmptyProjectCamera = false;
+      this.showAddProjectCamera = true;
     },
     closeAddProjectCameras() {
-      this.showAddProjectCameras = false;
+      this.showAddProjectCamera = false;
     },
-    addProjectsCameraRequest() {
-      this.addProjectCameras({
+    async addProjectsCameraRequest() {
+      await this.addProjectCameras({
         projectId: this.projectId,
         payload: this.addProjectCameraList,
       });
+      await this.openEditProjectCameras();
       this.closeAddProjectCameras();
     },
     // edit project camera
-    openEditProjectCameras() {
+    async openEditProjectCameras() {
+      await this.getProjectCameraRequest();
       this.setEditProjectCameraList(this.projectCameras);
-      this.showEditProjectCameras = true;
+      this.showEditProjectCamera = true;
     },
     closeEditProjectCameras() {
-      this.showEditProjectCameras = false;
+      this.showEditProjectCamera = false;
     },
     editProjectsCameraRequest() {
       this.editProjectCameras(this.editProjectCameraList);
@@ -215,10 +218,29 @@ export default {
         cameraId: id,
       });
     },
+    setShowListProjectCamera() {
+      this.showListProjectCamera =
+        !this.showEmptyCamera &&
+        !this.showEmptyProjectCamera &&
+        !this.showAddProjectCamera &&
+        !this.showEditProjectCamera;
+    },
   },
-  mounted() {
-    this.getCameras();
-    this.getProjectCameraRequest();
+  async mounted() {
+    await this.getCameras();
+    await this.getProjectCameraRequest();
+
+    this.showEmptyCamera = !this.cameras.length;
+    this.showEmptyProjectCamera = !this.projectCameras.length;
+    this.setShowListProjectCamera();
+  },
+  watch: {
+    showAddProjectCamera: function() {
+      this.setShowListProjectCamera();
+    },
+    showEditProjectCamera: function() {
+      this.setShowListProjectCamera();
+    },
   },
 };
 </script>
