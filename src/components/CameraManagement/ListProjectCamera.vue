@@ -1,5 +1,5 @@
 <template>
-  <div class="project-camera-list">
+  <div class="list-project-camera">
     <div>
       <el-table :data="projectCameraListData" style="width: 100%">
         <el-table-column type="expand">
@@ -83,7 +83,7 @@
 import CheckDeleteProjectCameraModal from './CheckDeleteProjectCameraModal.vue';
 
 export default {
-  name: 'ProjectCameraList',
+  name: 'ListProjectCamera',
   props: {
     projectCameraListData: {
       type: Array,
