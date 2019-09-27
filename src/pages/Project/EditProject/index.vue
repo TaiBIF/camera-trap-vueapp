@@ -56,6 +56,7 @@ export default {
         { pathName: 'projectSetting', title: '編輯設定' },
         { pathName: 'projectCameraLocation', title: '相機位置管理' },
         { pathName: 'projectCamera', title: '相機管理' },
+        { pathName: 'projectTrip', title: '行程管理' },
         { pathName: 'projectMember', title: '計畫成員' },
         { pathName: 'projectLicense', title: '創⽤CC授權' },
       ],
