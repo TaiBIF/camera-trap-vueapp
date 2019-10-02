@@ -91,7 +91,9 @@
         </div>
         <div
           class="edit-project-trip-basic-cameraLocations"
-          v-show="showNextStep"
+          v-show="
+            this.projectTrip.studyAreas && this.projectTrip.studyAreas.length
+          "
         >
           <div
             class="form-group row"
@@ -126,7 +128,7 @@
         </div>
       </form>
     </div>
-    <div class="float-right mt-3">
+    <div class="edit-project-trip-basic-footer float-right mt-3">
       <button
         class="btn btn-green-border mr-3"
         @click="closeEditProjectTripBasic"
@@ -137,11 +139,26 @@
         {{ showNextStep ? '下一步' : '完成' }}
       </button>
     </div>
+    <double-check-modal-with-style
+      :open="showCheckStudyAreasModal"
+      title="您確定不填入行程樣區嗎？"
+      description="不填寫行程內的樣區資料，往後將無法依據行程篩選資料．"
+      @summit="checkAddProjectTripRequest"
+      @close="closeCheckStudyAreasModal"
+    />
+    <double-check-modal-with-style
+      :open="showCheckCameraLocationsModal"
+      title="您確定不填入相機位置嗎？"
+      description="不填寫樣區內的相機位置資料，往後將無法依據行程篩選資料．"
+      @summit="checkGoEditProjectTripCamera"
+      @close="closeCheckCameraLocationsModal"
+    />
   </div>
 </template>
 
 <script>
 import DatePicker from 'vue2-datepicker';
+import DoubleCheckModalWithStyle from '@/components/Modal/DoubleCheckModalWithStyle.vue';
 import moment from 'moment';
 import vSelect from 'vue-select';
 
@@ -150,6 +167,7 @@ export default {
   components: {
     vSelect,
     DatePicker,
+    DoubleCheckModalWithStyle,
   },
   props: {
     projectId: {
@@ -191,6 +209,8 @@ export default {
       studyAreasOptions: [],
       cameraLocationsOptions: {},
       showNextStep: false,
+      showCheckStudyAreasModal: false,
+      showCheckCameraLocationsModal: false,
     };
   },
   mounted() {
@@ -235,8 +255,7 @@ export default {
       this.projectTripDate = date ? this.formatTime(date) : date;
     },
     async selectStudyAreas() {
-      this.showNextStep =
-        this.projectTrip.studyAreas && this.projectTrip.studyAreas.length;
+      this.checkShowNextStep();
 
       this.projectTrip.studyAreas.map(async ({ value }) => {
         if (!this.cameraLocationsOptions[value]) {
@@ -260,9 +279,20 @@ export default {
       this.projectTripCameraLocations[
         studyAreaId
       ].studyAreaTitle = studyAreaTitle;
+      this.checkShowNextStep();
+    },
+    checkShowNextStep() {
+      this.showNextStep =
+        this.projectTrip.studyAreas &&
+        this.projectTrip.studyAreas.length &&
+        Object.values(this.projectTripCameraLocations).reduce(
+          (previous, current) => previous || (current && current.length > 0),
+          false,
+        );
     },
     setEditProjectTripReduest() {
       this.$validator.validateAll().then(result => {
+        let emptyCameraLocation = false;
         if (result) {
           let studyAreas = [];
           if (this.projectTrip.studyAreas) {
@@ -278,6 +308,8 @@ export default {
                   },
                 );
               }
+
+              if (cameraLocations.length === 0) emptyCameraLocation = true;
 
               return {
                 studyArea: value,
@@ -295,18 +327,44 @@ export default {
             studyAreas,
             date: this.projectTripDate,
           };
-
           this.setEditProjectTrip(body);
-          this.closeEditProjectTripBasic();
 
-          if (this.showNextStep) this.goEditProjectTripCamera(body);
-          else this.addProjectTripRequest(false);
+          if (this.showNextStep) {
+            if (emptyCameraLocation) this.openCheckCameraLocationsModal();
+            else {
+              this.closeEditProjectTripBasic();
+              this.openEditProjectTripCamera();
+            }
+          } else {
+            if (studyAreas.length > 0) this.openCheckCameraLocationsModal();
+            else this.openCheckStudyAreasModal();
+          }
         }
       });
     },
-    goEditProjectTripCamera(body) {
-      this.setEditProjectTrip(body);
-      this.openEditProjectTripCamera();
+    openCheckStudyAreasModal() {
+      this.showCheckStudyAreasModal = true;
+    },
+    closeCheckStudyAreasModal() {
+      this.showCheckStudyAreasModal = false;
+    },
+    openCheckCameraLocationsModal() {
+      this.showCheckCameraLocationsModal = true;
+    },
+    closeCheckCameraLocationsModal() {
+      this.showCheckCameraLocationsModal = false;
+    },
+    checkAddProjectTripRequest() {
+      this.addProjectTripRequest(true);
+      this.closeCheckStudyAreasModal();
+      this.closeEditProjectTripBasic();
+    },
+    checkGoEditProjectTripCamera() {
+      if (this.showNextStep) this.openEditProjectTripCamera();
+      else this.addProjectTripRequest(true);
+
+      this.closeCheckCameraLocationsModal();
+      this.closeEditProjectTripBasic();
     },
   },
 };

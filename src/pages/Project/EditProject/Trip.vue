@@ -51,15 +51,23 @@
       <button class="btn btn-orange-border mr-3" @click="back">
         上一步
       </button>
-      <button class="btn btn-orange" @click="addProjectTripRequest(true)">
+      <button class="btn btn-orange" @click="checkAddProjectTripRequest">
         完成
       </button>
     </div>
+    <double-check-modal-with-style
+      :open="showCheckCameraDetailModal"
+      title="您確定不填入相機資料嗎？"
+      description="不填寫相機位置內的相機資料，往後將無法依據行程篩選資料．"
+      @summit="addProjectTripRequest(true)"
+      @close="closeCheckCameraDetailModal"
+    />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import DoubleCheckModalWithStyle from '@/components/Modal/DoubleCheckModalWithStyle.vue';
 import EditProjectTripBasic from '@/components/ProjectEdit/Trip/EditProjectTripBasic.vue';
 import EditProjectTripCamera from '@/components/ProjectEdit/Trip/EditProjectTripCamera.vue';
 
@@ -71,6 +79,7 @@ export default {
   components: {
     EditProjectTripBasic,
     EditProjectTripCamera,
+    DoubleCheckModalWithStyle,
   },
   data: function() {
     return {
@@ -78,6 +87,7 @@ export default {
       showEditProjectTripBasic: false,
       showEditProjectTripCamera: false,
       projectId: this.$route.params.projectId,
+      showCheckCameraDetailModal: false,
     };
   },
   computed: {
@@ -110,14 +120,41 @@ export default {
       this.closeEditProjectTripCamera();
     },
     addProjectTripRequest: async function(reGetProjectTrip) {
-      await this.$emit('setEditProjectTripReduest');
-
       await this.addProjectTrip({
         projectId: this.projectId,
         body: this.editProjectTrip,
         reGetProjectTrip,
       });
       this.closeEditProjectTripCamera();
+      this.closeCheckCameraDetailModal();
+    },
+    openCheckCameraDetailModal() {
+      this.showCheckCameraDetailModal = true;
+    },
+    closeCheckCameraDetailModal() {
+      this.showCheckCameraDetailModal = false;
+    },
+    async checkAddProjectTripRequest() {
+      await this.$emit('setEditProjectTripReduest');
+      const emptyCameraDetail = this.editProjectTrip.studyAreas.reduce(
+        (previous, current) => {
+          let result = current.cameraLocations.reduce((pre, curr) => {
+            if (curr.projectCameras && curr.projectCameras[0]) {
+              const projectCameraDetailCount = Object.keys(
+                curr.projectCameras[0],
+              ).length;
+
+              return pre || projectCameraDetailCount < 14;
+            } else return pre;
+          }, false);
+
+          return previous || result;
+        },
+        false,
+      );
+
+      if (emptyCameraDetail) this.openCheckCameraDetailModal();
+      else this.addProjectTripRequest(true);
     },
   },
   watch: {
