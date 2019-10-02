@@ -428,6 +428,72 @@
             flex: 1
             min-height: 446px
 
+    .add-project-camera
+        display: flex
+        flex-direction: row
+        .camera-filter
+            width: 300px
+            border: 1px solid #e6e7e8
+            .camera-filter-title
+                font-size: 16px
+            hr
+                border-top: 1px solid #e6e7e8
+        .camera-filter-option-type
+            span
+                font-size: 14px
+                cursor: pointer
+            >input
+                border: 0
+                outline: 0
+                padding: 13px 0
+                background-color: transparent
+                display: block
+                &:focus
+                    outline: 0
+                    &::placeholder
+                        opacity: 0
+            .camera-filter-option
+                font-size: 14px
+                line-height: 24px
+                cursor: pointer
+            .el-checkbox__inner
+                background-color: transparent
+                border-color: black
+                &::after
+                    border-color: black
+            .el-checkbox__label
+                color: black
+                font-weight: normal
+                font-size: 14px
+                line-height: 24px
+        .camera-list
+            width: 100%
+            .add-project-selected
+                background: $bg-green
+                color: $green
+            .el-table__row:hover > td
+                background: none
+
+    .edit-project-camera
+        display: flex
+        flex-direction: row
+        .is-active
+            background: $bg-green
+        .project-camera-sidebar
+            width: 300px
+        .project-camera-sidebar-item
+            border-bottom: 1px solid #E6E7E8
+            line-height: 38px
+            cursor: pointer
+            color: $green
+        .edit-project-camera-context
+            box-shadow: (-1px) 0 0 0 #E6E7E8
+            min-height: 446px
+            width: 100%
+            padding: 20px 40px
+        .form-group
+            line-height: 38px
+
     .column-editor
         border: 1px solid #F0F1F3
 
