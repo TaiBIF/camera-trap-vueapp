@@ -493,6 +493,7 @@
             padding: 20px 40px
         .form-group
             line-height: 38px
+
     .edit-project-trip-basic
         .edit-project-trip-basic-content
             min-height: 455px
@@ -505,7 +506,89 @@
                     color: $light-green
                 .dropdown-toggle
                     min-height: 38px
-        .btn-orange
+
+    .edit-project-trip-camera
+        .edit-project-trip-camera-container
+            display: flex
+            flex-direction: row
+            .form-group
+                line-height: 38px
+                .mx-calendar-icon
+                    color: $light-green
+        .edit-project-trip-camera-sidebar
+            min-width: 260px
+            min-height: 455px
+            border-right: 1px solid #E6E7E8
+            .el-collapse-item__header
+                font-size: 16px
+                background-color: $bg-gray
+                border-bottom: 1px solid #E6E7E8
+                padding-left: 35px
+                position: relative
+                .el-collapse-item__arrow
+                    position: relative
+                    left: -225px
+            .el-collapse-item__content
+                padding-bottom: 0px
+                font-size: 16px
+                color: $green
+                cursor: pointer
+                border-bottom: 1px solid #E6E7E8
+                .is-active
+                        background: $bg-green
+                &:last-child
+                    border-bottom: none
+                .edit-project-trip-camera-sidebar-item
+                    line-height: 48px
+                    border-bottom: 1px solid #E6E7E8
+                    padding-left: 30px
+                    &:before
+                        content: ''
+                        width: 8px
+                        height: 8px
+                        border-radius: 50%
+                        background-color: black
+                        display: inline-block
+                        margin-right: 15px
+        .edit-project-trip-camera-content
+            width: 70%
+            padding: 20px 20px
+            .trip-camera-detail-title
+                display: none
+            .trip-camera-detail-active-date
+                .form-group
+                    >div
+                        padding-right: 0
+                        &:last-child
+                            padding-left: 3px
+                            input
+                                line-height: 38px
+                                height: 38px
+                    .mx-datepicker
+                        width: 100%
+                        input
+                            font-size: 16px
+            .half
+                float: left
+                width: 50%
+                font-size: 14px
+                label,
+                div,
+                input
+                    padding: 0 3px 0 0
+                    font-size: 14px
+                .trip-camera-detail-title
+                    display: block
+                    font-size: 16px
+                    hr
+                        width: 80%
+                        border-top: 1.5px solid #979797
+                        margin-top: 5px
+        .edit-project-trip-camera-footer
+            display: block
+
+    .edit-project-trip-basic, .edit-project-trip-camera
+        .btn-orange, .btn-orange-border
             width: 106px
 
     .column-editor

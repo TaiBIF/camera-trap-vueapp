@@ -3,11 +3,15 @@ import idx from 'idx';
 
 const state = {
   trips: [],
+  editProjectTrip: {},
 };
 
 const mutations = {
   setTrips(state, payload) {
     state.trips = payload;
+  },
+  setEditProjectTrip(state, payload) {
+    state.editProjectTrip = payload;
   },
 };
 
@@ -21,6 +25,9 @@ const actions = {
     if (reGetProjectTrip) {
       dispatch('getProjectTrips', projectId);
     }
+  },
+  async setEditProjectTrip({ commit }, payload) {
+    commit('setEditProjectTrip', payload);
   },
 };
 

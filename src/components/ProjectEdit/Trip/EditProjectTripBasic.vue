@@ -84,6 +84,7 @@
                 placeholder="請選擇多個樣區"
                 multiple
                 @change="selectStudyAreas"
+                :closeOnSelect="false"
               ></v-select>
             </div>
           </div>
@@ -106,6 +107,7 @@
                   placeholder="請選擇多個相機位置"
                   multiple
                   @change="selectCameraLocations(label, value)"
+                  :closeOnSelect="false"
                 ></v-select>
               </div>
             </div>
@@ -131,7 +133,7 @@
       >
         取消
       </button>
-      <button class="btn btn-orange" @click="addProjectTripRequest">
+      <button class="btn btn-orange" @click="setEditProjectTripReduest">
         {{ showNextStep ? '下一步' : '完成' }}
       </button>
     </div>
@@ -167,8 +169,18 @@ export default {
     closeEditProjectTripBasic: {
       type: Function,
     },
-    addProjectTrip: {
+    openEditProjectTripCamera: {
       type: Function,
+    },
+    addProjectTripRequest: {
+      type: Function,
+    },
+    setEditProjectTrip: {
+      type: Function,
+    },
+    editProjectTripData: {
+      type: Object,
+      default: () => {},
     },
   },
   data: function() {
@@ -186,6 +198,34 @@ export default {
       label: title,
       value: id,
     }));
+
+    let studyAreas = [];
+
+    if (this.editProjectTripData.studyAreas) {
+      studyAreas = this.editProjectTripData.studyAreas.map(
+        ({ title, studyArea }) => ({ label: title, value: studyArea }),
+      );
+    }
+
+    this.projectTrip = Object.assign({}, this.editProjectTripData, {
+      studyAreas,
+    });
+    this.projectTripDate = this.editProjectTripData.date || '';
+
+    let projectTripCameraLocations = {};
+    if (this.editProjectTripData.studyAreas) {
+      this.editProjectTripData.studyAreas.map(studyArea => {
+        let cameraLocations = studyArea.cameraLocations.map(
+          ({ title, cameraLocation }) => ({
+            label: title,
+            value: cameraLocation,
+          }),
+        );
+        projectTripCameraLocations[studyArea.studyArea] = cameraLocations;
+      });
+    }
+
+    this.projectTripCameraLocations = projectTripCameraLocations;
   },
   methods: {
     formatTime(date) {
@@ -221,7 +261,7 @@ export default {
         studyAreaId
       ].studyAreaTitle = studyAreaTitle;
     },
-    addProjectTripRequest() {
+    setEditProjectTripReduest() {
       this.$validator.validateAll().then(result => {
         if (result) {
           let studyAreas = [];
@@ -233,7 +273,7 @@ export default {
                   cameraLocation => {
                     return {
                       cameraLocation: cameraLocation.value,
-                      cameraLocationMark: cameraLocation.label,
+                      title: cameraLocation.label,
                     };
                   },
                 );
@@ -256,15 +296,17 @@ export default {
             date: this.projectTripDate,
           };
 
-          this.addProjectTrip({
-            projectId: this.projectId,
-            body,
-            reGetProjectTrip: !this.showNextStep,
-          });
+          this.setEditProjectTrip(body);
+          this.closeEditProjectTripBasic();
 
-          if (!this.showNextStep) this.closeEditProjectTripBasic();
+          if (this.showNextStep) this.goEditProjectTripCamera(body);
+          else this.addProjectTripRequest(false);
         }
       });
+    },
+    goEditProjectTripCamera(body) {
+      this.setEditProjectTrip(body);
+      this.openEditProjectTripCamera();
     },
   },
 };
