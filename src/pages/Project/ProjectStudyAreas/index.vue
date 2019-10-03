@@ -13,16 +13,12 @@
           </div>
           <div class="col-5 text-right">
             <span class="divider"></span>
-            <button @click="setEdit(false)" class="btn btn-circle">
-              <i class="icon-save"></i>
-            </button>
-            <span class="divider"></span>
             <button
               @click="setEdit(false)"
-              class="btn btn-basic btn-sm"
               :disabled="requestProcessingCount !== 0"
+              class="btn btn-circle"
             >
-              關閉編輯模式
+              <i class="icon-save"></i>
             </button>
           </div>
         </div>
