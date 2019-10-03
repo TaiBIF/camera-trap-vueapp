@@ -182,6 +182,7 @@ export default {
   },
   methods: {
     selectCamera(row) {
+      Object.assign(row, { nickname: row.name });
       const new_addProjectCameraList = Array.from(this.addProjectCameraList);
       const index = new_addProjectCameraList.indexOf(row);
       if (index !== -1) new_addProjectCameraList.splice(index, 1);
@@ -189,6 +190,7 @@ export default {
       this.setAddProjectCameraList(new_addProjectCameraList);
     },
     selectedStyle({ row }) {
+      Object.assign(row, { nickname: row.name });
       const index = this.addProjectCameraList.indexOf(row);
       if (index !== -1) return 'add-project-selected';
     },
