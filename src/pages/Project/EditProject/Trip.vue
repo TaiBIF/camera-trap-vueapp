@@ -161,6 +161,9 @@ export default {
     showEditProjectTripBasic: function(value) {
       this.showListTrip = !value;
     },
+    showEditProjectTripCamera: function(value) {
+      this.showListTrip = !value;
+    },
   },
   mounted() {
     this.getProjectStudyAreas(this.projectId);

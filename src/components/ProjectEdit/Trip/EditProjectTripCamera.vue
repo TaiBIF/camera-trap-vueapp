@@ -249,7 +249,8 @@
               <div class="col-2">
                 <div class="input-group">
                   <vue-timepicker
-                    v-model="tripCamerasDetail[index].startActiveTime"
+                    v-model="startActiveTime"
+                    format="HH:mm"
                     hide-clear-button
                   ></vue-timepicker>
                 </div>
@@ -268,7 +269,8 @@
               <div class="col-2">
                 <div class="input-group">
                   <vue-timepicker
-                    v-model="tripCamerasDetail[index].endActiveTime"
+                    v-model="endActiveTime"
+                    format="HH:mm"
                     hide-clear-button
                   ></vue-timepicker>
                 </div>
@@ -282,14 +284,24 @@
 </template>
 
 <script>
+import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
 import vSelect from 'vue-select';
 
 const batteryTypeOptions = ['鹼性電池', '充電電池'];
 const brightnessOptions = ['自動'];
 const sensitivityOptions = ['自動'];
 const stateOptions = ['active'];
+
+const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
+  return moment(day)
+    .hour(time.HH)
+    .minute(time.mm)
+    .second(second)
+    .millisecond(millisecond);
+};
 
 export default {
   name: 'EditProjectTripCamera',
@@ -322,6 +334,8 @@ export default {
       activeName: '',
       projectTrip: {},
       tripCamerasDetail: [{}, {}],
+      startActiveTime: { HH: '00', mm: '00' },
+      endActiveTime: { HH: '00', mm: '00' },
       cmaeraLocationEvenOptions: [],
       batteryTypeOptions,
       brightnessOptions,
@@ -373,12 +387,41 @@ export default {
         : {};
       this.projectTrip = Object.assign({}, nextProjectTrip, projectCameras);
 
-      this.tripCamerasDetail = this.editProjectTripBasic.studyAreas[
+      const nextTripCamerasDetail = this.editProjectTripBasic.studyAreas[
         this.selectedStudyAreaIndex
-      ].cameraLocations[this.selectedCameraLocationIndex].projectCameras || [
-        {},
-        {},
-      ];
+      ].cameraLocations[this.selectedCameraLocationIndex].projectCameras;
+
+      if (nextTripCamerasDetail && nextTripCamerasDetail.length > 0) {
+        this.tripCamerasDetail = nextTripCamerasDetail;
+        if (
+          this.projectTrip.projectCameras &&
+          this.projectTrip.projectCameras.length === 1
+        ) {
+          if (
+            nextTripCamerasDetail[0].startActiveDate &&
+            nextTripCamerasDetail[0].startActiveDate !== 'Invalid date'
+          ) {
+            this.startActiveTime = {
+              HH: moment(nextTripCamerasDetail[0].startActiveDate).format('HH'),
+              mm: moment(nextTripCamerasDetail[0].startActiveDate).format('mm'),
+            };
+          } else this.startActiveTime = { HH: '00', mm: '00' };
+
+          if (
+            nextTripCamerasDetail[0].endActiveDate &&
+            nextTripCamerasDetail[0].endActiveDate !== 'Invalid date'
+          ) {
+            this.endActiveTime = {
+              HH: moment(nextTripCamerasDetail[0].endActiveDate).format('HH'),
+              mm: moment(nextTripCamerasDetail[0].endActiveDate).format('mm'),
+            };
+          } else this.endActiveTime = { HH: '00', mm: '00' };
+        }
+      } else {
+        this.tripCamerasDetail = [{}, {}];
+        this.startActiveTime = { HH: '00', mm: '00' };
+        this.endActiveTime = { HH: '00', mm: '00' };
+      }
     },
     async setEditProjectTripReduest() {
       if (this.selectedCameraLocationIndex !== null) {
@@ -386,19 +429,42 @@ export default {
         if (currentProjectTrip.projectCameras !== undefined) {
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
-              const startActiveDate =
-                this.tripCamerasDetail[index].startActiveDate ||
-                '' + ' ' + this.tripCamerasDetail[index].startActiveTime ||
-                '';
-              const endActiveDate =
-                this.tripCamerasDetail[index].endActiveDate ||
-                '' + ' ' + this.tripCamerasDetail[index].endActiveTime ||
-                '';
+              let startActiveDate = {};
+              let endActiveDate = {};
+
+              if (
+                this.tripCamerasDetail[index].startActiveDate &&
+                this.tripCamerasDetail[index].startActiveDate !== 'Invalid date'
+              ) {
+                const startActiveDateAndTime = getDateAndTime(
+                  this.tripCamerasDetail[index].startActiveDate,
+                  this.startActiveTime,
+                );
+                startActiveDate = {
+                  startActiveDate: dateFormatYYYYMMDDHHmmss(
+                    startActiveDateAndTime,
+                  ),
+                };
+              } else delete this.tripCamerasDetail[index].startActiveDate;
+
+              if (
+                this.tripCamerasDetail[index].endActiveDate &&
+                this.tripCamerasDetail[index].endActiveDate !== 'Invalid date'
+              ) {
+                const endActiveDateAndTime = getDateAndTime(
+                  this.tripCamerasDetail[index].endActiveDate,
+                  this.endActiveTime,
+                );
+                endActiveDate = {
+                  endActiveDate: dateFormatYYYYMMDDHHmmss(endActiveDateAndTime),
+                };
+              } else delete this.tripCamerasDetail[index].endActiveDate;
+
               const currentTripCamera = Object.assign(
                 {},
                 this.tripCamerasDetail[index],
-                { startActiveDate },
-                { endActiveDate },
+                startActiveDate,
+                endActiveDate,
               );
               return { cameraSn: value, ...currentTripCamera };
             },
