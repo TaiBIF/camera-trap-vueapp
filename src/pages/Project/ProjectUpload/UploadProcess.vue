@@ -96,7 +96,8 @@
                     處理中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
-                    <i class="icon icon-upload-success" /> 系統已收到檔案
+                    <i class="icon icon-upload-success" />
+                    系統已收到檔案，並處理中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploadError">
                     <i class="icon icon-upload-fail" /> 上傳失敗
