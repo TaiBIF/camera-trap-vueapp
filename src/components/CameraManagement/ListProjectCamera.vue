@@ -69,10 +69,11 @@
           ></template>
         </el-table-column>
       </el-table>
-      <check-delete-project-camera-modal
+      <double-check-modal-with-style
         :open="showCheckModal"
-        :projectCameraName="chooseProjectCameraName"
-        @checkDeleteProjectCamera="checkDeleteProjectCamera"
+        :title="`您確定要刪除${chooseProjectCameraName}嗎？`"
+        description="刪除此計畫內的相機資料，往後行程管理將無法選擇此相機．"
+        @summit="checkDeleteProjectCamera"
         @close="closeCheckModal"
       />
     </div>
@@ -80,7 +81,7 @@
 </template>
 
 <script>
-import CheckDeleteProjectCameraModal from './CheckDeleteProjectCameraModal.vue';
+import DoubleCheckModalWithStyle from '@/components/Modal/DoubleCheckModalWithStyle.vue';
 
 export default {
   name: 'ListProjectCamera',
@@ -91,7 +92,7 @@ export default {
     },
   },
   components: {
-    CheckDeleteProjectCameraModal,
+    DoubleCheckModalWithStyle,
   },
 
   data() {

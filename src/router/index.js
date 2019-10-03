@@ -104,6 +104,14 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/Camera.vue'),
                 },
+                // 行程管理
+                {
+                  path: 'trip',
+                  name: 'projectTrip',
+                  meta: { projectAside: false },
+                  component: () =>
+                    import('@/pages/Project/EditProject/Trip.vue'),
+                },
                 // 計畫成員
                 {
                   path: 'member',

@@ -8,14 +8,12 @@
             width="221"
             srcset="/assets/common/error-img@2x.png"
           />
-          <h1 class="heading mt-0">您確定要刪除{{ projectCameraName }}嗎？</h1>
+          <h1 class="heading mt-0">{{ title }}</h1>
           <div class="text-left">
-            刪除此計畫內的相機資料，往後行程管理將無法選擇此相機．
+            {{ description }}
           </div>
           <a @click="$emit('close')" class="btn btn-default">取消</a>
-          <a @click="$emit('checkDeleteProjectCamera')" class="btn btn-orange"
-            >是，我確定</a
-          >
+          <a @click="$emit('summit')" class="btn btn-orange">是，我確定</a>
         </div>
       </div>
     </div>
@@ -24,13 +22,16 @@
 
 <script>
 export default {
-  name: 'CheckDeleteProjectCameraModal',
+  name: 'DoubleCheckModalWithStyle',
   props: {
     open: {
       type: Boolean,
       default: false,
     },
-    projectCameraName: {
+    title: {
+      type: String,
+    },
+    description: {
       type: String,
     },
   },
