@@ -587,9 +587,9 @@ export default {
           renderer: (instance, td, row, col, prop, value) => {
             resetTd(td);
 
-            td.innerHTML = value;
+            td.innerHTML = `<div class="text">${value}</div>`;
             if (!this.annotations[row].file) {
-              td.innerHTML += '<span class="alert-box">!</span>';
+              td.innerHTML += '<div class="alert-box">!</div>';
               td.className = 'htFileInvalid';
             }
 
@@ -802,11 +802,16 @@ export default {
   overflow: visible;
   background: transparentize(#dbc451, 0.9);
 
+  .text {
+    position: absolute;
+    z-index: 2;
+  }
+
   .alert-box {
     background: #ffecc5;
-    float: left;
-    margin-left: -7px;
-    margin-top: 1px;
+    position: absolute;
+    z-index: 1;
+    left: 2px;
   }
 }
 </style>
