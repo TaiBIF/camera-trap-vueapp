@@ -133,7 +133,7 @@ export default {
         },
         height: () => {
           return Math.min(
-            this.HandsontableSetting.data.length * 42 + 43,
+            this.HandsontableSetting.data.length * 42 + 65,
             document.querySelector('.sidebar').offsetHeight - 100,
           );
         },
