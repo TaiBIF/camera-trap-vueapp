@@ -190,7 +190,7 @@ export default {
     openEditProjectTripCamera: {
       type: Function,
     },
-    addProjectTripRequest: {
+    addEditProjectTripRequest: {
       type: Function,
     },
     setEditProjectTrip: {
@@ -301,9 +301,50 @@ export default {
               if (this.projectTripCameraLocations[value]) {
                 cameraLocations = this.projectTripCameraLocations[value].map(
                   cameraLocation => {
+                    let cameraLocationEven = undefined;
+                    let cameraLocationMark = undefined;
+                    let projectCameras = undefined;
+                    if (
+                      this.editProjectTripData.id &&
+                      this.editProjectTripData.studyAreas
+                    ) {
+                      this.editProjectTripData.studyAreas.some(
+                        studyAreaData => {
+                          if (
+                            studyAreaData.studyArea === value &&
+                            studyAreaData.cameraLocations
+                          ) {
+                            studyAreaData.cameraLocations.some(
+                              cameraLocationData => {
+                                if (
+                                  cameraLocationData.cameraLocation ===
+                                    cameraLocation.value &&
+                                  cameraLocationData.projectCameras &&
+                                  cameraLocationData.projectCameras.length > 0
+                                ) {
+                                  cameraLocationEven =
+                                    cameraLocationData.cameraLocationEven;
+                                  cameraLocationMark =
+                                    cameraLocationData.cameraLocationMark;
+                                  projectCameras =
+                                    cameraLocationData.projectCameras;
+                                  return true;
+                                }
+                              },
+                            );
+                          }
+                          if (projectCameras) {
+                            return true;
+                          }
+                        },
+                      );
+                    }
                     return {
                       cameraLocation: cameraLocation.value,
                       title: cameraLocation.label,
+                      cameraLocationEven: cameraLocationEven || '',
+                      cameraLocationMark: cameraLocationMark || '',
+                      projectCameras: projectCameras || [],
                     };
                   },
                 );
@@ -320,13 +361,16 @@ export default {
           }
 
           const { sn, member, mark } = this.projectTrip;
-          const body = {
+          let body = {
             sn,
             member,
             mark,
             studyAreas,
             date: this.projectTripDate,
           };
+          if (this.editProjectTripData.id)
+            body = { id: this.editProjectTripData.id, ...body };
+
           this.setEditProjectTrip(body);
 
           if (this.showNextStep) {
@@ -355,13 +399,13 @@ export default {
       this.showCheckCameraLocationsModal = false;
     },
     checkAddProjectTripRequest() {
-      this.addProjectTripRequest(true);
+      this.addEditProjectTripRequest(true);
       this.closeCheckStudyAreasModal();
       this.closeEditProjectTripBasic();
     },
     checkGoEditProjectTripCamera() {
       if (this.showNextStep) this.openEditProjectTripCamera();
-      else this.addProjectTripRequest(true);
+      else this.addEditProjectTripRequest(true);
 
       this.closeCheckCameraLocationsModal();
       this.closeEditProjectTripBasic();

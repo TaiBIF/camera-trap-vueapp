@@ -117,7 +117,7 @@
             <label class="col-4">記憶卡檔案數:</label>
             <div class="col-6">
               <input
-                v-model="tripCamerasDetail[index].memoryCardNumber"
+                v-model="tripCamerasDetail[index].cameraMemoryCardNumber"
                 type="text"
                 placeholder="請輸入檔案數量"
                 class="form-control"
@@ -352,13 +352,6 @@ export default {
   },
   async mounted() {
     this.editProjectTripBasic = Object.assign({}, this.editProjectTripData);
-    if (
-      this.editProjectTripData.projectCameras &&
-      this.editProjectTripData.projectCameras.length > 0
-    ) {
-      this.cmaeraLocationEvenOptions = ['設置', '替換'];
-    } else this.cmaeraLocationEvenOptions = ['設置'];
-
     this.projectTrip.cameraLocationEven = this.cmaeraLocationEvenOptions[0];
 
     await this.getProjectCameras({ projectId: this.projectId });
@@ -378,6 +371,7 @@ export default {
       const nextProjectTrip = this.editProjectTripBasic.studyAreas[
         this.selectedStudyAreaIndex
       ].cameraLocations[this.selectedCameraLocationIndex];
+
       const projectCameras = nextProjectTrip.projectCameras
         ? {
             projectCameras: nextProjectTrip.projectCameras.map(
@@ -391,8 +385,11 @@ export default {
         this.selectedStudyAreaIndex
       ].cameraLocations[this.selectedCameraLocationIndex].projectCameras;
 
+      this.cmaeraLocationEvenOptions = ['設置'];
+
       if (nextTripCamerasDetail && nextTripCamerasDetail.length > 0) {
         this.tripCamerasDetail = nextTripCamerasDetail;
+
         if (
           this.projectTrip.projectCameras &&
           this.projectTrip.projectCameras.length === 1
@@ -417,6 +414,9 @@ export default {
             };
           } else this.endActiveTime = { HH: '00', mm: '00' };
         }
+
+        if (this.editProjectTripBasic.id)
+          this.cmaeraLocationEvenOptions = ['設置', '替換'];
       } else {
         this.tripCamerasDetail = [{}, {}];
         this.startActiveTime = { HH: '00', mm: '00' };
@@ -466,6 +466,7 @@ export default {
                 startActiveDate,
                 endActiveDate,
               );
+
               return { cameraSn: value, ...currentTripCamera };
             },
           );
@@ -473,13 +474,12 @@ export default {
         }
 
         if (Object.keys(currentProjectTrip).length > 0) {
-          Object.assign(
-            this.editProjectTripBasic.studyAreas[this.selectedStudyAreaIndex]
-              .cameraLocations[this.selectedCameraLocationIndex],
-            currentProjectTrip,
-          );
+          this.editProjectTripBasic.studyAreas[
+            this.selectedStudyAreaIndex
+          ].cameraLocations[this.selectedCameraLocationIndex] = {
+            ...currentProjectTrip,
+          };
         }
-
         this.setEditProjectTrip(this.editProjectTripBasic);
       }
     },
