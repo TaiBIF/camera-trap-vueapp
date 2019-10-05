@@ -6,13 +6,19 @@
           <h4>
             行程管理
           </h4>
-          <button
-            class="float-right btn btn-light-green btn-sm"
-            @click="openAddProjectTripBasic"
-            v-show="showListTrip"
-          >
-            新增行程
-          </button>
+          <span class="float-right" v-show="showListTrip">
+            <button
+              class=" btn btn-light-green btn-sm"
+              @click="openAddProjectTripBasic"
+            >
+              新增行程
+            </button>
+            <el-input
+              placeholder="搜尋..."
+              suffix-icon="el-icon-search"
+              v-model="searchTrip"
+            ></el-input>
+          </span>
         </div>
       </div>
       <div
@@ -22,6 +28,7 @@
         <list-project-trip
           :projectId="projectId"
           :projectTripsData="projectTrips"
+          :searchTrip="searchTrip"
           @deleteProjectTrip="deleteProjectTrip"
           @openEditProjectTripBasic="openEditProjectTripBasic"
         />
@@ -101,6 +108,7 @@ export default {
       showEditProjectTripCamera: false,
       projectId: this.$route.params.projectId,
       showCheckCameraDetailModal: false,
+      searchTrip: '',
     };
   },
   computed: {
@@ -193,9 +201,11 @@ export default {
   watch: {
     showEditProjectTripBasic: function(value) {
       this.showListTrip = !value;
+      this.searchTrip = '';
     },
     showEditProjectTripCamera: function(value) {
       this.showListTrip = !value;
+      this.searchTrip = '';
     },
   },
   mounted() {

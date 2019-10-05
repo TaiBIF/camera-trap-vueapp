@@ -1,7 +1,7 @@
 <template>
   <div class="list-project-trip">
     <div>
-      <el-table :data="projectTripsData" stripe style="width: 100%">
+      <el-table :data="projectTripsDataFilter" stripe style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-row :gutter="10">
@@ -302,6 +302,9 @@ export default {
     projectId: {
       type: String,
     },
+    searchTrip: {
+      type: String,
+    },
     projectTripsData: {
       type: Array,
       default: () => [],
@@ -318,7 +321,41 @@ export default {
       selectedTrip: {},
       cameraSettingKeys,
       shotSettingKeys,
+      projectTripsDataFilter: [],
     };
+  },
+  mounted() {
+    this.projectTripsDataFilter = this.projectTripsData;
+  },
+  watch: {
+    projectTripsData: function() {
+      this.projectTripsDataFilter = this.projectTripsData;
+    },
+    searchTrip: function() {
+      this.projectTripsDataFilter = this.projectTripsData.filter(data => {
+        return (
+          !this.searchTrip ||
+          (data.sn &&
+            data.sn.toLowerCase().includes(this.searchTrip.toLowerCase())) ||
+          (data.date &&
+            this.formatDate(data.date)
+              .toLowerCase()
+              .includes(this.searchTrip.toLowerCase())) ||
+          (data.member &&
+            data.member
+              .toLowerCase()
+              .includes(this.searchTrip.toLowerCase())) ||
+          (data.studyAreas &&
+            data.studyAreas.some(studyArea => {
+              return studyArea.title
+                .toLowerCase()
+                .includes(this.searchTrip.toLowerCase());
+            })) ||
+          (data.mark &&
+            data.mark.toLowerCase().includes(this.searchTrip.toLowerCase()))
+        );
+      });
+    },
   },
   methods: {
     openCheckModal(sn, id) {
