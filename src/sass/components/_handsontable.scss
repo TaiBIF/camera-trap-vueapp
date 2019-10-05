@@ -296,12 +296,7 @@
   // border: 2px solid #D0021B !important; /*gives priority over td.area selection background*/
   overflow: visible;
   background: transparentize(#d80c37, 0.84);
-
-  .alert-box {
-    float: left;
-    margin-left: -7px;
-    margin-top: 1px;
-  }
+  padding-left: 18px;
 }
 
 .handsontable td.htNoWrap {

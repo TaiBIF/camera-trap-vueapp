@@ -62,7 +62,8 @@
             type="text"
             id="addParentArea"
             placeholder="新增樣區"
-            @keydown="addNewArea"
+            v-model="newArea"
+            @keydown.enter="addNewArea"
           />
         </div>
       </div>
@@ -101,6 +102,7 @@ export default {
   data() {
     return {
       expandId: null,
+      newArea: '',
     };
   },
   methods: {
@@ -124,16 +126,19 @@ export default {
       }
       return `/project/${this.projectId}/study-areas/${studyArea.id}`;
     },
-    addNewArea(event) {
-      if (event.type === 'keydown' && event.key === 'Enter') {
-        const value = event.target.value;
-        const parentId = event.target.getAttribute('data-parent-id');
-        if (value) {
-          this.$emit('addArea', value, parentId);
-          this.$emit('handleSubmitBtnState', true);
-          event.target.value = '';
-        }
+    addNewArea({ target }) {
+      if (!this.newArea) {
+        return;
       }
+
+      const value = this.newArea;
+      const parentId = target.getAttribute('data-parent-id');
+
+      this.$emit('addArea', value, parentId);
+      this.$emit('handleSubmitBtnState', true);
+
+      // reset new area value
+      this.newArea = '';
     },
     editArea(name, id) {
       this.$emit('editArea', name, id);
@@ -150,7 +155,6 @@ export default {
   }
   input {
     border: 0;
-    font-size: 16px;
     outline: 0;
     padding: 13px 0;
     background-color: transparent;
