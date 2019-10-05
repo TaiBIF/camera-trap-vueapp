@@ -254,6 +254,10 @@ export default {
             );
             this.setFileType(index, uploadStatus.success);
           } catch (error) {
+            if (error instanceof DOMException) {
+              return;
+            }
+
             if (!error.status) {
               const message = '上傳過程連線異常，檔案上傳失敗。';
               this.showInfoModal = true;
