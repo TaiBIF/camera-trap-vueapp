@@ -155,7 +155,6 @@ export default {
   }
   input {
     border: 0;
-    font-size: 16px;
     outline: 0;
     padding: 13px 0;
     background-color: transparent;
