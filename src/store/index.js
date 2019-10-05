@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import account from '@/store/modules/account';
 import calculator from '@/store/modules/calculator';
+import camera from '@/store/modules/camera';
 import config from '@/store/modules/config';
 import dataFields from '@/store/modules/dataFields';
 import forest from '@/store/modules/forest';
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     ...projects,
     upload,
     uploadSessions,
+    camera,
   },
   strict: debug,
 });

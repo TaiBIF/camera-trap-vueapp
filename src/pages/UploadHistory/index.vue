@@ -43,9 +43,21 @@
               {{ row.file.id }}</span
             >
           </td>
-          <td>{{ row.project.shortTitle }}</td>
-          <td>{{ row.cameraLocation.studyArea.title['zh-TW'] }}</td>
-          <td>{{ row.cameraLocation.name }}</td>
+          <td>
+            {{ row.project ? row.project.shortTitle : '計畫已不存在' }}
+          </td>
+          <td>
+            {{
+              row.cameraLocation
+                ? row.cameraLocation.studyArea.title['zh-TW']
+                : '相機位置已不存在'
+            }}
+          </td>
+          <td>
+            {{
+              row.cameraLocation ? row.cameraLocation.name : '相機位置已不存在'
+            }}
+          </td>
           <td style="white-space: nowrap;">
             <div v-if="row.state === 'success'" class="float-left">
               <span class="icon"><i class="icon-upload-success"></i></span>
@@ -81,6 +93,7 @@
               "
             >
               <a
+                v-if="row.project"
                 :href="
                   `/project/${row.project.id}/study-areas/${
                     row.cameraLocation.studyArea.id
