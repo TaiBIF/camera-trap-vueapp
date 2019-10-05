@@ -87,6 +87,27 @@
       :error="error"
       :disabledSubmit="!(canSubmit || !disabledSubmit)"
     />
+    <info-modal
+      v-if="!!showInfoModal"
+      :open="!!showInfoModal"
+      @close="showInfoModal = false"
+    >
+      <div>
+        <div class="image">
+          <img
+            src="/assets/common/error-img.png"
+            width="221"
+            srcset="/assets/common/error-img@2x.png"
+          />
+        </div>
+        <h1 class="text-green">
+          發生錯誤
+        </h1>
+        <p class="text-gray">
+          {{ error.message }}
+        </p>
+      </div>
+    </info-modal>
   </div>
 </template>
 
@@ -99,6 +120,7 @@ import vSelect from 'vue-select';
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { getProjectCameraLocationsByName } from '@/service';
 import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
@@ -107,6 +129,7 @@ const geodeticDatumEnum = ['WGS84', 'TWD97'];
 export default {
   components: {
     StudyAreaSidebar,
+    InfoModal,
     HotTable,
     ActionBtns,
     vSelect,
@@ -122,6 +145,7 @@ export default {
       geodeticDatumEnum,
       errorMessage: undefined,
       status: undefined,
+      showInfoModal: false,
       error: undefined,
       currentStudyAreaId: undefined,
       currentCameraLocationId: undefined,
@@ -133,7 +157,7 @@ export default {
         },
         height: () => {
           return Math.min(
-            this.HandsontableSetting.data.length * 42 + 43,
+            this.HandsontableSetting.data.length * 42 + 65,
             document.querySelector('.sidebar').offsetHeight - 100,
           );
         },
@@ -145,7 +169,7 @@ export default {
           '<span style="color: red;">*</span>經度 (X)',
           '<span style="color: red;">*</span>緯度 (Y)',
           '海拔 (公尺)',
-          '植被',
+          '植被類型',
           '土地覆蓋類型',
         ],
         columns: [
@@ -332,6 +356,7 @@ export default {
         });
         this.error = undefined;
       } catch (e) {
+        this.showInfoModal = true;
         this.error = e;
       }
       this.setLoading(false);

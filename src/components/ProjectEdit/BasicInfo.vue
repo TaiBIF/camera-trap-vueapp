@@ -62,9 +62,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="project-funder" class="col-2"
-              >委辦單位：</label
-            >
+            <label for="project-funder" class="col-2">委辦單位：</label>
             <div class="col-4">
               <input
                 type="text"

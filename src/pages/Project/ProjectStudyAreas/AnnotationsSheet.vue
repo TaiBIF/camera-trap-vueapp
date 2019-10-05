@@ -529,7 +529,7 @@ export default {
         // 不明原因有時後 sp.title 會與 title 值不相同，造成資料還是顯示舊的 issue #125
         if (sp && sp.title === title) {
           // 如果 sp 存在才要用一般方式判斷
-          td.innerHTML = sp.title;
+          td.innerHTML = `<span class="text">${sp.title}</span>`;
 
           if (sp.code) {
             // 如果有 code 則要顯示物種提示
@@ -587,9 +587,9 @@ export default {
           renderer: (instance, td, row, col, prop, value) => {
             resetTd(td);
 
-            td.innerHTML = value;
+            td.innerHTML = `<div class="text">${value}</div>`;
             if (!this.annotations[row].file) {
-              td.innerHTML += '<span class="alert-box">!</span>';
+              td.innerHTML += '<div class="alert-box">!</div>';
               td.className = 'htFileInvalid';
             }
 
@@ -798,15 +798,20 @@ export default {
 </script>
 
 <style lang="scss">
-.handsontable td.htFileInvalid {
-  overflow: visible;
-  background: transparentize(#dbc451, 0.9);
+.handsontable {
+  td.htFileInvalid {
+    overflow: visible;
+    background: transparentize(#dbc451, 0.9);
+    padding-left: 16px;
 
-  .alert-box {
-    background: #ffecc5;
-    float: left;
-    margin-left: -7px;
-    margin-top: 1px;
+    .alert-box {
+      background: #fbd485;
+    }
+  }
+
+  .text {
+    position: relative;
+    white-space: nowrap;
   }
 }
 </style>

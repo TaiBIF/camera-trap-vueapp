@@ -214,10 +214,10 @@
   border-left-width: 0;
   border-right: 1px solid #dbdbdb;
   border-bottom: 1px solid #dbdbdb;
-  height: 30px;
+  height: 20px;
   vertical-align: middle;
   empty-cells: show;
-  line-height: 29px;
+  line-height: 24px;
   padding: 0 8px 0;
   /* top, bottom padding different than 0 is handled poorly by FF with HTML5 doctype */
   background-color: #fff;
@@ -296,12 +296,7 @@
   // border: 2px solid #D0021B !important; /*gives priority over td.area selection background*/
   overflow: visible;
   background: transparentize(#d80c37, 0.84);
-
-  .alert-box {
-    float: left;
-    margin-left: -7px;
-    margin-top: 1px;
-  }
+  padding-left: 18px;
 }
 
 .handsontable td.htNoWrap {

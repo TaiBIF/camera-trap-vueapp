@@ -96,6 +96,22 @@ export default new Router({
                   component: () =>
                     import('@/pages/Project/EditProject/CameraLocation.vue'),
                 },
+                // 相機管理
+                {
+                  path: 'camera',
+                  name: 'projectCamera',
+                  meta: { projectAside: false },
+                  component: () =>
+                    import('@/pages/Project/EditProject/Camera.vue'),
+                },
+                // 行程管理
+                {
+                  path: 'trip',
+                  name: 'projectTrip',
+                  meta: { projectAside: false },
+                  component: () =>
+                    import('@/pages/Project/EditProject/Trip.vue'),
+                },
                 // 計畫成員
                 {
                   path: 'member',

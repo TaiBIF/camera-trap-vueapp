@@ -93,10 +93,11 @@
                       class="text-green icon fas fa-circle-notch fa-spin"
                       style="font-size: 25px"
                     />
-                    處理中
+                    上傳中，請勿離開此頁面
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
-                    <i class="icon icon-upload-success" /> 系統已收到檔案
+                    <i class="icon icon-upload-success" />
+                    系統已收到檔案，並處理中
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploadError">
                     <i class="icon icon-upload-fail" /> 上傳失敗
@@ -172,9 +173,11 @@
           />
         </div>
         <h1 class="text-green">
-          {{ uploadErrorOtherText }}
+          發生錯誤
         </h1>
-        <p class="text-gray"></p>
+        <p class="text-gray">
+          {{ uploadErrorOtherText }}
+        </p>
       </div>
     </info-modal>
   </div>
@@ -251,13 +254,29 @@ export default {
             );
             this.setFileType(index, uploadStatus.success);
           } catch (error) {
-            if (file.uploadStatus !== uploadStatus.cancel) {
-              // 不是主動取消才要改變狀態
-              this.setFileType(index, uploadStatus.uploadError, error.message);
+            if (error instanceof DOMException) {
+              return;
             }
-            this.showInfoModal = true;
-            this.uploadErrorType = 'other-error';
-            this.uploadErrorOtherText = error;
+
+            if (!error.status) {
+              const message = '上傳過程連線異常，檔案上傳失敗。';
+              this.showInfoModal = true;
+              this.uploadErrorType = 'other-error';
+              this.uploadErrorOtherText = message;
+              this.setFileType(index, uploadStatus.uploadError, message);
+            } else {
+              if (file.uploadStatus !== uploadStatus.cancel) {
+                // 不是主動取消才要改變狀態
+                this.setFileType(
+                  index,
+                  uploadStatus.uploadError,
+                  error.message,
+                );
+              }
+              this.showInfoModal = true;
+              this.uploadErrorType = 'other-error';
+              this.uploadErrorOtherText = error;
+            }
           }
         }
       }
