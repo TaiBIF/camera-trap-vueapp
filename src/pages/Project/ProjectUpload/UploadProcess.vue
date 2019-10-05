@@ -93,7 +93,7 @@
                       class="text-green icon fas fa-circle-notch fa-spin"
                       style="font-size: 25px"
                     />
-                    處理中
+                    上傳中，請勿離開此頁面
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.success">
                     <i class="icon icon-upload-success" />
