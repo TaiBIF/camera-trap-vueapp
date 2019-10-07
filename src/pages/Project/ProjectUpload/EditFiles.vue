@@ -16,12 +16,12 @@
           :useCustomSlot="true"
           @vdropzone-files-added="addFiles($event)"
         >
-          <label class="btn btn-upload">
+          <button class="btn btn-upload">
             <span class="icon">
               <i class="icon-add-green" />
             </span>
             <span class="text">新增上傳檔案</span>
-          </label>
+          </button>
         </vue-dropzone>
 
         <div class="message is-alert" v-if="overTotalLimited">

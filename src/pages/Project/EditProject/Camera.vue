@@ -7,7 +7,7 @@
             相機管理
           </h4>
           <button
-            class="float-right btn btn-light-green"
+            class="float-right btn btn-light-green btn-sm"
             @click="openAddProjectCameras"
             v-show="showListProjectCamera"
           >
@@ -19,13 +19,13 @@
             本單位相機
           </h4>
           <button
-            class="float-right btn btn-light-green"
+            class="float-right btn btn-light-green btn-sm"
             @click="addProjectsCameraRequest"
           >
             新增
           </button>
           <button
-            class="float-right btn btn-white-border"
+            class="float-right btn btn-white-border btn-sm"
             @click="closeAddProjectCameras"
           >
             取消
@@ -36,13 +36,13 @@
             編輯相機
           </h4>
           <button
-            class="float-right btn btn-light-green"
+            class="float-right btn btn-light-green btn-sm"
             @click="editProjectsCameraRequest"
           >
             完成
           </button>
           <button
-            class="float-right btn btn-white-border"
+            class="float-right btn btn-white-border btn-sm"
             @click="closeEditProjectCameras"
           >
             取消
