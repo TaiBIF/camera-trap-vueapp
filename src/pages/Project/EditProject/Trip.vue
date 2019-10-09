@@ -7,7 +7,7 @@
             行程管理
           </h4>
           <button
-            class="float-right btn btn-light-green"
+            class="float-right btn btn-light-green btn-sm"
             @click="openEditProjectTripBasic"
             v-show="showListTrip"
           >
