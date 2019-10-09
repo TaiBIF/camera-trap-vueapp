@@ -187,9 +187,7 @@
         <span v-else-if="errorType === 'missing-fields'">
           缺少欄位: {{ errorMessage }}
         </span>
-        <span v-else-if="errorType === 'others'">
-          其他錯誤
-        </span>
+        <span v-else>其他錯誤: {{ errorMessage }}</span>
       </p></info-modal
     >
   </div>

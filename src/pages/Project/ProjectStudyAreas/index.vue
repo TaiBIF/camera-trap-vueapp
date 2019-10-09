@@ -26,7 +26,7 @@
       <!-- Overview mode -->
       <div v-else class="search-content">
         <a
-          class="btn btn-green-border btn-sm float-right"
+          class="btn btn-green-border float-right"
           v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
           :href="canSearch ? exportCSVLink : undefined"
           target="_blank"
@@ -136,21 +136,21 @@
                     hide-clear-button
                   ></vue-timepicker>
                 </div>
-                <a
-                  @click="clickSearch"
-                  class="btn btn-sm btn-green"
+                <button
+                  @click.prevent="clickSearch"
+                  class="btn btn-green"
                   :style="{ margin: '4px' }"
                   :disabled="!canSearch"
                 >
                   篩選
-                </a>
+                </button>
               </div>
             </div>
           </div>
         </form>
         <div>
           <button
-            class="btn btn-sm btn-block btn-green"
+            class="btn btn-block btn-green"
             @click="setEdit(true)"
             :disabled="disabledEdit"
           >
