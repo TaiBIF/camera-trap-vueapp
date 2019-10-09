@@ -11,20 +11,12 @@
     &.d-inline-block
         min-width: 200px
 
-    .vs__selected-options
-        > input[type=search],
-        > input[type=search]:focus
-            margin: 0
-
     &.is-invalid .dropdown-toggle
       border-color: $red !important
 
     .open-indicator
-        width: 20px
-        height: 20px
         margin-right: 5px
         border: 0
-        margin-top: 10px
         background-image: url(/assets/common/arrow-down@2x.png)
         background-position: center
         background-size: 20px
@@ -37,6 +29,7 @@
         transform: rotate(180deg)
 
     .dropdown-toggle
+        height: 32px !important
         padding-bottom: 0
         background: #FFF
         z-index: 1999
@@ -45,5 +38,5 @@
             display: none
 
     .selected-tag
-        height: 30px
+        margin: 0px 2px;
         padding: 0 20px
