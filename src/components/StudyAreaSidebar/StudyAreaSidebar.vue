@@ -44,7 +44,8 @@
                 type="text"
                 :id="`addArea_${studyArea.id}`"
                 placeholder="新增子樣區"
-                @keydown="addNewArea"
+                v-model="newSubStudyArea"
+                @keydown.enter="addNewSubStudyArea"
                 :data-parent-id="studyArea.id"
               />
             </div>
@@ -62,8 +63,8 @@
             type="text"
             id="addParentArea"
             placeholder="新增樣區"
-            v-model="newArea"
-            @keydown.enter="addNewArea"
+            v-model="newStudyArea"
+            @keydown.enter="addNewStudyArea"
           />
         </div>
       </div>
@@ -102,7 +103,8 @@ export default {
   data() {
     return {
       expandId: null,
-      newArea: '',
+      newStudyArea: '',
+      newSubStudyArea: '',
     };
   },
   methods: {
@@ -126,19 +128,24 @@ export default {
       }
       return `/project/${this.projectId}/study-areas/${studyArea.id}`;
     },
-    addNewArea({ target }) {
-      if (!this.newArea) {
+    addNewSubStudyArea() {
+      const value = this.newSubStudyArea;
+      if (!value) {
         return;
       }
-
-      const value = this.newArea;
-      const parentId = target.getAttribute('data-parent-id');
-
+      const parentId = event.target.getAttribute('data-parent-id');
       this.$emit('addArea', value, parentId);
       this.$emit('handleSubmitBtnState', true);
-
-      // reset new area value
-      this.newArea = '';
+      this.newSubStudyArea = '';
+    },
+    addNewStudyArea() {
+      const value = this.newStudyArea;
+      if (!value) {
+        return;
+      }
+      this.$emit('addArea', value);
+      this.$emit('handleSubmitBtnState', true);
+      this.newStudyArea = '';
     },
     editArea(name, id) {
       this.$emit('editArea', name, id);

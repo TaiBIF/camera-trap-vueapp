@@ -23,7 +23,7 @@
                         projectId,
                       },
                     }"
-                    class="float-right btn btn-green-border btn-sm"
+                    class="float-right btn btn-green-border"
                   >
                     <i class="fa fa-pencil-alt mr-2"></i>
                     <span class="text" style="white-space: nowrap;"
