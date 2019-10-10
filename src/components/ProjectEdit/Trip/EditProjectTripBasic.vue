@@ -193,7 +193,7 @@ export default {
     addEditProjectTripRequest: {
       type: Function,
     },
-    setEditProjectTrip: {
+    setEditProjectTripData: {
       type: Function,
     },
     editProjectTripData: {
@@ -371,7 +371,7 @@ export default {
           if (this.editProjectTripData.id)
             body = { id: this.editProjectTripData.id, ...body };
 
-          this.setEditProjectTrip(body);
+          this.setEditProjectTripData(body);
 
           if (this.showNextStep) {
             if (emptyCameraLocation) this.openCheckCameraLocationsModal();

@@ -29,6 +29,8 @@
           :projectId="projectId"
           :projectTripsData="projectTrips"
           :searchTrip="searchTrip"
+          :cmaeraLocationEvenString="cmaeraLocationEvenString"
+          :cameraStateString="cameraStateString"
           @deleteProjectTrip="deleteProjectTrip"
           @openEditProjectTripBasic="openEditProjectTripBasic"
         />
@@ -42,7 +44,7 @@
           :closeEditProjectTripBasic="closeEditProjectTripBasic"
           :openEditProjectTripCamera="openEditProjectTripCamera"
           :addEditProjectTripRequest="addEditProjectTripRequest"
-          :setEditProjectTrip="setEditProjectTripData"
+          :setEditProjectTripData="setEditProjectTripData"
           :editProjectTripData="editProjectTripData"
         ></edit-project-trip-basic>
       </div>
@@ -52,7 +54,9 @@
           :projectCameras="projectCameras"
           :getProjectCameras="getProjectCameras"
           :projectId="projectId"
-          :setEditProjectTrip="setEditProjectTripData"
+          :setEditProjectTripData="setEditProjectTripData"
+          :cmaeraLocationEvenString="cmaeraLocationEvenString"
+          :cameraStateString="cameraStateString"
         ></edit-project-trip-camera>
       </div>
     </div>
@@ -94,6 +98,15 @@ const projectCamera = createNamespacedHelpers('projectCamera');
 const studyAreas = createNamespacedHelpers('studyAreas');
 const trip = createNamespacedHelpers('trip');
 
+const cmaeraLocationEvenString = {
+  設置: '設置',
+  替換: '替換',
+};
+const cameraStateString = {
+  active: '正常',
+  broken: '毀損',
+};
+
 export default {
   components: {
     EditProjectTripBasic,
@@ -109,6 +122,8 @@ export default {
       projectId: this.$route.params.projectId,
       showCheckCameraDetailModal: false,
       searchTrip: '',
+      cmaeraLocationEvenString,
+      cameraStateString,
     };
   },
   computed: {

@@ -96,7 +96,7 @@
             <div class="col-6">
               <v-select
                 v-model="tripCamerasDetail[index].cameraState"
-                :options="stateOptions"
+                :options="cameraStateOptions"
                 placeholder="請選擇相機狀態"
                 @change="changeLimit"
               ></v-select>
@@ -293,7 +293,6 @@ import vSelect from 'vue-select';
 const batteryTypeOptions = ['鹼性電池', '充電電池'];
 const brightnessOptions = ['自動'];
 const sensitivityOptions = ['自動'];
-const stateOptions = ['active'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
@@ -325,8 +324,14 @@ export default {
     projectId: {
       type: String,
     },
-    setEditProjectTrip: {
+    setEditProjectTripData: {
       type: Function,
+    },
+    cmaeraLocationEvenString: {
+      type: Object,
+    },
+    cameraStateString: {
+      type: Object,
     },
   },
   data: function() {
@@ -336,11 +341,13 @@ export default {
       tripCamerasDetail: [{}, {}],
       startActiveTime: { HH: '00', mm: '00' },
       endActiveTime: { HH: '00', mm: '00' },
+      cmaeraLocationEvenOptionsAll: [],
+      cameraStateOptionsAll: [],
       cmaeraLocationEvenOptions: [],
+      cameraStateOptions: [],
       batteryTypeOptions,
       brightnessOptions,
       sensitivityOptions,
-      stateOptions,
       projectCameraOptions: [],
       selectedStudyAreaIndex: null,
       selectedCameraLocationIndex: null,
@@ -352,7 +359,18 @@ export default {
   },
   async mounted() {
     this.editProjectTripBasic = Object.assign({}, this.editProjectTripData);
-    this.projectTrip.cameraLocationEven = this.cmaeraLocationEvenOptions[0];
+    // 所有相機位置事件選項，對照顯示文字(label)及值(value)
+    this.cmaeraLocationEvenOptionsAll = Object.keys(
+      this.cmaeraLocationEvenString,
+    ).map(value => ({ label: this.cmaeraLocationEvenString[value], value }));
+    // 所有相機狀態選項，對照顯示文字(label)及值(value)
+    this.cameraStateOptionsAll = Object.keys(this.cameraStateString).map(
+      value => ({ label: this.cameraStateString[value], value }),
+    );
+
+    // 預設選項只有 事件: 設置 狀態: 正常
+    this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
+    this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
     await this.getProjectCameras({ projectId: this.projectId });
     this.projectCameraOptions = this.projectCameras.map(({ sn }) => sn);
@@ -372,20 +390,38 @@ export default {
         this.selectedStudyAreaIndex
       ].cameraLocations[this.selectedCameraLocationIndex];
 
-      const projectCameras = nextProjectTrip.projectCameras
+      // 從資料轉換成表單用格式 相機位置事件
+      const cameraLocationEven = nextProjectTrip.cameraLocationEven
         ? {
-            projectCameras: nextProjectTrip.projectCameras.map(
-              ({ cameraSn }) => cameraSn,
-            ),
+            label: this.cmaeraLocationEvenString[
+              nextProjectTrip.cameraLocationEven
+            ],
+            value: nextProjectTrip.cameraLocationEven,
           }
-        : {};
-      this.projectTrip = Object.assign({}, nextProjectTrip, projectCameras);
+        : undefined;
+      // 從資料轉換成表單用格式 相機編號
+      const projectCameras = nextProjectTrip.projectCameras
+        ? nextProjectTrip.projectCameras.map(({ cameraSn }) => cameraSn)
+        : [];
+      this.projectTrip = {
+        ...nextProjectTrip,
+        cameraLocationEven,
+        projectCameras,
+      };
 
-      const nextTripCamerasDetail = this.editProjectTripBasic.studyAreas[
-        this.selectedStudyAreaIndex
-      ].cameraLocations[this.selectedCameraLocationIndex].projectCameras;
-
-      this.cmaeraLocationEvenOptions = ['設置'];
+      let nextTripCamerasDetail = Array.from(
+        this.editProjectTripBasic.studyAreas[this.selectedStudyAreaIndex]
+          .cameraLocations[this.selectedCameraLocationIndex].projectCameras,
+      ).map(nextTripCameraDetail => {
+        // 從資料轉換成表單用格式 相機狀態
+        const cameraState = nextTripCameraDetail.cameraState
+          ? {
+              label: this.cameraStateString[nextTripCameraDetail.cameraState],
+              value: nextTripCameraDetail.cameraState,
+            }
+          : {};
+        return { ...nextTripCameraDetail, cameraState };
+      });
 
       if (nextTripCamerasDetail && nextTripCamerasDetail.length > 0) {
         this.tripCamerasDetail = nextTripCamerasDetail;
@@ -414,9 +450,6 @@ export default {
             };
           } else this.endActiveTime = { HH: '00', mm: '00' };
         }
-
-        if (this.editProjectTripBasic.id)
-          this.cmaeraLocationEvenOptions = ['設置', '替換'];
       } else {
         this.tripCamerasDetail = [{}, {}];
         this.startActiveTime = { HH: '00', mm: '00' };
@@ -427,10 +460,23 @@ export default {
       if (this.selectedCameraLocationIndex !== null) {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
+          // 從表單用格式轉換成資料 相機位置事件
+          let cameraLocationEven = {};
+          if (this.projectTrip.cameraLocationEven)
+            cameraLocationEven = this.projectTrip.cameraLocationEven.value;
+          // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
+              let cameraState = {};
               let startActiveDate = {};
               let endActiveDate = {};
+
+              if (this.tripCamerasDetail[index].cameraState) {
+                // 從表單用格式轉換成資料 相機狀態
+                cameraState = {
+                  cameraState: this.tripCamerasDetail[index].cameraState.value,
+                };
+              }
 
               if (
                 this.tripCamerasDetail[index].startActiveDate &&
@@ -463,6 +509,7 @@ export default {
               const currentTripCamera = Object.assign(
                 {},
                 this.tripCamerasDetail[index],
+                cameraState,
                 startActiveDate,
                 endActiveDate,
               );
@@ -470,7 +517,12 @@ export default {
               return { cameraSn: value, ...currentTripCamera };
             },
           );
-          currentProjectTrip.projectCameras = projectCameras;
+
+          currentProjectTrip = {
+            ...currentProjectTrip,
+            cameraLocationEven,
+            projectCameras,
+          };
         }
 
         if (Object.keys(currentProjectTrip).length > 0) {
@@ -480,7 +532,7 @@ export default {
             ...currentProjectTrip,
           };
         }
-        this.setEditProjectTrip(this.editProjectTripBasic);
+        this.setEditProjectTripData(this.editProjectTripBasic);
       }
     },
     changeLimit(value) {

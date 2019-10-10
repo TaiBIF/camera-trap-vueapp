@@ -55,7 +55,17 @@
                       style="width: 100%"
                     >
                       <el-table-column label="位置" prop="cameraLocation" />
-                      <el-table-column label="事件" prop="cameraLocationEven" />
+                      <el-table-column label="事件" prop="cameraLocationEven">
+                        <template slot-scope="props">
+                          <div :title="props.row.cameraLocationMark">
+                            {{
+                              cmaeraLocationEvenString[
+                                props.row.cameraLocationMark
+                              ] || ''
+                            }}
+                          </div>
+                        </template>
+                      </el-table-column>
                       <el-table-column label="註記" width="120">
                         <template slot-scope="props">
                           <div :title="props.row.cameraLocationMark">
@@ -158,11 +168,21 @@
                         </template>
                       </el-table-column>
                       <el-table-column label="相機編號" prop="cameraSn" />
-                      <el-table-column
-                        label="相機狀態"
-                        prop="cameraState"
-                        width="80"
-                      />
+                      <el-table-column label="相機狀態" width="80">
+                        <template slot-scope="tripCamera">
+                          <div
+                            :title="
+                              cameraStateString[tripCamera.row.cameraState] ||
+                                ''
+                            "
+                          >
+                            {{
+                              cameraStateString[tripCamera.row.cameraState] ||
+                                ''
+                            }}
+                          </div>
+                        </template>
+                      </el-table-column>
                       <el-table-column label="註記" prop="cameraMark">
                         <template slot-scope="tripCamera">
                           <div :title="tripCamera.row.cameraMark">
@@ -308,6 +328,12 @@ export default {
     projectTripsData: {
       type: Array,
       default: () => [],
+    },
+    cmaeraLocationEvenString: {
+      type: Object,
+    },
+    cameraStateString: {
+      type: Object,
     },
   },
   components: {
