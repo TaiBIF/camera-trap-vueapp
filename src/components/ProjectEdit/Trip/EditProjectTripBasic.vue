@@ -318,16 +318,19 @@ export default {
                               cameraLocationData => {
                                 if (
                                   cameraLocationData.cameraLocation ===
-                                    cameraLocation.value &&
-                                  cameraLocationData.projectCameras &&
-                                  cameraLocationData.projectCameras.length > 0
+                                  cameraLocation.value
                                 ) {
                                   cameraLocationEven =
                                     cameraLocationData.cameraLocationEven;
                                   cameraLocationMark =
                                     cameraLocationData.cameraLocationMark;
-                                  projectCameras =
-                                    cameraLocationData.projectCameras;
+                                  if (
+                                    cameraLocationData.projectCameras &&
+                                    cameraLocationData.projectCameras.length > 0
+                                  )
+                                    projectCameras =
+                                      cameraLocationData.projectCameras;
+
                                   return true;
                                 }
                               },
