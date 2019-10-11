@@ -128,7 +128,7 @@
         </div>
       </form>
     </div>
-    <div class="edit-project-trip-basic-footer float-right mt-3">
+    <div class="edit-project-trip-basic-footer float-right mt-3 mb-3">
       <button
         class="btn btn-green-border mr-3"
         @click="closeEditProjectTripBasic"
