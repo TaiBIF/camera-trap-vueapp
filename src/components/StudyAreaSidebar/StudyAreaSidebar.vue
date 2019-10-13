@@ -58,10 +58,21 @@
               @change="selectCameraLocation"
             >
               <el-checkbox
-                v-for="({ name }, index) in cameraLocationsOption"
+                v-for="(cameraLocation, index) in cameraLocationsOption"
                 :key="index"
-                :label="name"
-              />
+                :label="cameraLocation.name"
+              >
+                {{ cameraLocation.name }}
+                <span class="icon" v-if="cameraLocation.isLocked">
+                  <i
+                    class="icon-lock align-middle"
+                    v-tooltip.top="`${cameraLocation.lockUser.name} 正在編輯中`"
+                  ></i>
+                </span>
+                <span class="error-label" v-if="cameraLocation.failures > 0">
+                  {{ cameraLocation.failures }}
+                </span>
+              </el-checkbox>
             </el-checkbox-group>
           </div>
         </li>
