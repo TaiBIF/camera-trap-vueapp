@@ -39,64 +39,6 @@
         </h3>
         <hr class="my-0" />
         <form action="" class="form form-horizontal">
-          <div class="form-group mb-0">
-            <label>相機位置</label>
-            <div class="d-inline-block">
-              <div class="checkbox checkbox-inline">
-                <input
-                  type="checkbox"
-                  id="camera-all"
-                  :checked="isCheckedAllCameraLocations"
-                  @click="
-                    query.cameraLocations = isCheckedAllCameraLocations
-                      ? []
-                      : cameraLocations.map(v => v.id)
-                  "
-                />
-                <label for="camera-all">全部相機位置</label>
-              </div>
-              <div class="mb-2">
-                <div
-                  class="d-inline-block"
-                  :key="camera.id"
-                  v-for="(camera, index) in cameraLocations"
-                >
-                  <div class="checkbox checkbox-inline" v-if="index < 12">
-                    <input
-                      v-if="!isCheckedAllCameraLocations"
-                      type="checkbox"
-                      v-model="query.cameraLocations"
-                      :id="camera.id"
-                      :value="camera.id"
-                      :disabled="isCheckedAllCameraLocations"
-                    />
-                    <input v-else type="checkbox" disabled="true" />
-                    <label :for="camera.id">
-                      <span class="text">{{ camera.name }}</span>
-                      <span class="icon" v-if="camera.isLocked">
-                        <i
-                          class="icon-lock align-middle"
-                          v-tooltip.top="`${camera.lockUser.name} 正在編輯中`"
-                        ></i>
-                      </span>
-                      <span class="error-label" v-if="camera.failures > 0">
-                        {{ camera.failures }}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                <div class="d-inline-block" v-if="cameraLocations.length >= 12">
-                  <a
-                    class="link text-gray"
-                    role="button"
-                    @click="CameraModalOpen = true"
-                  >
-                    查看更多
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="form-group mb-2">
             <label>資料時間</label>
             <div class="d-inline-block">
@@ -183,15 +125,6 @@
         @changeWidth="setSheetHeight"
       />
     </div>
-
-    <camera-location-modal
-      v-if="CameraModalOpen"
-      :cameraLocations="cameraLocations"
-      :selected="query.cameraLocations"
-      @submit="setSelectedCamera"
-      @close="CameraModalOpen = false"
-    />
-
     <info-modal :open="lockByOtherModal" @close="lockByOtherModal = false">
       <p class="text-gray">
         此相機位置剛進入鎖定狀態，無法進入編輯模式。
@@ -211,7 +144,6 @@ import {
   getTodayDate,
   subNYears,
 } from '@/utils/dateHelper.js';
-import CameraLocationModal from '@/components/ProjectStudyAreas/CameraLocationModal.vue';
 import InfoModal from '@/components/Modal/InfoModal.vue';
 
 import AnnotationsSheet from './AnnotationsSheet';
@@ -237,7 +169,6 @@ const getTime = (day, time, second = 0, millisecond = 0) => {
 const defaultQuery = {
   index: 0,
   size: 50,
-  cameraLocations: [],
   startDate: subNYears(getTodayDate(), 5),
   endDate: getTodayDate(),
   startTime: {
@@ -252,7 +183,6 @@ const defaultQuery = {
 
 export default {
   components: {
-    CameraLocationModal,
     AnnotationsSheet,
     RightSide,
     VueTimepicker,
@@ -264,7 +194,6 @@ export default {
       lockByOtherModal: false,
       isLoading: false,
       isEdit: false,
-      CameraModalOpen: false,
       galleryShow: true,
       historyShow: true,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
@@ -316,12 +245,6 @@ export default {
     },
     studyAreaId: function() {
       return this.$route.params.studyAreaId;
-    },
-    isCheckedAllCameraLocations: function() {
-      return (
-        this.cameraLocations.length > 0 &&
-        this.query.cameraLocations.length === this.cameraLocations.length
-      );
     },
     queryTimeRange: function() {
       const { query } = this;
@@ -403,10 +326,6 @@ export default {
         query.startTime = query.endTime;
         query.endTime = tmpTime;
       }
-    },
-    setSelectedCamera(val) {
-      this.query.cameraLocations = val;
-      this.CameraModalOpen = false;
     },
     resetPagination() {
       this.$refs.sheet.resetPagination(this.query.index);
