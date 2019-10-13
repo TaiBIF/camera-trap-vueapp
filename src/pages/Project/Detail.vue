@@ -18,6 +18,8 @@
         :studyAreas="studyAreas"
         :projectId="projectId"
         :currentStudyAreaId="$route.params.studyAreaId"
+        :showCameraLocation="true"
+        :cameraLocations="cameraLocations"
       />
     </aside>
     <router-view />
@@ -50,7 +52,7 @@ export default {
   },
   computed: {
     ...projects.mapGetters(['projectDetail']),
-    ...studyAreas.mapGetters(['studyAreas']),
+    ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     projectId: function() {
       return this.$route.params.projectId;
     },

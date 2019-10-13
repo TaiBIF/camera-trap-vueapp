@@ -31,6 +31,32 @@
             @select="toggleExpand(studyArea)"
             @editArea="editArea"
           />
+          <div
+            v-show="
+              showCameraLocation &&
+                cameraLocations.length > 0 &&
+                currentStudyAreaId === studyArea.id &&
+                currentStudyAreaId === cameraLocations[0].studyArea
+            "
+            class="tree-menu-checkbox"
+          >
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="selectAllCamera"
+              @change="selectAllCameraLocation"
+              >全部相機位置</el-checkbox
+            >
+            <el-checkbox-group
+              v-model="selectedCamera"
+              @change="selectCameraLocation"
+            >
+              <el-checkbox
+                v-for="({ name }, index) in cameraLocations"
+                :key="index"
+                :label="name"
+              />
+            </el-checkbox-group>
+          </div>
         </li>
       </ul>
       <ul v-show="isEditMode" class="tree-menu-child">
@@ -99,12 +125,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    cameraLocations: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
+    showCameraLocation: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       expandId: null,
       newStudyArea: '',
       newSubStudyArea: '',
+      selectedCamera: [],
+      selectAllCamera: false,
+      isIndeterminate: false,
     };
   },
   methods: {
@@ -120,10 +159,7 @@ export default {
       }
     },
     generateAreaLink(studyArea) {
-      if (
-        this.isEditMode ||
-        (studyArea.children && studyArea.children.length > 0)
-      ) {
+      if (this.isEditMode) {
         return '';
       }
       return `/project/${this.projectId}/study-areas/${studyArea.id}`;
@@ -149,6 +185,18 @@ export default {
     },
     editArea(name, id) {
       this.$emit('editArea', name, id);
+    },
+    selectAllCameraLocation(isCheck) {
+      this.selectedCamera = isCheck
+        ? this.cameraLocations.map(({ name }) => name)
+        : [];
+      this.isIndeterminate = false;
+    },
+    selectCameraLocation(value) {
+      let checkedCount = value.length;
+      this.selectAllCamera = checkedCount === this.cameraLocations.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.cameraLocations.length;
     },
   },
 };
