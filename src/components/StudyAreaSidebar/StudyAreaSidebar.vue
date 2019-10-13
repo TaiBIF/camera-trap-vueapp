@@ -40,7 +40,14 @@
             "
             class="tree-menu-checkbox"
           >
+            <input
+              type="text"
+              placeholder="搜尋"
+              v-model="searchCameraLocation"
+              style="width: 120px"
+            />
             <el-checkbox
+              v-show="!searchCameraLocation"
               :indeterminate="isIndeterminate"
               v-model="selectAllCamera"
               @change="selectAllCameraLocation"
@@ -51,7 +58,7 @@
               @change="selectCameraLocation"
             >
               <el-checkbox
-                v-for="({ name }, index) in cameraLocations"
+                v-for="({ name }, index) in cameraLocationsOption"
                 :key="index"
                 :label="name"
               />
@@ -144,7 +151,26 @@ export default {
       selectedCamera: [],
       selectAllCamera: false,
       isIndeterminate: false,
+      cameraLocationsOption: [],
+      searchCameraLocation: '',
     };
+  },
+  watch: {
+    cameraLocations: function(value) {
+      this.cameraLocationsOption = value;
+    },
+    searchCameraLocation: function(value) {
+      if (!value) {
+        this.cameraLocationsOption = this.cameraLocations;
+      } else {
+        this.cameraLocationsOption = this.cameraLocationsOption.filter(
+          ({ name }) => name.toLowerCase().includes(value.toLowerCase()),
+        );
+      }
+    },
+    currentStudyAreaId: function() {
+      this.searchCameraLocation = '';
+    },
   },
   methods: {
     toggleExpand(studyArea, isParent) {
