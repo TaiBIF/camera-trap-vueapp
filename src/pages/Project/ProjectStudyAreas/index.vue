@@ -287,7 +287,7 @@ export default {
       this.updateDateRange();
       this.resetPagination();
     },
-    'query.cameraLocations': function() {
+    '$store.state.annotations.queryCameraLocations'() {
       debounceTimeId && window.clearTimeout(debounceTimeId);
 
       debounceTimeId = setTimeout(() => {
@@ -304,7 +304,11 @@ export default {
   computed: {
     ...studyAreas.mapState(['cameraLocations']),
     ...studyAreas.mapGetters(['studyAreas', 'studyAreaTitle']),
-    ...annotations.mapState(['annotationsTotal', 'requestProcessingCount']),
+    ...annotations.mapState([
+      'annotationsTotal',
+      'requestProcessingCount',
+      'queryCameraLocations',
+    ]),
     ...account.mapGetters(['userId']),
     ...projects.mapGetters(['projectDetail']),
     projectId: function() {
@@ -329,9 +333,7 @@ export default {
       )} ~ ${dateFormatYYYYMMDDHHmmss(endTime)}`;
     },
     queryLocation: function() {
-      const { cameraLocations } = this.query;
-
-      return cameraLocations
+      return this.queryCameraLocations
         .map(v => this.cameraLocations.find(c => c.id === v).name)
         .join(', ');
     },
@@ -339,7 +341,7 @@ export default {
       return (
         this.annotationsTotal === 0 ||
         this.cameraLocations
-          .filter(v => this.query.cameraLocations.includes(v.id))
+          .filter(v => this.queryCameraLocations.includes(v.id))
           .some(v => v.isLocked === true && v.lockUser.id !== this.userId)
       );
     },
@@ -347,7 +349,7 @@ export default {
       const { query } = this;
       const queryParams = {
         studyAreaId: this.studyAreaId,
-        cameraLocations: query.cameraLocations,
+        cameraLocations: this.queryCameraLocations,
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
@@ -359,7 +361,7 @@ export default {
       }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
     },
     canSearch: function() {
-      return this.query.cameraLocations.length > 0;
+      return this.queryCameraLocations.length > 0;
     },
   },
   methods: {
@@ -428,7 +430,7 @@ export default {
           await this.setLockProjectCameraLocations({
             projectId: this.projectId,
             studyAreaId: this.studyAreaId,
-            cameraLocations: this.query.cameraLocations,
+            cameraLocations: this.queryCameraLocations,
             isLock: bool,
           });
           this.isEdit = true;
@@ -439,7 +441,7 @@ export default {
         await this.setLockProjectCameraLocations({
           projectId: this.projectId,
           studyAreaId: this.studyAreaId,
-          cameraLocations: this.query.cameraLocations,
+          cameraLocations: this.queryCameraLocations,
           isLock: bool,
         });
 
@@ -453,7 +455,7 @@ export default {
     async doSearch() {
       this.resetPagination();
       this.currentAnnotationIdx = -1;
-      if (this.query.cameraLocations.length === 0) {
+      if (this.queryCameraLocations.length === 0) {
         this.resetAnnotations();
         return;
       }
@@ -464,7 +466,7 @@ export default {
       await this.getAnnotations({
         studyAreaId: this.studyAreaId,
         ...{
-          cameraLocations: query.cameraLocations,
+          cameraLocations: this.queryCameraLocations,
           startTime: getTime(query.startDate, query.startTime).toISOString(),
           endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
           index: query.index,

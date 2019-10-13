@@ -163,11 +163,15 @@ export default {
       selectAllCamera: false,
       isIndeterminate: false,
       cameraLocationsOption: [],
+      cameraLocationsNameId: [],
       searchCameraLocation: '',
     };
   },
   watch: {
     cameraLocations: function(value) {
+      this.cameraLocationsNameId = value.reduce((previous, { name, id }) => {
+        return { ...previous, [name]: id };
+      }, {});
       this.cameraLocationsOption = value;
     },
     searchCameraLocation: function(value) {
@@ -180,6 +184,10 @@ export default {
       }
     },
     currentStudyAreaId: function() {
+      this.selectedCamera = [];
+      this.setSelectedCameraLocations();
+      this.selectAllCamera = false;
+      this.isIndeterminate = false;
       this.searchCameraLocation = '';
     },
   },
@@ -228,12 +236,20 @@ export default {
         ? this.cameraLocations.map(({ name }) => name)
         : [];
       this.isIndeterminate = false;
+      this.setSelectedCameraLocations();
     },
     selectCameraLocation(value) {
       let checkedCount = value.length;
       this.selectAllCamera = checkedCount === this.cameraLocations.length;
       this.isIndeterminate =
         checkedCount > 0 && checkedCount < this.cameraLocations.length;
+      this.setSelectedCameraLocations();
+    },
+    setSelectedCameraLocations() {
+      this.$emit(
+        'setSelectedCameraLocations',
+        this.selectedCamera.map(name => this.cameraLocationsNameId[name]),
+      );
     },
   },
 };

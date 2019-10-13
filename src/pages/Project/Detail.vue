@@ -20,6 +20,7 @@
         :currentStudyAreaId="$route.params.studyAreaId"
         :showCameraLocation="true"
         :cameraLocations="cameraLocations"
+        @setSelectedCameraLocations="setQueryCameraLocations"
       />
     </aside>
     <router-view />
@@ -33,6 +34,7 @@ import StudyAreaSidebar from '@/components/StudyAreaSidebar/StudyAreaSidebar.vue
 
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');
+const annotations = createNamespacedHelpers('annotations');
 
 export default {
   name: 'detail',
@@ -70,6 +72,7 @@ export default {
       'loadSpeciesGroupByStudyArea',
       'loadSpeciesGroupByCameraLocation',
     ]),
+    ...annotations.mapMutations(['setQueryCameraLocations']),
     fetchProjectCameraLocations() {
       if (this.selectedStudyAreaId && this.selectedStudyAreaId !== 'all') {
         this.getProjectStudyAreas(this.projectId);
