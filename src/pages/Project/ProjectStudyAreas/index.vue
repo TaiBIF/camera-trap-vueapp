@@ -40,11 +40,16 @@
               <div class="form-group mb-2">
                 <div class="input-group-inline">
                   <label>行程</label>
-                  <div class="select" style="width: 200px">
+                  <div
+                    class="select"
+                    @mousedown="changeQueryType('trip')"
+                    style="width: 200px"
+                  >
                     <v-select
                       v-model="query.trip"
                       :options="tripOptions"
                       placeholder="請選擇行程"
+                      @change="resetValue('datetime')"
                     ></v-select>
                   </div>
                   <span
@@ -68,40 +73,58 @@
                 <div class="d-inline-block">
                   <div class="input-group-inline">
                     <label>時間</label>
-                    <div class="input-group">
+                    <div
+                      class="input-group"
+                      @mousedown="changeQueryType('datetime')"
+                    >
                       <date-picker
                         :format="'YYYY-MM-DD'"
                         :first-day-of-week="1"
                         v-model="query.startDate"
                         placeholder="請選擇日期"
                         style="width: 200px"
+                        @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
                         <i class="icon icon-calendar"></i>
                       </div>
                     </div>
-                    <div class="input-group ml-2" style="width: 50px">
+                    <div
+                      class="input-group ml-2"
+                      @mousedown="changeQueryType('datetime')"
+                      style="width: 50px"
+                    >
                       <vue-timepicker
                         v-model="query.startTime"
                         hide-clear-button
+                        @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
                     <span class="input-text">到</span>
-                    <div class="input-group">
+                    <div
+                      class="input-group"
+                      @mousedown="changeQueryType('datetime')"
+                    >
                       <date-picker
                         :format="'YYYY-MM-DD'"
                         :first-day-of-week="1"
                         v-model="query.endDate"
                         placeholder="請選擇日期"
+                        @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
                         <i class="icon icon-calendar"></i>
                       </div>
                     </div>
-                    <div class="input-group ml-2" style="width: 50px">
+                    <div
+                      class="input-group ml-2"
+                      @mousedown="changeQueryType('datetime')"
+                      style="width: 50px"
+                    >
                       <vue-timepicker
                         v-model="query.endTime"
                         hide-clear-button
+                        @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
                     <button
@@ -211,7 +234,7 @@ const getTime = (day, time, second = 0, millisecond = 0) => {
 const defaultQuery = {
   index: 0,
   size: 50,
-  trip: {},
+  trip: null,
   startDate: subNYears(getTodayDate(), 5),
   endDate: getTodayDate(),
   startTime: {
@@ -250,6 +273,7 @@ export default {
       tripOptions: [],
       qualityNoteOptions,
       collapse: true,
+      correctQueryType: '',
     };
   },
   async mounted() {
@@ -331,7 +355,7 @@ export default {
       const queryParams = {
         studyAreaId: this.studyAreaId,
         cameraLocations: this.queryCameraLocations,
-        trip: query.trip.value,
+        trip: query.trip ? query.trip.value : [],
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
@@ -446,7 +470,7 @@ export default {
         studyAreaId: this.studyAreaId,
         ...{
           cameraLocations: this.queryCameraLocations,
-          trip: query.trip.value,
+          trip: query.trip ? query.trip.value : [],
           startTime: getTime(query.startDate, query.startTime).toISOString(),
           endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
           index: query.index,
@@ -457,6 +481,21 @@ export default {
     },
     setSheetHeight() {
       this.$refs.sheet.setSheetHeight();
+    },
+    resetValue(resetType) {
+      if (resetType === 'datetime' && this.correctQueryType === 'trip') {
+        this.query.startDate = defaultQuery.startDate;
+        this.query.endDate = defaultQuery.endDate;
+        this.query.startTime = defaultQuery.startTime;
+        this.query.endTime = defaultQuery.endTime;
+      }
+
+      if (resetType === 'trip' && this.correctQueryType === 'datetime') {
+        this.query.trip = null;
+      }
+    },
+    changeQueryType(queryType) {
+      this.correctQueryType = queryType;
     },
   },
 };

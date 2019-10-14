@@ -266,7 +266,6 @@ export default {
     outline: 0;
     padding: 13px 0;
     background-color: transparent;
-
     &:focus {
       outline: 0;
       box-shadow: inset 0px -1px lightgray;
