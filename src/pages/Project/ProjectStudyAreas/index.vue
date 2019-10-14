@@ -31,6 +31,33 @@
         <hr class="my-0" />
         <form action="" class="form form-horizontal">
           <div class="form-group mb-2">
+            <div class="input-group-inline">
+              <label>行程</label>
+              <div class="select" style="width: 200px">
+                <v-select
+                  v-model="query.trip"
+                  :options="tripOptions"
+                  placeholder="請選擇行程"
+                ></v-select>
+              </div>
+              <span
+                class="btn btn-text px-2 pt-3"
+                style="margin-top: -10px"
+                v-tooltip.right="{
+                  content: '若無顯示物種，只能篩選資料，無法進行資料分析．',
+                }"
+              >
+                <i class="icon-info"></i>
+              </span>
+              <label class="ml-5">品質註記</label>
+              <div class="select d-inline-block" style="width: 200px">
+                <v-select
+                  v-model="query.qualityNote"
+                  :options="qualityNoteOptions"
+                  placeholder="請為資料註記品質"
+                ></v-select>
+              </div>
+            </div>
             <div class="d-inline-block">
               <div class="input-group-inline">
                 <label>時間</label>
@@ -140,6 +167,7 @@ import { createNamespacedHelpers } from 'vuex';
 import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
+import vSelect from 'vue-select';
 
 import {
   dateFormatYYYYMMDDHHmmss,
@@ -157,6 +185,7 @@ const annotations = createNamespacedHelpers('annotations');
 const projects = createNamespacedHelpers('projects');
 const dataFields = createNamespacedHelpers('dataFields');
 const account = createNamespacedHelpers('account');
+const trip = createNamespacedHelpers('trip');
 
 let debounceTimeId = undefined;
 
@@ -171,6 +200,7 @@ const getTime = (day, time, second = 0, millisecond = 0) => {
 const defaultQuery = {
   index: 0,
   size: 50,
+  trip: {},
   startDate: subNYears(getTodayDate(), 5),
   endDate: getTodayDate(),
   startTime: {
@@ -183,6 +213,11 @@ const defaultQuery = {
   },
 };
 
+const qualityNoteOptions = [
+  { label: '品質註記1', value: 'qualityNote1' },
+  { label: '品質註記2', value: 'qualityNote2' },
+];
+
 export default {
   components: {
     AnnotationsSheet,
@@ -190,6 +225,7 @@ export default {
     VueTimepicker,
     DatePicker,
     InfoModal,
+    vSelect,
   },
   data() {
     return {
@@ -200,12 +236,19 @@ export default {
       historyShow: true,
       currentAnnotationIdx: -1, // 目前選擇的資料 index
       query: Object.assign({}, defaultQuery),
+      tripOptions: [],
+      qualityNoteOptions,
     };
   },
-  mounted() {
+  async mounted() {
     this.getDataFields();
     this.getProjectSpecies(this.projectId);
     this.updateDateRange();
+    await this.getProjectTrips(this.projectId);
+    this.tripOptions = this.projectTrips.map(({ sn, id }) => ({
+      label: sn,
+      value: id,
+    }));
   },
   watch: {
     galleryShow: 'setSheetHeight',
@@ -240,6 +283,7 @@ export default {
       'requestProcessingCount',
       'queryCameraLocations',
     ]),
+    ...trip.mapState(['projectTrips']),
     ...account.mapGetters(['userId']),
     ...projects.mapGetters(['projectDetail']),
     projectId: function() {
@@ -275,6 +319,7 @@ export default {
       const queryParams = {
         studyAreaId: this.studyAreaId,
         cameraLocations: this.queryCameraLocations,
+        trip: query.trip.value,
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
@@ -299,6 +344,7 @@ export default {
     ]),
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
+    ...trip.mapActions(['getProjectTrips']),
     updateDateRange() {
       if (
         this.projectDetail.oldestAnnotationTime &&
@@ -388,6 +434,7 @@ export default {
         studyAreaId: this.studyAreaId,
         ...{
           cameraLocations: this.queryCameraLocations,
+          trip: query.trip.value,
           startTime: getTime(query.startDate, query.startTime).toISOString(),
           endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
           index: query.index,
