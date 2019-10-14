@@ -25,36 +25,28 @@
       </div>
       <!-- Overview mode -->
       <div v-else class="search-content">
-        <a
-          class="btn btn-green-border float-right"
-          v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
-          :href="canSearch ? exportCSVLink : undefined"
-          target="_blank"
-          :disabled="!canSearch"
-        >
-          下載篩選結果
-        </a>
         <h3 class="text-green mb-2">
           {{ studyAreaTitle(studyAreaId) }}
         </h3>
         <hr class="my-0" />
         <form action="" class="form form-horizontal">
           <div class="form-group mb-2">
-            <label>資料時間</label>
             <div class="d-inline-block">
               <div class="input-group-inline">
+                <label>時間</label>
                 <div class="input-group">
                   <date-picker
                     :format="'YYYY-MM-DD'"
                     :first-day-of-week="1"
                     v-model="query.startDate"
                     placeholder="請選擇日期"
+                    style="width: 200px"
                   ></date-picker>
                   <div class="input-group-append">
                     <i class="icon icon-calendar"></i>
                   </div>
                 </div>
-                <div class="input-group ml-2">
+                <div class="input-group ml-2" style="width: 50px">
                   <vue-timepicker
                     v-model="query.startTime"
                     hide-clear-button
@@ -72,7 +64,7 @@
                     <i class="icon icon-calendar"></i>
                   </div>
                 </div>
-                <div class="input-group ml-2">
+                <div class="input-group ml-2" style="width: 50px">
                   <vue-timepicker
                     v-model="query.endTime"
                     hide-clear-button
@@ -88,17 +80,27 @@
                 </button>
               </div>
             </div>
+            <a
+              class="btn btn-green-border float-right"
+              :style="{ margin: '4px' }"
+              style="height: 32px"
+              v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
+              :href="canSearch ? exportCSVLink : undefined"
+              target="_blank"
+              :disabled="!canSearch"
+            >
+              下載篩選結果
+            </a>
+            <button
+              class="btn btn-green float-right"
+              :style="{ margin: '4px' }"
+              @click="setEdit(true)"
+              :disabled="disabledEdit"
+            >
+              <i class="fa fa-pencil-alt"></i> 編輯模式
+            </button>
           </div>
         </form>
-        <div>
-          <button
-            class="btn btn-block btn-green"
-            @click="setEdit(true)"
-            :disabled="disabledEdit"
-          >
-            <i class="fa fa-pencil-alt"></i> 進入編輯模式
-          </button>
-        </div>
       </div>
     </div>
 
