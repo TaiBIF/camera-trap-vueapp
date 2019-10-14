@@ -24,110 +24,121 @@
         </div>
       </div>
       <!-- Overview mode -->
-      <div v-else class="search-content">
-        <h3 class="text-green mb-2">
-          {{ studyAreaTitle(studyAreaId) }}
-        </h3>
-        <hr class="my-0" />
-        <form action="" class="form form-horizontal">
-          <div class="form-group mb-2">
-            <div class="input-group-inline">
-              <label>行程</label>
-              <div class="select" style="width: 200px">
-                <v-select
-                  v-model="query.trip"
-                  :options="tripOptions"
-                  placeholder="請選擇行程"
-                ></v-select>
-              </div>
-              <span
-                class="btn btn-text px-2 pt-3"
-                style="margin-top: -10px"
-                v-tooltip.right="{
-                  content: '若無顯示物種，只能篩選資料，無法進行資料分析．',
-                }"
-              >
-                <i class="icon-info"></i>
-              </span>
-              <label class="ml-5">品質註記</label>
-              <div class="select d-inline-block" style="width: 200px">
-                <v-select
-                  v-model="query.qualityNote"
-                  :options="qualityNoteOptions"
-                  placeholder="請為資料註記品質"
-                ></v-select>
-              </div>
+      <div v-else class="search-content accordion">
+        <div class="accordion-item" :class="collapse ? 'is-open' : ''">
+          <div class="accordion-heading" @click="collapse = !collapse">
+            <h3 class="text-green mb-2 d-inline-block">
+              {{ studyAreaTitle(studyAreaId) }}
+            </h3>
+            <div class="icon">
+              <i class="icon-chevron-down"></i>
             </div>
-            <div class="d-inline-block">
-              <div class="input-group-inline">
-                <label>時間</label>
-                <div class="input-group">
-                  <date-picker
-                    :format="'YYYY-MM-DD'"
-                    :first-day-of-week="1"
-                    v-model="query.startDate"
-                    placeholder="請選擇日期"
-                    style="width: 200px"
-                  ></date-picker>
-                  <div class="input-group-append">
-                    <i class="icon icon-calendar"></i>
+            <hr class="my-0" />
+          </div>
+          <div class="accordion-body">
+            <form action="" class="form form-horizontal">
+              <div class="form-group mb-2">
+                <div class="input-group-inline">
+                  <label>行程</label>
+                  <div class="select" style="width: 200px">
+                    <v-select
+                      v-model="query.trip"
+                      :options="tripOptions"
+                      placeholder="請選擇行程"
+                    ></v-select>
+                  </div>
+                  <span
+                    class="btn btn-text px-2 pt-3"
+                    style="margin-top: -10px"
+                    v-tooltip.right="{
+                      content: '若無顯示物種，只能篩選資料，無法進行資料分析．',
+                    }"
+                  >
+                    <i class="icon-info"></i>
+                  </span>
+                  <label class="ml-5">品質註記</label>
+                  <div class="select d-inline-block" style="width: 200px">
+                    <v-select
+                      v-model="query.qualityNote"
+                      :options="qualityNoteOptions"
+                      placeholder="請為資料註記品質"
+                    ></v-select>
                   </div>
                 </div>
-                <div class="input-group ml-2" style="width: 50px">
-                  <vue-timepicker
-                    v-model="query.startTime"
-                    hide-clear-button
-                  ></vue-timepicker>
-                </div>
-                <span class="input-text">到</span>
-                <div class="input-group">
-                  <date-picker
-                    :format="'YYYY-MM-DD'"
-                    :first-day-of-week="1"
-                    v-model="query.endDate"
-                    placeholder="請選擇日期"
-                  ></date-picker>
-                  <div class="input-group-append">
-                    <i class="icon icon-calendar"></i>
+                <div class="d-inline-block">
+                  <div class="input-group-inline">
+                    <label>時間</label>
+                    <div class="input-group">
+                      <date-picker
+                        :format="'YYYY-MM-DD'"
+                        :first-day-of-week="1"
+                        v-model="query.startDate"
+                        placeholder="請選擇日期"
+                        style="width: 200px"
+                      ></date-picker>
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2" style="width: 50px">
+                      <vue-timepicker
+                        v-model="query.startTime"
+                        hide-clear-button
+                      ></vue-timepicker>
+                    </div>
+                    <span class="input-text">到</span>
+                    <div class="input-group">
+                      <date-picker
+                        :format="'YYYY-MM-DD'"
+                        :first-day-of-week="1"
+                        v-model="query.endDate"
+                        placeholder="請選擇日期"
+                      ></date-picker>
+                      <div class="input-group-append">
+                        <i class="icon icon-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="input-group ml-2" style="width: 50px">
+                      <vue-timepicker
+                        v-model="query.endTime"
+                        hide-clear-button
+                      ></vue-timepicker>
+                    </div>
+                    <button
+                      @click.prevent="clickSearch"
+                      class="btn btn-green"
+                      :style="{ margin: '4px' }"
+                      :disabled="!canSearch"
+                    >
+                      篩選
+                    </button>
                   </div>
                 </div>
-                <div class="input-group ml-2" style="width: 50px">
-                  <vue-timepicker
-                    v-model="query.endTime"
-                    hide-clear-button
-                  ></vue-timepicker>
-                </div>
-                <button
-                  @click.prevent="clickSearch"
-                  class="btn btn-green"
+                <a
+                  class="btn btn-green-border float-right"
                   :style="{ margin: '4px' }"
+                  style="height: 32px"
+                  v-tooltip.bottom="
+                    '將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'
+                  "
+                  :href="canSearch ? exportCSVLink : undefined"
+                  target="_blank"
                   :disabled="!canSearch"
                 >
-                  篩選
+                  下載篩選結果
+                </a>
+                <button
+                  class="btn btn-green float-right"
+                  :style="{ margin: '4px' }"
+                  @click="setEdit(true)"
+                  :disabled="disabledEdit"
+                >
+                  <i class="fa fa-pencil-alt"></i> 編輯模式
                 </button>
               </div>
-            </div>
-            <a
-              class="btn btn-green-border float-right"
-              :style="{ margin: '4px' }"
-              style="height: 32px"
-              v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
-              :href="canSearch ? exportCSVLink : undefined"
-              target="_blank"
-              :disabled="!canSearch"
-            >
-              下載篩選結果
-            </a>
-            <button
-              class="btn btn-green float-right"
-              :style="{ margin: '4px' }"
-              @click="setEdit(true)"
-              :disabled="disabledEdit"
-            >
-              <i class="fa fa-pencil-alt"></i> 編輯模式
-            </button>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
@@ -238,6 +249,7 @@ export default {
       query: Object.assign({}, defaultQuery),
       tripOptions: [],
       qualityNoteOptions,
+      collapse: true,
     };
   },
   async mounted() {
@@ -453,5 +465,21 @@ export default {
 <style lang="scss" scoped>
 input[type='checkbox'][disabled] + label {
   color: #ccc;
+}
+
+.accordion {
+  .accordion-item {
+    .accordion-heading {
+      border: none;
+      .icon {
+        margin: 0px 10px;
+      }
+    }
+    .accordion-body {
+      background: none;
+      border: none;
+      padding: 0px;
+    }
+  }
 }
 </style>
