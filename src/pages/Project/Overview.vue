@@ -1,6 +1,6 @@
 <template>
   <div
-    class="container"
+    class="container project-overview"
     v-infinite-scroll="loadMoreProjects"
     infinite-scroll-disabled="disableLoadMoreProjects"
     infinite-scroll-distance="300"
@@ -19,6 +19,13 @@
     </div>
     <div v-else>
       <!-- Controlbar -->
+      <div class="row">
+        <div class="offset-8 col-4 text-right">
+          <router-link to="/project/create" class="btn btn-orange"
+            >上傳計畫</router-link
+          >
+        </div>
+      </div>
       <div class="row">
         <div class="col-8">
           <div class="dropdown">
@@ -43,14 +50,22 @@
             </div>
           </div>
         </div>
-        <div class="col-4 text-right">
-          <router-link to="/project/create" class="btn btn-orange"
-            >新增計畫</router-link
+        <div class="col-4">
+          <div
+            class="display_type float-right"
+            @click="displayByGrid = !displayByGrid"
           >
+            <span v-show="displayByGrid">
+              <i class="el-icon-s-grid" /> 格狀顯示
+            </span>
+            <span v-show="!displayByGrid">
+              <i class="el-icon-s-unfold" /> 條狀顯示
+            </span>
+          </div>
         </div>
       </div>
       <!-- Cards -->
-      <div class="three cards">
+      <div v-show="displayByGrid" class="three cards">
         <router-link
           class="card"
           :to="proj.id"
@@ -80,6 +95,30 @@
           </div>
         </router-link>
       </div>
+      <!-- List -->
+      <div v-show="!displayByGrid">
+        <div class="row project-item-title">
+          <div class="col-4">計劃名稱</div>
+          <div class="col-2">資料起始年份</div>
+          <div class="col-2">委託單位</div>
+          <div class="col-1">樣區數量</div>
+          <div class="col-2">相機位置數</div>
+          <div class="col-1">資料量</div>
+        </div>
+        <router-link
+          class="row project-item-content"
+          v-for="proj in projects"
+          :key="proj.id"
+          :to="proj.id"
+        >
+          <div class="col-4">{{ proj.title }}</div>
+          <div class="col-2">{{ proj.startTime.split('-')[0] }}</div>
+          <div class="col-2">{{ proj.funder }}</div>
+          <div class="col-1">58</div>
+          <div class="col-2">1200</div>
+          <div class="col-1">400,000</div>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -104,6 +143,7 @@ export default {
       SORTED_BY_ENUM,
       sortedBy: '-oldestAnnotationTime',
       busy: false,
+      displayByGrid: true,
     };
   },
   mounted() {
