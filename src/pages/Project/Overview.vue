@@ -127,7 +127,18 @@
         <div v-else>
           <!-- Controlbar -->
           <div class="row">
-            <div class="offset-8 col-4 text-right">
+            <div class="col-8">
+              <span
+                class="filter-label"
+                v-for="(label, index) in selectedFiltersLabel"
+                :key="index"
+                @click="clearFilter(label.type)"
+              >
+                {{ label.value }}
+                <i class="el-icon-close"></i>
+              </span>
+            </div>
+            <div class="col-4 text-right">
               <router-link to="/project/create" class="btn btn-orange"
                 >上傳計畫</router-link
               >
@@ -296,6 +307,7 @@ export default {
         county: '',
         datetime: [0, MaxDateTime],
       },
+      selectedFiltersLabel: [],
       MaxDateTime,
     };
   },
@@ -305,6 +317,34 @@ export default {
   watch: {
     sortedBy() {
       this.getProjectRequest();
+    },
+    selectedFilters: {
+      handler() {
+        this.selectedFiltersLabel = Object.keys(this.selectedFilters).reduce(
+          (pre, key) => {
+            if (key === 'datetime') {
+              const startDatetime = this.selectedFilters[key][0];
+              const endDatetime = this.selectedFilters[key][1];
+              // 資料時間非初始值才顯示
+              if (!(startDatetime === 0 && endDatetime === MaxDateTime))
+                return [
+                  ...pre,
+                  {
+                    type: key,
+                    value: `${this.formatDatetime(
+                      startDatetime,
+                    )}-${this.formatDatetime(endDatetime)}`,
+                  },
+                ];
+            } else if (this.selectedFilters[key] !== '') {
+              return [...pre, { type: key, value: this.selectedFilters[key] }];
+            }
+            return pre;
+          },
+          [],
+        );
+      },
+      deep: true,
     },
   },
   computed: {
