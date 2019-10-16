@@ -181,10 +181,12 @@
                 class="display_type float-right"
                 @click="displayByGrid = !displayByGrid"
               >
-                <span v-show="displayByGrid">
+                <!-- <span v-show="displayByGrid"> -->
+                <span v-show="false">
                   <i class="el-icon-s-grid" /> 格狀顯示
                 </span>
-                <span v-show="!displayByGrid">
+                <!-- <span v-show="!displayByGrid"> -->
+                <span v-show="false">
                   <i class="el-icon-s-unfold" /> 條狀顯示
                 </span>
               </div>
