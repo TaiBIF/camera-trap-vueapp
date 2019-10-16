@@ -1,9 +1,9 @@
 <template>
   <div class="add-project-camera">
-    <div class="camera-filter p-3">
-      <div class="camera-filter-title mb-3">篩選條件</div>
-      <div class="camera-filter-option-type">
-        <div>
+    <div class="filter">
+      <div class="filter-title">篩選條件</div>
+      <div class="filter-option-type">
+        <div class="filter-option-type-header">
           廠牌
           <span class="float-right" v-on:click="clearFilter('manufacturer')"
             >清除 －</span
@@ -17,7 +17,7 @@
           />
           <span
             :id="option"
-            class="camera-filter-option"
+            class="filter-option"
             v-on:click="selectSingleFilter('manufacturer', $event)"
           >
             {{ option }}
@@ -28,8 +28,8 @@
         </div>
       </div>
       <hr />
-      <div class="camera-filter-option-type">
-        <div>
+      <div class="filter-option-type">
+        <div class="filter-option-type-header">
           型號<span class="float-right" v-on:click="clearFilter('model')"
             >清除 －</span
           >
@@ -39,7 +39,7 @@
           <i class="el-icon-check" v-show="selectedFilters.model === option" />
           <span
             :id="option"
-            class="camera-filter-option"
+            class="filter-option"
             v-on:click="selectSingleFilter('model', $event)"
           >
             {{ option }}
@@ -50,8 +50,8 @@
         </div>
       </div>
       <hr />
-      <div class="camera-filter-option-type">
-        <div>
+      <div class="filter-option-type">
+        <div class="filter-option-type-header">
           相機序號<span class="float-right" v-on:click="clearFilter('sn')"
             >清除 －</span
           >
@@ -75,8 +75,8 @@
         </el-checkbox-group>
       </div>
       <hr />
-      <div class="camera-filter-option-type">
-        <div>
+      <div class="filter-option-type">
+        <div class="filter-option-type-header">
           廠商維護編號<span class="float-right" v-on:click="clearFilter('vn')"
             >清除 －</span
           >

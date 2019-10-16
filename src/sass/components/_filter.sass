@@ -1,0 +1,48 @@
+.filter
+    padding: 14px
+    width: 300px
+    border: 1px solid #e6e7e8
+    .filter-title
+        margin-bottom: 14px
+        font-size: 16px
+    hr
+        border-top: 1px solid #e6e7e8
+    .filter-option-type
+        .filter-option-type-header
+            margin-bottom: 14px
+        span
+            font-size: 14px
+            cursor: pointer
+        >input
+            border: 0
+            outline: 0
+            margin-bottom: 14px
+            background-color: transparent
+            display: block
+            &:focus
+                outline: 0
+                &::placeholder
+                    opacity: 0
+        .filter-option
+            font-size: 14px
+            line-height: 24px
+            cursor: pointer
+        .el-checkbox__inner
+            background-color: transparent
+            border-color: black
+            &::after
+                border-color: black
+        .el-checkbox__label
+            color: black
+            font-weight: normal
+            font-size: 14px
+            line-height: 24px
+        .el-checkbox__input.is-checked+.el-checkbox__label
+            color: black
+        .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner
+            background-color: transparent
+            border-color: black
+            &::after
+                border-color: black
+        .el-checkbox__input.is-focus .el-checkbox__inner
+            border-color: black
