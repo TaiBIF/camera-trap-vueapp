@@ -301,7 +301,7 @@ export default {
               if (this.projectTripCameraLocations[value]) {
                 cameraLocations = this.projectTripCameraLocations[value].map(
                   cameraLocation => {
-                    let cameraLocationEven = undefined;
+                    let cameraLocationEvent = undefined;
                     let cameraLocationMark = undefined;
                     let projectCameras = undefined;
                     if (
@@ -320,8 +320,8 @@ export default {
                                   cameraLocationData.cameraLocation ===
                                   cameraLocation.value
                                 ) {
-                                  cameraLocationEven =
-                                    cameraLocationData.cameraLocationEven;
+                                  cameraLocationEvent =
+                                    cameraLocationData.cameraLocationEvent;
                                   cameraLocationMark =
                                     cameraLocationData.cameraLocationMark;
                                   if (
@@ -345,7 +345,7 @@ export default {
                     return {
                       cameraLocation: cameraLocation.value,
                       title: cameraLocation.label,
-                      cameraLocationEven: cameraLocationEven || '',
+                      cameraLocationEvent: cameraLocationEvent || '',
                       cameraLocationMark: cameraLocationMark || '',
                       projectCameras: projectCameras || [],
                     };

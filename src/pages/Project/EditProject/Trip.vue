@@ -99,8 +99,8 @@ const studyAreas = createNamespacedHelpers('studyAreas');
 const trip = createNamespacedHelpers('trip');
 
 const cmaeraLocationEvenString = {
-  設置: '設置',
-  替換: '替換',
+  setting: '設置',
+  exchange: '替換',
 };
 const cameraStateString = {
   active: '正常',

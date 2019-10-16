@@ -55,12 +55,12 @@
                       style="width: 100%"
                     >
                       <el-table-column label="位置" prop="cameraLocation" />
-                      <el-table-column label="事件" prop="cameraLocationEven">
+                      <el-table-column label="事件" prop="cameraLocationEvent">
                         <template slot-scope="props">
-                          <div :title="props.row.cameraLocationMark">
+                          <div :title="props.row.cameraLocationEvent">
                             {{
                               cmaeraLocationEvenString[
-                                props.row.cameraLocationMark
+                                props.row.cameraLocationEvent
                               ] || ''
                             }}
                           </div>

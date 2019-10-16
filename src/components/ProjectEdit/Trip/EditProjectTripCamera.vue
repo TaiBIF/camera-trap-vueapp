@@ -39,7 +39,7 @@
           <div class="col-6">
             <div class="select">
               <v-select
-                v-model="projectTrip.cameraLocationEven"
+                v-model="projectTrip.cameraLocationEvent"
                 :options="cmaeraLocationEvenOptions"
                 placeholder="請選擇相機位置事件"
                 @change="changeLimit"
@@ -422,12 +422,12 @@ export default {
       ].cameraLocations[this.selectedCameraLocationIndex];
 
       // 從資料轉換成表單用格式 相機位置事件
-      const cameraLocationEven = nextProjectTrip.cameraLocationEven
+      const cameraLocationEvent = nextProjectTrip.cameraLocationEvent
         ? {
             label: this.cmaeraLocationEvenString[
-              nextProjectTrip.cameraLocationEven
+              nextProjectTrip.cameraLocationEvent
             ],
-            value: nextProjectTrip.cameraLocationEven,
+            value: nextProjectTrip.cameraLocationEvent,
           }
         : undefined;
 
@@ -503,7 +503,7 @@ export default {
 
       this.projectTrip = {
         ...nextProjectTrip,
-        cameraLocationEven,
+        cameraLocationEvent,
         projectCameras,
       };
 
@@ -556,9 +556,9 @@ export default {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
           // 從表單用格式轉換成資料 相機位置事件
-          let cameraLocationEven = {};
-          if (this.projectTrip.cameraLocationEven)
-            cameraLocationEven = this.projectTrip.cameraLocationEven.value;
+          let cameraLocationEvent = {};
+          if (this.projectTrip.cameraLocationEvent)
+            cameraLocationEvent = this.projectTrip.cameraLocationEvent.value;
           // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
@@ -614,7 +614,7 @@ export default {
           );
           currentProjectTrip = {
             ...currentProjectTrip,
-            cameraLocationEven,
+            cameraLocationEvent,
             projectCameras: [...this.tripCamerasDetailOld, ...projectCameras],
           };
         }
@@ -631,8 +631,8 @@ export default {
     },
     changeLimit() {
       this.projectCameraLimit =
-        this.projectTrip.cameraLocationEven &&
-        this.projectTrip.cameraLocationEven.value ==
+        this.projectTrip.cameraLocationEvent &&
+        this.projectTrip.cameraLocationEvent.value ==
           this.cmaeraLocationEvenOptionsAll[1].value
           ? 2
           : 1;
