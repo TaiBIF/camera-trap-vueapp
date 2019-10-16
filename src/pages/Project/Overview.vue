@@ -8,7 +8,15 @@
     <h1 class="heading">計畫總覽</h1>
     <div class="project-overview-content">
       <div class="filter" style="background-color: white">
-        <div class="filter-title">篩選條件</div>
+        <div class="filter-title">
+          篩選條件
+          <span
+            class="btn btn-sm btn-black-border float-right"
+            @click="getProjectRequest(0)"
+            >篩選</span
+          >
+        </div>
+        <hr />
         <div class="filter-option-type">
           <div class="filter-option-type-header">
             物種
@@ -361,6 +369,15 @@ export default {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
+        species: this.selectedFilters.species || undefined,
+        county: this.selectedFilters.county || undefined,
+        startDate: this.formatDatetime(
+          this.selectedFilters.datetime[0],
+        ).replace('/', '-'),
+        endDate: this.formatDatetime(this.selectedFilters.datetime[1]).replace(
+          '/',
+          '-',
+        ),
       });
       this.busy = false;
     },
