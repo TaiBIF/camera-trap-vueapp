@@ -7,113 +7,117 @@
   >
     <h1 class="heading">計畫總覽</h1>
     <div class="project-overview-content">
-      <div class="filter" style="background-color: white">
-        <div class="filter-title">
-          篩選條件
-          <span
-            class="btn btn-sm btn-black-border float-right"
-            @click="getProjectRequest(0)"
-            >篩選</span
-          >
-        </div>
-        <hr />
-        <div class="filter-option-type">
-          <div class="filter-option-type-header">
-            物種
-            <span class="float-right" @click="clearFilter('species')"
-              >清除 －</span
-            >
-          </div>
-          <div v-for="(option, index) in speciesOption" :key="index">
-            <i
-              class="el-icon-check"
-              v-show="selectedFilters.species === option.name"
-            />
+      <div>
+        <div class="filter">
+          <div class="filter-title">
+            篩選條件
             <span
-              :id="option.name"
-              class="filter-option"
-              @click="selectSingleFilter('species', $event)"
-            >
-              {{ option.name }}
-            </span>
-            <span class="float-right"> ({{ option.count }}) </span>
-          </div>
-        </div>
-        <hr />
-        <div class="filter-option-type">
-          <div class="filter-option-type-header">
-            區域
-            <span class="float-right" @click="clearFilter('county')"
-              >清除 －</span
+              class="btn btn-sm btn-black-border float-right"
+              @click="getProjectRequest(0)"
+              >篩選</span
             >
           </div>
-          <div v-for="(area, index) in areaOption" :key="index">
-            <!-- 區域 -->
-            <span
-              :id="area.name"
-              class="filter-option"
-              @click="selectedArea = area.name"
-            >
-              {{ area.name }}
-            </span>
-            <span class="float-right"> ({{ area.count }}) </span>
-            <!-- 縣市 -->
-            <div
-              v-show="area.count !== 0 && selectedArea === area.name"
-              class="ml-3"
-            >
-              <div>
-                <i
-                  class="el-icon-check"
-                  v-show="selectedFilters.county === area.name"
-                />
-                <span
-                  :id="area.name"
-                  class="filter-option"
-                  @click="selectSingleFilter('county', $event)"
-                >
-                  全部
-                </span>
-                <span class="float-right"> ({{ area.count }}) </span>
-              </div>
-              <div v-for="(county, index) in area.county" :key="index">
-                <i
-                  class="el-icon-check"
-                  v-show="selectedFilters.county === county.name"
-                />
-                <span
-                  :id="county.name"
-                  class="filter-option"
-                  @click="selectSingleFilter('county', $event)"
-                >
-                  {{ county.name }}
-                </span>
-                <span class="float-right"> ({{ county.count }}) </span>
+          <hr />
+          <div class="filter-option-type">
+            <div class="filter-option-type-header">
+              物種
+              <span class="float-right" @click="clearFilter('species')"
+                >清除 －</span
+              >
+            </div>
+            <div v-for="(option, index) in speciesOption" :key="index">
+              <i
+                class="el-icon-check"
+                v-show="selectedFilters.species === option.name"
+              />
+              <span
+                :id="option.name"
+                class="filter-option"
+                @click="selectSingleFilter('species', $event)"
+              >
+                {{ option.name }}
+              </span>
+              <span class="float-right"> ({{ option.count }}) </span>
+            </div>
+          </div>
+          <hr />
+          <div class="filter-option-type">
+            <div class="filter-option-type-header">
+              區域
+              <span class="float-right" @click="clearFilter('county')"
+                >清除 －</span
+              >
+            </div>
+            <div v-for="(area, index) in areaOption" :key="index">
+              <!-- 區域 -->
+              <span
+                :id="area.name"
+                class="filter-option"
+                @click="selectedArea = area.name"
+              >
+                {{ area.name }}
+              </span>
+              <span class="float-right"> ({{ area.count }}) </span>
+              <!-- 縣市 -->
+              <div
+                v-show="area.count !== 0 && selectedArea === area.name"
+                class="ml-3"
+              >
+                <div>
+                  <i
+                    class="el-icon-check"
+                    v-show="selectedFilters.county === area.name"
+                  />
+                  <span
+                    :id="area.name"
+                    class="filter-option"
+                    @click="selectSingleFilter('county', $event)"
+                  >
+                    全部
+                  </span>
+                  <span class="float-right"> ({{ area.count }}) </span>
+                </div>
+                <div v-for="(county, index) in area.county" :key="index">
+                  <i
+                    class="el-icon-check"
+                    v-show="selectedFilters.county === county.name"
+                  />
+                  <span
+                    :id="county.name"
+                    class="filter-option"
+                    @click="selectSingleFilter('county', $event)"
+                  >
+                    {{ county.name }}
+                  </span>
+                  <span class="float-right"> ({{ county.count }}) </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <hr />
-        <div class="filter-option-type">
-          <div class="filter-option-type-header">
-            資料時間
-            <span class="float-right" @click="clearFilter('datetime')"
-              >清除 －</span
-            >
-          </div>
-          <div class="filter-datetime">
-            <el-slider
-              v-model="selectedFilters.datetime"
-              range
-              :show-tooltip="false"
-              :max="MaxDateTime"
-            >
-            </el-slider>
-            <div class="filter-datetime-text">
-              <span>{{ formatDatetime(this.selectedFilters.datetime[0]) }}</span
-              >至<span>{{
-                formatDatetime(this.selectedFilters.datetime[1])
-              }}</span>
+          <hr />
+          <div class="filter-option-type">
+            <div class="filter-option-type-header">
+              資料時間
+              <span class="float-right" @click="clearFilter('datetime')"
+                >清除 －</span
+              >
+            </div>
+            <div class="filter-datetime">
+              <el-slider
+                v-model="selectedFilters.datetime"
+                range
+                :show-tooltip="false"
+                :max="MaxDateTime"
+              >
+              </el-slider>
+              <div class="filter-datetime-text">
+                <span>{{
+                  formatDatetime(this.selectedFilters.datetime[0])
+                }}</span
+                >至<span>{{
+                  formatDatetime(this.selectedFilters.datetime[1])
+                }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -402,3 +406,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.filter {
+  background-color: white;
+  width: 240px;
+  border: none;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.285892);
+}
+</style>
