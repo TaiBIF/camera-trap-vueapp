@@ -7,7 +7,10 @@
   >
     <h1 class="heading">計畫總覽</h1>
     <div class="project-overview-content">
-      <div>
+      <div class="collapse-filter" @click="collapseFilter = !collapseFilter">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <div :class="collapseFilter ? 'is-open' : 'is-close'">
         <div class="filter">
           <div class="filter-title">
             篩選條件
@@ -323,6 +326,7 @@ export default {
       },
       selectedFiltersLabel: [],
       MaxDateTime,
+      collapseFilter: true,
     };
   },
   mounted() {
@@ -413,5 +417,11 @@ export default {
   width: 240px;
   border: none;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.285892);
+}
+.is-open {
+  display: block;
+}
+.is-close {
+  display: none;
 }
 </style>
