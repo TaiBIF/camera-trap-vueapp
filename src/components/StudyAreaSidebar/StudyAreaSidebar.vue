@@ -17,6 +17,51 @@
         @select="toggleExpand(studyArea, true)"
         @editArea="editArea"
       />
+      <div
+        v-show="
+          showCameraLocation &&
+            cameraLocations.length > 0 &&
+            currentStudyAreaId === studyArea.id &&
+            currentStudyAreaId === cameraLocations[0].studyArea
+        "
+        class="tree-menu-checkbox"
+      >
+        <input
+          type="text"
+          placeholder="搜尋"
+          v-model="searchCameraLocation"
+          style="width: 120px"
+        />
+        <el-checkbox
+          v-show="!searchCameraLocation"
+          :indeterminate="isIndeterminate"
+          v-model="selectAllCamera"
+          @change="selectAllCameraLocation"
+          >全部相機位置</el-checkbox
+        >
+        <el-checkbox-group
+          v-model="selectedCamera"
+          @change="selectCameraLocation"
+        >
+          <el-checkbox
+            v-for="(cameraLocation, index) in cameraLocationsOption"
+            :key="index"
+            :label="cameraLocation.name"
+          >
+            {{ cameraLocation.name }}
+            <span class="icon" v-if="cameraLocation.isLocked">
+              <i
+                class="icon-lock align-middle"
+                v-tooltip.top="`${cameraLocation.lockUser.name} 正在編輯中`"
+              ></i>
+            </span>
+            <span class="error-label" v-if="cameraLocation.failures > 0">
+              {{ cameraLocation.failures }}
+            </span>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+
       <ul
         class="tree-menu-child"
         v-for="studyArea in studyArea.children"
@@ -178,8 +223,8 @@ export default {
       if (!value) {
         this.cameraLocationsOption = this.cameraLocations;
       } else {
-        this.cameraLocationsOption = this.cameraLocationsOption.filter(
-          ({ name }) => name.toLowerCase().includes(value.toLowerCase()),
+        this.cameraLocationsOption = this.cameraLocations.filter(({ name }) =>
+          name.toLowerCase().includes(value.toLowerCase()),
         );
       }
     },
