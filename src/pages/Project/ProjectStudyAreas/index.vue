@@ -61,14 +61,16 @@
                   >
                     <i class="icon-info"></i>
                   </span>
-                  <label class="ml-5">品質註記</label>
-                  <div class="select d-inline-block" style="width: 200px">
-                    <v-select
-                      v-model="query.qualityNote"
-                      :options="qualityNoteOptions"
-                      placeholder="請為資料註記品質"
-                    ></v-select>
-                  </div>
+                  <span v-show="funder.includes('林務局')">
+                    <label class="ml-5">品質註記</label>
+                    <div class="select d-inline-block" style="width: 200px">
+                      <v-select
+                        v-model="query.qualityNote"
+                        :options="qualityNoteOptions"
+                        placeholder="請為資料註記品質"
+                      ></v-select>
+                    </div>
+                  </span>
                 </div>
                 <div class="d-inline-block">
                   <div class="input-group-inline">
@@ -274,6 +276,7 @@ export default {
       qualityNoteOptions,
       collapse: true,
       correctQueryType: '',
+      funder: '',
     };
   },
   async mounted() {
@@ -285,6 +288,10 @@ export default {
       label: sn,
       value: id,
     }));
+
+    if (Object.keys(this.projectDetail).length === 0)
+      await this.getProjectDetail(this.projectId);
+    this.funder = this.projectDetail.funder;
   },
   watch: {
     galleryShow: 'setSheetHeight',
@@ -372,7 +379,7 @@ export default {
   },
   methods: {
     ...dataFields.mapActions(['getDataFields']),
-    ...projects.mapActions(['getProjectSpecies']),
+    ...projects.mapActions(['getProjectSpecies', 'getProjectDetail']),
     ...studyAreas.mapActions([
       'getProjectStudyAreas',
       'getProjectCameraLocations',
