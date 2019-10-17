@@ -54,7 +54,7 @@
                       @row-click="selectCameraLocation($event, props.row.sn)"
                       style="width: 100%"
                     >
-                      <el-table-column label="位置" prop="cameraLocation" />
+                      <el-table-column label="位置" prop="title" />
                       <el-table-column label="事件" prop="cameraLocationEvent">
                         <template slot-scope="props">
                           <div :title="props.row.cameraLocationEvent">
@@ -82,10 +82,8 @@
                   <h5>
                     相機資訊{{
                       selectedTrip[props.row.sn] &&
-                      selectedTrip[props.row.sn].cameraLocation.cameraLocation
-                        ? '-' +
-                          selectedTrip[props.row.sn].cameraLocation
-                            .cameraLocation
+                      selectedTrip[props.row.sn].cameraLocation.title
+                        ? '-' + selectedTrip[props.row.sn].cameraLocation.title
                         : ''
                     }}
                   </h5>
