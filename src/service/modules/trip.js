@@ -13,4 +13,19 @@ const addProjectTrip = async (projectId, body) =>
     body,
   });
 
-export { getProjectTrips, addProjectTrip };
+const editProjectTrip = async (projectId, tripId, body) =>
+  await fetchWrap({
+    url: `/api/v1/projects/${projectId}/trips/${tripId}`,
+    method: 'PUT',
+    body,
+  });
+
+const deleteProjectTrip = async (projectId, tripId) => {
+  const data = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/trips/${tripId}`,
+    method: 'DELETE',
+  });
+  return data;
+};
+
+export { getProjectTrips, addProjectTrip, editProjectTrip, deleteProjectTrip };

@@ -39,7 +39,7 @@
           <div class="col-6">
             <div class="select">
               <v-select
-                v-model="projectTrip.cameraLocationEven"
+                v-model="projectTrip.cameraLocationEvent"
                 :options="cmaeraLocationEvenOptions"
                 placeholder="請選擇相機位置事件"
                 @change="changeLimit"
@@ -77,9 +77,7 @@
         <div
           class="trip-camera-detail"
           :class="{
-            half:
-              projectTrip.projectCameras &&
-              projectTrip.projectCameras.length > 1,
+            half: tripCameraDetailHalf,
           }"
           v-show="
             projectTrip.projectCameras && projectTrip.projectCameras.length > 0
@@ -96,9 +94,8 @@
             <div class="col-6">
               <v-select
                 v-model="tripCamerasDetail[index].cameraState"
-                :options="stateOptions"
+                :options="cameraStateOptions"
                 placeholder="請選擇相機狀態"
-                @change="changeLimit"
               ></v-select>
             </div>
           </div>
@@ -117,7 +114,7 @@
             <label class="col-4">記憶卡檔案數:</label>
             <div class="col-6">
               <input
-                v-model="tripCamerasDetail[index].memoryCardNumber"
+                v-model="tripCamerasDetail[index].cameraMemoryCardNumber"
                 type="text"
                 placeholder="請輸入檔案數量"
                 class="form-control"
@@ -127,11 +124,14 @@
           <div class="form-group row">
             <label class="col-4">電池類型:</label>
             <div class="col-6">
+              <span v-if="tripCameraDetailHalf && index == 0"
+                >{{ tripCamerasDetail[index].cameraBatteryType }}
+              </span>
               <v-select
+                v-else
                 v-model="tripCamerasDetail[index].cameraBatteryType"
                 :options="batteryTypeOptions"
                 placeholder="請選擇電池類型"
-                @change="changeLimit"
               ></v-select>
             </div>
           </div>
@@ -151,28 +151,37 @@
           <div class="form-group row">
             <label class="col-4">光強度:</label>
             <div class="col-6">
+              <span v-if="tripCameraDetailHalf && index == 0"
+                >{{ tripCamerasDetail[index].cameraBrightness }}
+              </span>
               <v-select
+                v-else
                 v-model="tripCamerasDetail[index].cameraBrightness"
                 :options="brightnessOptions"
                 placeholder="請選擇光強度"
-                @change="changeLimit"
               ></v-select>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-4">敏感度:</label>
             <div class="col-6">
+              <span v-if="tripCameraDetailHalf && index == 0"
+                >{{ tripCamerasDetail[index].cameraSensitivity }}
+              </span>
               <v-select
+                v-else
                 v-model="tripCamerasDetail[index].cameraSensitivity"
                 :options="sensitivityOptions"
                 placeholder="請選擇敏感度"
-                @change="changeLimit"
               ></v-select>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-4">影片長度:</label>
-            <div class="col-6">
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraVideoLength }}
+            </span>
+            <div v-else class="col-6">
               <input
                 v-model="tripCamerasDetail[index].cameraVideoLength"
                 type="text"
@@ -184,7 +193,10 @@
           </div>
           <div class="form-group row">
             <label class="col-4">連拍張數:</label>
-            <div class="col-6">
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraContinuousShots }}
+            </span>
+            <div v-else class="col-6">
               <input
                 v-model="tripCamerasDetail[index].cameraContinuousShots"
                 type="text"
@@ -192,10 +204,14 @@
                 class="form-control"
               />
             </div>
+            <span>張</span>
           </div>
           <div class="form-group row">
             <label class="col-4">相機方位:</label>
-            <div class="col-6">
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraPosition }}
+            </span>
+            <div v-else class="col-6">
               <input
                 v-model="tripCamerasDetail[index].cameraPosition"
                 type="text"
@@ -207,7 +223,10 @@
           </div>
           <div class="form-group row">
             <label class="col-4">相機俯角:</label>
-            <div class="col-6">
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraDepressionAngle }}
+            </span>
+            <div v-else class="col-6">
               <input
                 v-model="tripCamerasDetail[index].cameraDepressionAngle"
                 type="text"
@@ -219,7 +238,10 @@
           </div>
           <div class="form-group row">
             <label class="col-4">感應距離:</label>
-            <div class="col-6">
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraSensingDistance }}
+            </span>
+            <div v-else class="col-6">
               <input
                 v-model="tripCamerasDetail[index].cameraSensingDistance"
                 type="text"
@@ -293,7 +315,6 @@ import vSelect from 'vue-select';
 const batteryTypeOptions = ['鹼性電池', '充電電池'];
 const brightnessOptions = ['自動'];
 const sensitivityOptions = ['自動'];
-const stateOptions = ['active'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
@@ -325,8 +346,14 @@ export default {
     projectId: {
       type: String,
     },
-    setEditProjectTrip: {
+    setEditProjectTripData: {
       type: Function,
+    },
+    cmaeraLocationEvenString: {
+      type: Object,
+    },
+    cameraStateString: {
+      type: Object,
     },
   },
   data: function() {
@@ -334,13 +361,16 @@ export default {
       activeName: '',
       projectTrip: {},
       tripCamerasDetail: [{}, {}],
+      tripCamerasDetailOld: [],
       startActiveTime: { HH: '00', mm: '00' },
       endActiveTime: { HH: '00', mm: '00' },
+      cmaeraLocationEvenOptionsAll: [],
+      cameraStateOptionsAll: [],
       cmaeraLocationEvenOptions: [],
+      cameraStateOptions: [],
       batteryTypeOptions,
       brightnessOptions,
       sensitivityOptions,
-      stateOptions,
       projectCameraOptions: [],
       selectedStudyAreaIndex: null,
       selectedCameraLocationIndex: null,
@@ -348,18 +378,23 @@ export default {
       projectCameraLimit: 1,
       projectCameraNoDrop: false,
       endActiveDate: '',
+      tripCameraDetailHalf: false,
     };
   },
   async mounted() {
     this.editProjectTripBasic = Object.assign({}, this.editProjectTripData);
-    if (
-      this.editProjectTripData.projectCameras &&
-      this.editProjectTripData.projectCameras.length > 0
-    ) {
-      this.cmaeraLocationEvenOptions = ['設置', '替換'];
-    } else this.cmaeraLocationEvenOptions = ['設置'];
+    // 所有相機位置事件選項，對照顯示文字(label)及值(value)
+    this.cmaeraLocationEvenOptionsAll = Object.keys(
+      this.cmaeraLocationEvenString,
+    ).map(value => ({ label: this.cmaeraLocationEvenString[value], value }));
+    // 所有相機狀態選項，對照顯示文字(label)及值(value)
+    this.cameraStateOptionsAll = Object.keys(this.cameraStateString).map(
+      value => ({ label: this.cameraStateString[value], value }),
+    );
 
-    this.projectTrip.cameraLocationEven = this.cmaeraLocationEvenOptions[0];
+    // 預設選項只有 事件: 設置 狀態: 正常
+    this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
+    this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
     await this.getProjectCameras({ projectId: this.projectId });
     this.projectCameraOptions = this.projectCameras.map(({ sn }) => sn);
@@ -367,6 +402,13 @@ export default {
       'setEditProjectTripReduest',
       this.setEditProjectTripReduest,
     );
+  },
+  watch: {
+    'projectTrip.projectCameras': function() {
+      this.tripCameraDetailHalf =
+        this.projectTrip.projectCameras &&
+        this.projectTrip.projectCameras.length > 1;
+    },
   },
   methods: {
     async selectCameraLocation(studyAreaIndex, cameraLocationIndex) {
@@ -378,21 +420,94 @@ export default {
       const nextProjectTrip = this.editProjectTripBasic.studyAreas[
         this.selectedStudyAreaIndex
       ].cameraLocations[this.selectedCameraLocationIndex];
-      const projectCameras = nextProjectTrip.projectCameras
-        ? {
-            projectCameras: nextProjectTrip.projectCameras.map(
-              ({ cameraSn }) => cameraSn,
-            ),
-          }
-        : {};
-      this.projectTrip = Object.assign({}, nextProjectTrip, projectCameras);
 
-      const nextTripCamerasDetail = this.editProjectTripBasic.studyAreas[
-        this.selectedStudyAreaIndex
-      ].cameraLocations[this.selectedCameraLocationIndex].projectCameras;
+      // 從資料轉換成表單用格式 相機位置事件
+      const cameraLocationEvent = nextProjectTrip.cameraLocationEvent
+        ? {
+            label: this.cmaeraLocationEvenString[
+              nextProjectTrip.cameraLocationEvent
+            ],
+            value: nextProjectTrip.cameraLocationEvent,
+          }
+        : undefined;
+
+      let projectCameras = [];
+      let nextTripCameraDetail = {};
+      let nextTripCamerasDetail = [];
+      this.tripCamerasDetailOld = [];
+
+      if (
+        nextProjectTrip.projectCameras &&
+        nextProjectTrip.projectCameras.length > 0
+      ) {
+        nextTripCameraDetail =
+          nextProjectTrip.projectCameras[
+            nextProjectTrip.projectCameras.length - 1
+          ];
+        // 從資料轉換成表單用格式 相機狀態
+        let cameraState = nextTripCameraDetail.cameraState
+          ? {
+              cameraState: {
+                label: this.cameraStateString[nextTripCameraDetail.cameraState],
+                value: nextTripCameraDetail.cameraState,
+              },
+            }
+          : {};
+        nextTripCamerasDetail = [{ ...nextTripCameraDetail, ...cameraState }];
+
+        // 從資料轉換成表單用格式 相機編號
+        projectCameras = [nextTripCamerasDetail[0].cameraSn];
+
+        if (
+          !nextProjectTrip.projectCameras[
+            nextProjectTrip.projectCameras.length - 1
+          ]._id
+        ) {
+          nextTripCameraDetail =
+            nextProjectTrip.projectCameras[
+              nextProjectTrip.projectCameras.length - 2
+            ];
+          // 從資料轉換成表單用格式 相機狀態
+          cameraState = nextTripCameraDetail.cameraState
+            ? {
+                cameraState: {
+                  label: this.cameraStateString[
+                    nextTripCameraDetail.cameraState
+                  ],
+                  value: nextTripCameraDetail.cameraState,
+                },
+              }
+            : {};
+          nextTripCamerasDetail = [
+            { ...nextTripCameraDetail, ...cameraState },
+            ...nextTripCamerasDetail,
+          ];
+
+          // 從資料轉換成表單用格式 相機編號
+          projectCameras = [
+            nextTripCamerasDetail[0].cameraSn,
+            ...projectCameras,
+          ];
+        }
+
+        // 保留舊的行程相機
+        const tripCamerasDetailOldCount =
+          nextProjectTrip.projectCameras.length - projectCameras.length;
+        if (tripCamerasDetailOldCount > 0) {
+          this.tripCamerasDetailOld = nextProjectTrip.projectCameras.slice(
+            0,
+            tripCamerasDetailOldCount,
+          );
+        }
+      }
+
+      this.projectTrip = {
+        ...nextProjectTrip,
+        cameraLocationEvent,
+        projectCameras,
+      };
 
       if (nextTripCamerasDetail && nextTripCamerasDetail.length > 0) {
-        this.tripCamerasDetail = nextTripCamerasDetail;
         if (
           this.projectTrip.projectCameras &&
           this.projectTrip.projectCameras.length === 1
@@ -417,20 +532,46 @@ export default {
             };
           } else this.endActiveTime = { HH: '00', mm: '00' };
         }
+
+        this.tripCamerasDetail = nextTripCamerasDetail;
+        if (this.tripCamerasDetail.length === 1) {
+          this.tripCamerasDetail[1] = {};
+        }
+
+        this.cmaeraLocationEvenOptions = [...this.cmaeraLocationEvenOptionsAll];
+        this.cameraStateOptions = [...this.cameraStateOptionsAll];
       } else {
         this.tripCamerasDetail = [{}, {}];
         this.startActiveTime = { HH: '00', mm: '00' };
         this.endActiveTime = { HH: '00', mm: '00' };
+
+        this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
+        this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
       }
+
+      this.changeLimit();
     },
     async setEditProjectTripReduest() {
       if (this.selectedCameraLocationIndex !== null) {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
+          // 從表單用格式轉換成資料 相機位置事件
+          let cameraLocationEvent = {};
+          if (this.projectTrip.cameraLocationEvent)
+            cameraLocationEvent = this.projectTrip.cameraLocationEvent.value;
+          // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
+              let cameraState = {};
               let startActiveDate = {};
               let endActiveDate = {};
+
+              if (this.tripCamerasDetail[index].cameraState) {
+                // 從表單用格式轉換成資料 相機狀態
+                cameraState = {
+                  cameraState: this.tripCamerasDetail[index].cameraState.value,
+                };
+              }
 
               if (
                 this.tripCamerasDetail[index].startActiveDate &&
@@ -463,29 +604,38 @@ export default {
               const currentTripCamera = Object.assign(
                 {},
                 this.tripCamerasDetail[index],
+                cameraState,
                 startActiveDate,
                 endActiveDate,
               );
+
               return { cameraSn: value, ...currentTripCamera };
             },
           );
-          currentProjectTrip.projectCameras = projectCameras;
+          currentProjectTrip = {
+            ...currentProjectTrip,
+            cameraLocationEvent,
+            projectCameras: [...this.tripCamerasDetailOld, ...projectCameras],
+          };
         }
 
         if (Object.keys(currentProjectTrip).length > 0) {
-          Object.assign(
-            this.editProjectTripBasic.studyAreas[this.selectedStudyAreaIndex]
-              .cameraLocations[this.selectedCameraLocationIndex],
-            currentProjectTrip,
-          );
+          this.editProjectTripBasic.studyAreas[
+            this.selectedStudyAreaIndex
+          ].cameraLocations[this.selectedCameraLocationIndex] = {
+            ...currentProjectTrip,
+          };
         }
-
-        this.setEditProjectTrip(this.editProjectTripBasic);
+        this.setEditProjectTripData(this.editProjectTripBasic);
       }
     },
-    changeLimit(value) {
+    changeLimit() {
       this.projectCameraLimit =
-        value === this.cmaeraLocationEvenOptions[1] ? 2 : 1;
+        this.projectTrip.cameraLocationEvent &&
+        this.projectTrip.cameraLocationEvent.value ==
+          this.cmaeraLocationEvenOptionsAll[1].value
+          ? 2
+          : 1;
 
       if (this.projectTrip.projectCameras && this.projectCameraLimit === 1)
         this.projectTrip.projectCameras.splice(1, 1);

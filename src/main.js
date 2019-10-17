@@ -7,6 +7,7 @@ import App from './App';
 import router from './router';
 import store from './store';
 
+import locale from 'element-ui/lib/locale/lang/zh-TW';
 import './sass/app.sass';
 import 'bootstrap';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -15,7 +16,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 
 Vue.use(VeeValidate);
 Vue.use(VTooltip);
-Vue.use(ElementUI);
+Vue.use(ElementUI, { locale });
 
 Vue.config.productionTip = false;
 
