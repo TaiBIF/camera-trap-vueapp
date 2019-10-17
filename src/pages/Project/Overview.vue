@@ -21,6 +21,26 @@
             >
           </div>
           <hr />
+          <div class="filter-option-type" v-show="isLogin">
+            <div class="filter-option-type-header">
+              計畫類型
+            </div>
+            <div v-for="(option, index) in projectTypeOption" :key="index">
+              <i
+                class="el-icon-check"
+                v-show="selectedFilters.projectType === option.name"
+              />
+              <span
+                :id="option.name"
+                class="filter-option"
+                @click="selectSingleFilter('projectType', $event)"
+              >
+                {{ option.name }}
+              </span>
+              <span class="float-right"> ({{ option.count }}) </span>
+            </div>
+          </div>
+          <hr v-show="isLogin" />
           <div class="filter-option-type">
             <div class="filter-option-type-header">
               物種
@@ -143,8 +163,11 @@
           <!-- Controlbar -->
           <div class="row">
             <div class="col-8">
+              <span class="filter-label">
+                {{ selectedFilters.projectType }}
+              </span>
               <span
-                class="filter-label"
+                class="filter-label deleteable"
                 v-for="(label, index) in selectedFiltersLabel"
                 :key="index"
                 @click="clearFilter(label.type)"
@@ -265,6 +288,8 @@ import { createNamespacedHelpers } from 'vuex';
 import infiniteScroll from 'vue-infinite-scroll';
 
 const projects = createNamespacedHelpers('projects');
+const account = createNamespacedHelpers('account');
+
 const PROJECT_PAGE = 12;
 const SORTED_BY_ENUM = {
   '-oldestAnnotationTime': '依資料起始時間排序 (新→舊)',
@@ -272,6 +297,10 @@ const SORTED_BY_ENUM = {
   funder: '依委託單位筆畫排序',
   title: '依計畫名稱筆畫排序',
 };
+const projectTypeOption = [
+  { name: '我的計畫', count: 0 },
+  { name: '公開計畫', count: 1500 },
+];
 const speciesOption = [
   { name: '山羌', count: 200 },
   { name: '山羊', count: 150 },
@@ -316,10 +345,12 @@ export default {
       sortedBy: '-oldestAnnotationTime',
       busy: false,
       displayByGrid: true,
+      projectTypeOption,
       speciesOption,
       areaOption,
       selectedArea: '',
       selectedFilters: {
+        projectType: '我的計畫',
         species: '',
         county: '',
         datetime: [0, MaxDateTime],
@@ -354,7 +385,10 @@ export default {
                     )}-${this.formatDatetime(endDatetime)}`,
                   },
                 ];
-            } else if (this.selectedFilters[key] !== '') {
+            } else if (
+              key !== 'projectType' &&
+              this.selectedFilters[key] !== ''
+            ) {
               return [...pre, { type: key, value: this.selectedFilters[key] }];
             }
             return pre;
@@ -366,6 +400,7 @@ export default {
     },
   },
   computed: {
+    ...account.mapGetters(['userName', 'isLogin']),
     ...projects.mapState(['projects', 'projectsTotal']),
     disableLoadMoreProjects() {
       return this.busy || this.projectsTotal === this.projects.length;
@@ -379,6 +414,7 @@ export default {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
+        projectType: this.selectedFilters.projectType,
         species: this.selectedFilters.species || undefined,
         county: this.selectedFilters.county || undefined,
         startDate: this.formatDatetime(
@@ -396,6 +432,7 @@ export default {
     },
     selectSingleFilter(key, event) {
       this.selectedFilters[key] = event.currentTarget.id;
+      if (key === 'projectType') this.getProjectRequest();
     },
     clearFilter(type) {
       if (type === 'datetime') this.selectedFilters[type] = [0, MaxDateTime];
