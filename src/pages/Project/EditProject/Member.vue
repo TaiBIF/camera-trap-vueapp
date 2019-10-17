@@ -120,6 +120,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';
 import DoubleCheckModal from '@/components/Modal/DoubleCheckModal.vue';

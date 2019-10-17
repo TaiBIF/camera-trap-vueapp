@@ -116,6 +116,7 @@ import { HotTable } from '@handsontable/vue';
 import { createNamespacedHelpers } from 'vuex';
 import moment from 'moment';
 import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import { getProjectCameraLocationsByName } from '@/service';

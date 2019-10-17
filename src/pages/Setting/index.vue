@@ -138,6 +138,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { equals } from 'ramda';
 import intToChar from '@/utils/intToChar';
 import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 const account = createNamespacedHelpers('account');
 
