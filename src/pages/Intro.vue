@@ -22,32 +22,20 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
             </h6>
             <h6 v-else>點擊地圖區塊進行資料探索</h6>
             <l-map
-              v-show="map.mode === 'studyArea'"
               style="height: 600px; width: 100%"
-              :zoom="zoom"
+              :zoom="map.mode === 'studyArea' ? 10 : 7"
               :center="center"
               @update:zoom="zoomUpdated"
               @update:center="centerUpdated"
               @update:bounds="boundsUpdated"
               :options="controlableMapOptions"
             >
-              <l-tile-layer :url="url" :attribution="attribution" />
-            </l-map>
-            <l-map
-              v-show="map.mode === 'region' || map.mode === 'none'"
-              style="height: 600px; width: 100%"
-              :zoom="7"
-              :center="{
-                lat: 23.5,
-                lng: 121.2,
-              }"
-              :options="mapOptions"
-            >
               <l-geo-json
                 ref="geoRef"
                 :geojson="geojson"
                 :options="geoOptions"
               />
+              <l-tile-layer :url="url" :attribution="attribution" />
               <l-circle-marker
                 v-for="l in locations"
                 :key="l.id"
@@ -56,7 +44,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                 color="orange"
                 :fillOpacity="1"
                 fillColor="orange"
-                @click="handleStudyAreaClick(l.id)"
+                @click="handleStudyAreaClick(l)"
               >
                 <l-tooltip
                   :content="l.text"
@@ -598,8 +586,8 @@ export default {
                 locations.push({
                   id: i,
                   latlng: latLng(rand(e.latlng.lat), rand(e.latlng.lng)),
-                  text: `玉里站${i} \n
-                  ${i * 10} 個相機位置，${i * 1.5} 萬筆資料`,
+                  text: `玉里站${i} <br/>
+                  ${i * 10}個相機位置，${i * 1.5}萬筆資料`,
                 });
               }
               this.locations = locations;
@@ -613,7 +601,7 @@ export default {
         features: [],
         type: 'FeatureCollection',
       },
-      zoom: 7,
+      zoom: 9,
       url: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -693,12 +681,16 @@ export default {
     ...account.mapGetters(['isLogin']),
   },
   methods: {
-    handleStudyAreaClick(id) {
+    handleStudyAreaClick({ id, ...l }) {
       this.map.mode = 'studyArea';
       console.log('==', this.map.mode);
       // 進入花蓮
       console.log('-id', id);
       this.map.studyArea.name = id;
+      this.center = {
+        lat: l.latlng.lat,
+        lng: l.latlng.lng,
+      };
     },
     click() {},
     zoomUpdated(e) {
