@@ -93,18 +93,39 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
       </div>
     </section>
 
-    <section class="important">
-      <div class="container">
-        <div class="row service-items">
+    <section class="important p-5">
+      <div class="row service-items total-data-chart">
+        <div class="col-xs-12 col-sm-12 col-md-3">
+          <span>資料成長數</span>
+          <hr />
           <ve-histogram
-            class="col-xs-12 col-sm-12 col-md-4"
-            :data="histogramData"
+            :data="dataCount"
+            :settings="dataCountSettings"
           ></ve-histogram>
-          <ve-bar class="col-xs-12 col-sm-12 col-md-4" :data="barData"></ve-bar>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6">
+          <span>物種分布</span>
+          <hr />
+          <div class="row">
+            <ve-bar
+              class="col-xs-12 col-sm-12 col-md-6"
+              :data="speciesLocationCount"
+            ></ve-bar>
+            <ve-bar
+              class="col-xs-12 col-sm-12 col-md-6"
+              :data="speciesPictureCount"
+            ></ve-bar>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3">
+          <span>單位比例圖</span>
+          <hr />
           <ve-pipe
-            class="col-xs-12 col-sm-12 col-md-4"
-            :data="pipeData"
+            :data="funderRatio"
+            :settings="funderRatioSettings"
+            :legend-visible="false"
           ></ve-pipe>
+          <p class="float-right pipe-chart-des">資料量(GB)</p>
         </div>
       </div>
     </section>
@@ -467,6 +488,7 @@ import LoginModal from '@/components/Modal/LoginModal';
 import veBar from 'v-charts/lib/bar.common.min';
 import veHistogram from 'v-charts/lib/histogram.common.min';
 import vePipe from 'v-charts/lib/pie.common.min';
+import 'echarts/lib/chart/line';
 import 'leaflet/dist/leaflet.css';
 const account = createNamespacedHelpers('account');
 
@@ -492,8 +514,18 @@ export default {
     LTooltip,
   },
   data() {
-    this.chartSettings = {
-      showLine: ['下单用户'],
+    this.dataCountSettings = {
+      showLine: ['照片累積張數(萬)'],
+    };
+    this.funderRatioSettings = {
+      radius: 65,
+      label: {
+        formatter: '{b}\n{c}',
+      },
+      labelLine: {
+        length: 5,
+        length2: 5,
+      },
     };
     return {
       locations: [],
@@ -592,26 +624,13 @@ export default {
       },
       loginModalOpen: false,
       slides: 7,
-      barData: {
-        columns: ['日期', '访问用户', '下单用户', '下单率'],
+      funderRatio: {
+        columns: ['funder', 'funderCount'],
         rows: [
-          { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
-          { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
-          { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
-          { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
-          { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
-          { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-        ],
-      },
-      pipeData: {
-        columns: ['日期', '访问用户'],
-        rows: [
-          { 日期: '1/1', 访问用户: 1393 },
-          { 日期: '1/2', 访问用户: 3530 },
-          { 日期: '1/3', 访问用户: 2923 },
-          { 日期: '1/4', 访问用户: 1723 },
-          { 日期: '1/5', 访问用户: 3792 },
-          { 日期: '1/6', 访问用户: 4593 },
+          { funder: '林務局', funderCount: 750 },
+          { funder: '玉山國家公園', funderCount: 100 },
+          { funder: '太魯閣國家公園', funderCount: 50 },
+          { funder: '特有生物研究保育中心', funderCount: 120 },
         ],
       },
       histogramData: {
@@ -623,6 +642,40 @@ export default {
           { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
           { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
           { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+        ],
+      },
+      dataCount: {
+        columns: ['year', '照片累積張數(萬)', '相機位置數'],
+        rows: [
+          { year: '101', '照片累積張數(萬)': 30, 相機位置數: 40 },
+          { year: '102', '照片累積張數(萬)': 40, 相機位置數: 50 },
+          { year: '103', '照片累積張數(萬)': 70, 相機位置數: 70 },
+          { year: '104', '照片累積張數(萬)': 150, 相機位置數: 160 },
+          { year: '105', '照片累積張數(萬)': 200, 相機位置數: 210 },
+          { year: '106', '照片累積張數(萬)': 250, 相機位置數: 270 },
+          { year: '107', '照片累積張數(萬)': 300, 相機位置數: 360 },
+        ],
+      },
+      speciesLocationCount: {
+        columns: ['species', '分佈位置數'],
+        rows: [
+          { species: '山羌', 分佈位置數: 152 },
+          { species: '鼬獾', 分佈位置數: 144 },
+          { species: '獼猴', 分佈位置數: 140 },
+          { species: '白鼻心', 分佈位置數: 124 },
+          { species: '野豬', 分佈位置數: 114 },
+          { species: '食蟹獴', 分佈位置數: 113 },
+        ],
+      },
+      speciesPictureCount: {
+        columns: ['species', '照片張數(萬)'],
+        rows: [
+          { species: '山羌', '照片張數(萬)': 165 },
+          { species: '鼬獾', '照片張數(萬)': 140 },
+          { species: '獼猴', '照片張數(萬)': 160 },
+          { species: '白鼻心', '照片張數(萬)': 50 },
+          { species: '野豬', '照片張數(萬)': 65 },
+          { species: '食蟹獴', '照片張數(萬)': 35 },
         ],
       },
     };
