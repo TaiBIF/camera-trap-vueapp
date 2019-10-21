@@ -67,11 +67,37 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
               </p>
             </div>
             <div v-else-if="map.mode === 'region'">
-              <h2 class="text-green text-left">
+              <h2 class="text-green text-left mb-3">
                 <big>{{ map.region.name }}</big
                 ><br />
-                山羌、台灣藍鵲
+                {{ regionData.species[0] || ''
+                }}{{
+                  regionData.species[1] ? `、${regionData.species[1]}` : ''
+                }}
               </h2>
+              <div
+                class="desp row"
+                v-for="(key, i) in Object.keys(regionData)"
+                :key="i"
+              >
+                <div class="col-3 text-left">
+                  {{ regionDataString[key] }}
+                </div>
+                <div
+                  class="col-6 text-left"
+                  v-if="!Array.isArray(regionData[key])"
+                >
+                  {{ regionData[key] }}
+                </div>
+                <div class="col-6 text-left" v-else>
+                  {{
+                    regionData[key].reduce(
+                      (pre, cur) => (pre === '' ? cur : `${pre}、${cur}`),
+                      '',
+                    )
+                  }}
+                </div>
+              </div>
             </div>
             <div v-else-if="map.mode === 'studyArea'">
               <ve-histogram :data="histogramData"></ve-histogram>
@@ -480,6 +506,23 @@ import 'echarts/lib/chart/line';
 import 'leaflet/dist/leaflet.css';
 const account = createNamespacedHelpers('account');
 
+const regionData = {
+  totalProject: 75,
+  totalCameraLocation: 537,
+  totalIdentifiedSpecies: 65,
+  totalPictrue: 3076233,
+  totalCameraWorkHour: 3479760,
+  species: ['山羌', '台灣藍鵲', '水鹿', '獼猴'],
+};
+const regionDataString = {
+  totalProject: '計畫總數',
+  totalCameraLocation: '相機位置',
+  totalIdentifiedSpecies: '總辨識進度',
+  totalPictrue: '總相片數',
+  totalCameraWorkHour: '相機總工時',
+  species: '出現物種',
+};
+
 export default {
   components: {
     LoginModal,
@@ -666,6 +709,8 @@ export default {
           { species: '食蟹獴', '照片張數(萬)': 35 },
         ],
       },
+      regionData,
+      regionDataString,
     };
   },
   watch: {
