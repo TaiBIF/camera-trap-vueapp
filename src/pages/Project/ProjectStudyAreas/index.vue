@@ -133,7 +133,6 @@
                       @click.prevent="clickSearch"
                       class="btn btn-green"
                       :style="{ margin: '4px' }"
-                      :disabled="!canSearch"
                     >
                       篩選
                     </button>
@@ -477,7 +476,7 @@ export default {
         studyAreaId: this.studyAreaId,
         ...{
           cameraLocations: this.queryCameraLocations,
-          trip: query.trip ? query.trip.value : [],
+          projectTripId: query.trip ? query.trip.value : [],
           startTime: getTime(query.startDate, query.startTime).toISOString(),
           endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
           index: query.index,
