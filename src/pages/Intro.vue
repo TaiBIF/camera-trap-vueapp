@@ -55,7 +55,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
               </l-circle-marker>
             </l-map>
           </div>
-          <div class="col-xs-12 col-sm-12 col-md-6 text-right">
+          <div class="col-xs-12 col-sm-12 col-md-6 text-right mt-5 pt-3">
             <div v-if="map.mode === 'none'">
               <h2 class="text-green">
                 <big>自動相機資料庫</big><br />
@@ -100,7 +100,31 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
               </div>
             </div>
             <div v-else-if="map.mode === 'studyArea'">
-              <ve-histogram :data="histogramData"></ve-histogram>
+              <div class="row mb-3">
+                <div class="col-5 p-0">
+                  <h2 class="text-green text-left">
+                    <big style="display: inline">{{ map.studyArea.name }}</big>
+                  </h2>
+                </div>
+                <div
+                  :style="{
+                    visibility:
+                      map.cameraLocation.name !== '' ? 'visible' : 'hidden',
+                  }"
+                  class="col-7 cameraLocationInfo text-left"
+                >
+                  相機位置：{{ map.cameraLocation.name }}<br />
+                  架設日期：2018/08/17<br />
+                  經緯度：X(97)213520, Y(97)2561356<br />
+                  海拔：230m<br />
+                  土地利用型態：農地<br />
+                  植披：闊葉林
+                </div>
+              </div>
+              <ve-histogram
+                :data="studyAreaDataCount"
+                :events="studyAreaDataEvents"
+              ></ve-histogram>
             </div>
           </div>
         </div>
@@ -570,6 +594,9 @@ export default {
         studyArea: {
           name: '',
         },
+        cameraLocation: {
+          name: '',
+        },
       },
       mapOptions: {
         zoomControl: false,
@@ -629,6 +656,7 @@ export default {
                 locations.push({
                   id: i,
                   latlng: latLng(rand(e.latlng.lat), rand(e.latlng.lng)),
+                  title: `玉里站${i}`,
                   text: `玉里站${i} <br/>
                   ${i * 10}個相機位置，${i * 1.5}萬筆資料`,
                 });
@@ -664,15 +692,16 @@ export default {
           { funder: '特有生物研究保育中心', funderCount: 120 },
         ],
       },
-      histogramData: {
-        columns: ['日期', '访问用户', '下单用户', '下单率'],
+      studyAreaDataCount: {
+        columns: ['cameraLocation', '累積資料量'],
         rows: [
-          { 日期: '1/1', 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
-          { 日期: '1/2', 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
-          { 日期: '1/3', 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
-          { 日期: '1/4', 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
-          { 日期: '1/5', 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
-          { 日期: '1/6', 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
+          { cameraLocation: 'PT01A', 累積資料量: 10500 },
+          { cameraLocation: 'PT02A', 累積資料量: 22000 },
+          { cameraLocation: 'PT03A', 累積資料量: 11000 },
+          { cameraLocation: 'PT04A', 累積資料量: 14200 },
+          { cameraLocation: 'PT05A', 累積資料量: 34000 },
+          { cameraLocation: 'PT06A', 累積資料量: 9000 },
+          { cameraLocation: 'PT07A', 累積資料量: 17000 },
         ],
       },
       dataCount: {
@@ -724,6 +753,14 @@ export default {
   },
   computed: {
     ...account.mapGetters(['isLogin']),
+    studyAreaDataEvents: function() {
+      const self = this;
+      return {
+        click: function(e) {
+          self.map.cameraLocation.name = e.name;
+        },
+      };
+    },
   },
   methods: {
     handleStudyAreaClick({ id, ...l }) {
@@ -731,7 +768,8 @@ export default {
       console.log('==', this.map.mode);
       // 進入花蓮
       console.log('-id', id);
-      this.map.studyArea.name = id;
+      this.map.cameraLocation.name = '';
+      this.map.studyArea.name = l.title;
       this.center = {
         lat: l.latlng.lat,
         lng: l.latlng.lng,
@@ -767,13 +805,13 @@ export default {
   },
 };
 </script>
-<style lang="sass" scoped>
-/*.leaflet-pane*/
-/*  .leaflet-tooltip-pane*/
-/*    .leaflet-tooltip*/
-
-/*      &.leaflet-tooltip-top*/
-
-
-/*        &:before*/
+<style lang="sass">
+.page-intro
+  .cameraLocationInfo
+    width: 100%
+    padding: 10px
+    background-color: #f6f5f5
+    color: #8b8b8b
+    box-sizing: border-box
+    font-size: 10px
 </style>
