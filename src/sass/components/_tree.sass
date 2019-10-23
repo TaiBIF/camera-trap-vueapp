@@ -40,6 +40,41 @@ ul.tree-menu
         flex: 1
         height: 44px
         line-height: 44px
+    .tree-menu-checkbox
+      label
+        display: block
+        margin: 0px
+        padding-left: 100px
+        font-size: 14px
+        box-shadow: 0 -1px 0 0 rgba(155,155,155,.15)
+        height: 44px
+        line-height: 44px
+      >input
+        margin-left: 100px
+        height: 44px
+        line-height: 44px
+        font-size: 14px
+        border: 0
+        outline: 0
+        padding: 13px 0
+        background-color: transparent
+        display: block
+        &:focus
+            outline: 0
+            &::placeholder
+                opacity: 0
+      .el-checkbox__inner
+        background-color: transparent
+        border-color: black
+        &::before
+          background-color: black
+        &::after
+          border-color: black
+      .el-checkbox__label
+        color: black
+        font-weight: normal
+        font-size: 14px
+        line-height: 24px
 
 
 
