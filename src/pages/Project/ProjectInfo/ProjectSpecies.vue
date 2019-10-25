@@ -387,7 +387,7 @@ export default {
     },
   },
   mounted() {
-    this.loadIdentifiedSpecies(this.projectId);
+    this.loadIdentifiedSpecies({ projectId: this.projectId });
     this.updateSelectArea();
     this.getProjectTrips(this.projectId);
   },
@@ -455,10 +455,24 @@ export default {
         this.selectedChildAreaId = 'all';
       }
     },
-    changeRoute(event) {
-      const studyArea = this.allAreas.find(
+    async changeRoute(event) {
+      const studyArea = await this.allAreas.find(
         ({ key }) => key === event.target.value,
       );
+      setTimeout(() => {
+        const pieCharts = this.$refs.pieCharts;
+        const PieChartOpt = {
+          type: 'pie',
+          name: 'speices',
+          size: '80%',
+          innerSize: '50%',
+        };
+        pieCharts.removeSeries(PieChartOpt);
+        this.loadIdentifiedSpecies({
+          projectId: this.projectId,
+          studyAreaId: this.selectedStudyAreaId,
+        });
+      }, 0);
       if (studyArea) {
         this.$router.push({
           name: 'projectSpecies',

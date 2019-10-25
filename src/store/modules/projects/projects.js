@@ -6,6 +6,7 @@ import { dateFormatYYYY, dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
   getAllProjects,
   getIdentifiedSpecies,
+  getIdentifiedStudyAreaSpecies,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
@@ -169,6 +170,17 @@ const mutations = {
       records,
     };
   },
+  setIdentifiedStudyAreaSpecies(state, data) {
+    let records = [];
+    if (data.records && data.records.length > 0) {
+      records = [...data.records];
+      records.sort(({ count: countA }, { count: countB }) => countB - countA);
+    }
+    state.identifiedSpecies = {
+      ...data,
+      records,
+    };
+  },
   setRetrievalStatus(state, status) {
     Vue.set(state.retrievalData, 'loadingStatus', status);
   },
@@ -263,9 +275,14 @@ const actions = {
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
   },
-  async loadIdentifiedSpecies({ commit }, projectId) {
-    const data = await getIdentifiedSpecies(projectId);
-    commit('setIdentifiedSpecies', data || {});
+  async loadIdentifiedSpecies({ commit }, { projectId, studyAreaId }) {
+    if (studyAreaId && studyAreaId !== 'all') {
+      const data = await getIdentifiedStudyAreaSpecies(projectId, studyAreaId);
+      commit('setIdentifiedStudyAreaSpecies', data || {});
+    } else {
+      const data = await getIdentifiedSpecies(projectId);
+      commit('setIdentifiedSpecies', data || {});
+    }
   },
   async loadRetrievalData(
     { commit },
