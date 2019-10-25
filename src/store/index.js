@@ -9,6 +9,7 @@ import dataFields from '@/store/modules/dataFields';
 import forest from '@/store/modules/forest';
 import notifications from '@/store/modules/notifications';
 import projects from '@/store/modules/projects';
+import statistic from '@/store/modules/statistic';
 import upload from '@/store/modules/upload';
 import uploadSessions from '@/store/modules/uploadSessions';
 
@@ -25,6 +26,7 @@ export default new Vuex.Store({
     calculator,
     notifications,
     ...projects,
+    statistic,
     upload,
     uploadSessions,
     camera,

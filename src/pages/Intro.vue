@@ -40,7 +40,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                 v-for="l in locations"
                 :key="l.id"
                 :lat-lng="l.latlng"
-                :radius="l.id"
+                :radius="5"
                 color="orange"
                 :fillOpacity="1"
                 fillColor="orange"
@@ -67,7 +67,10 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
               </p>
             </div>
             <div v-else-if="map.mode === 'region'">
-              <h2 class="text-green text-left mb-3">
+              <h2
+                class="text-green text-left mb-3"
+                v-show="map.region.name !== ''"
+              >
                 <big>{{ map.region.name }}</big
                 ><br />
                 {{ regionData.species[0] || ''
@@ -79,6 +82,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                 class="desp row"
                 v-for="(key, i) in Object.keys(regionData)"
                 :key="i"
+                v-show="map.region.name !== ''"
               >
                 <div class="col-3 text-left">
                   {{ regionDataString[key] }}
@@ -114,11 +118,17 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                   class="col-7 cameraLocationInfo text-left"
                 >
                   相機位置：{{ map.cameraLocation.name }}<br />
-                  架設日期：2018/08/17<br />
-                  經緯度：X(97)213520, Y(97)2561356<br />
-                  海拔：230m<br />
-                  土地利用型態：農地<br />
-                  植披：闊葉林
+                  架設日期：{{
+                    dateFormatYYYYMMDD(map.cameraLocation.detail.settingTime) ||
+                      ''
+                  }}<br />
+                  經緯度：{{ map.cameraLocation.detail.longitude }},{{
+                    map.cameraLocation.detail.latitude
+                  }}<br />
+                  海拔：{{ map.cameraLocation.detail.altitude }}<br />
+                  土地利用型態：{{ map.cameraLocation.detail.landCoverType
+                  }}<br />
+                  植披：{{ map.cameraLocation.detail.vegetation }}
                 </div>
               </div>
               <ve-histogram
@@ -137,7 +147,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
           <span>資料成長數</span>
           <hr />
           <ve-histogram
-            :data="dataCount"
+            :data="dataount"
             :settings="dataCountSettings"
           ></ve-histogram>
         </div>
@@ -520,6 +530,7 @@ import {
   LTooltip,
 } from 'vue2-leaflet';
 import { createNamespacedHelpers } from 'vuex';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper.js';
 import { latLng } from 'leaflet';
 import $ from 'jquery';
 import LoginModal from '@/components/Modal/LoginModal';
@@ -529,15 +540,8 @@ import vePipe from 'v-charts/lib/pie.common.min';
 import 'echarts/lib/chart/line';
 import 'leaflet/dist/leaflet.css';
 const account = createNamespacedHelpers('account');
+const statistic = createNamespacedHelpers('statistic');
 
-const regionData = {
-  totalProject: 75,
-  totalCameraLocation: 537,
-  totalIdentifiedSpecies: 65,
-  totalPictrue: 3076233,
-  totalCameraWorkHour: 3479760,
-  species: ['山羌', '台灣藍鵲', '水鹿', '獼猴'],
-};
 const regionDataString = {
   totalProject: '計畫總數',
   totalCameraLocation: '相機位置',
@@ -593,9 +597,11 @@ export default {
         },
         studyArea: {
           name: '',
+          index: 0,
         },
         cameraLocation: {
           name: '',
+          detail: {},
         },
       },
       mapOptions: {
@@ -634,13 +640,8 @@ export default {
                 });
               }
             },
-            click: e => {
+            click: async e => {
               this.map.mode = 'region';
-              const rand = n => {
-                let max = n + 0.1;
-                let min = n - 0.1;
-                return Math.random() * (max - min) + min;
-              };
               if (this.map.region.event.target) {
                 this.map.region.event.target.setStyle({
                   fillColor: '#7C9C2D',
@@ -650,20 +651,25 @@ export default {
                 fillColor: '#7CEC2D',
               });
               Object.assign(this.map.region.event, {}, e);
+              this.map.region.name = '';
+              await this.getSstatisticsByCountyName(feature.properties.name);
               this.map.region.name = feature.properties.name;
               const locations = [];
-              for (let i = 0; i < 10; i++) {
+              this.countyStatistics.studyArea.items.map((studyArea, i) => {
                 locations.push({
-                  id: i,
-                  latlng: latLng(rand(e.latlng.lat), rand(e.latlng.lng)),
-                  title: `玉里站${i}`,
-                  text: `玉里站${i} <br/>
-                  ${i * 10}個相機位置，${i * 1.5}萬筆資料`,
+                  studyAreaIndex: i,
+                  latlng: latLng(
+                    studyArea.cameraLocation.items[0].latitude,
+                    studyArea.cameraLocation.items[0].longitude,
+                  ),
+                  title: studyArea.title['zh-TW'],
+                  text: `${studyArea.title['zh-TW']} <br/>
+                  ${studyArea.cameraLocation.total}個相機位置，${
+                    studyArea.data.total
+                  }筆資料`,
                 });
-              }
+              });
               this.locations = locations;
-              console.log(this.locations);
-              // fetch api
             },
           });
         },
@@ -685,62 +691,68 @@ export default {
       slides: 7,
       funderRatio: {
         columns: ['funder', 'funderCount'],
-        rows: [
-          { funder: '林務局', funderCount: 750 },
-          { funder: '玉山國家公園', funderCount: 100 },
-          { funder: '太魯閣國家公園', funderCount: 50 },
-          { funder: '特有生物研究保育中心', funderCount: 120 },
-        ],
+        rows: [{}],
       },
       studyAreaDataCount: {
         columns: ['cameraLocation', '累積資料量'],
-        rows: [
-          { cameraLocation: 'PT01A', 累積資料量: 10500 },
-          { cameraLocation: 'PT02A', 累積資料量: 22000 },
-          { cameraLocation: 'PT03A', 累積資料量: 11000 },
-          { cameraLocation: 'PT04A', 累積資料量: 14200 },
-          { cameraLocation: 'PT05A', 累積資料量: 34000 },
-          { cameraLocation: 'PT06A', 累積資料量: 9000 },
-          { cameraLocation: 'PT07A', 累積資料量: 17000 },
-        ],
+        rows: [],
       },
-      dataCount: {
+      dataount: {
         columns: ['year', '照片累積張數(萬)', '相機位置數'],
-        rows: [
-          { year: '101', '照片累積張數(萬)': 30, 相機位置數: 40 },
-          { year: '102', '照片累積張數(萬)': 40, 相機位置數: 50 },
-          { year: '103', '照片累積張數(萬)': 70, 相機位置數: 70 },
-          { year: '104', '照片累積張數(萬)': 150, 相機位置數: 160 },
-          { year: '105', '照片累積張數(萬)': 200, 相機位置數: 210 },
-          { year: '106', '照片累積張數(萬)': 250, 相機位置數: 270 },
-          { year: '107', '照片累積張數(萬)': 300, 相機位置數: 360 },
-        ],
+        rows: [{}],
       },
       speciesLocationCount: {
         columns: ['species', '分佈位置數'],
-        rows: [
-          { species: '山羌', 分佈位置數: 152 },
-          { species: '鼬獾', 分佈位置數: 144 },
-          { species: '獼猴', 分佈位置數: 140 },
-          { species: '白鼻心', 分佈位置數: 124 },
-          { species: '野豬', 分佈位置數: 114 },
-          { species: '食蟹獴', 分佈位置數: 113 },
-        ],
+        rows: [{}],
       },
       speciesPictureCount: {
         columns: ['species', '照片張數(萬)'],
-        rows: [
-          { species: '山羌', '照片張數(萬)': 165 },
-          { species: '鼬獾', '照片張數(萬)': 140 },
-          { species: '獼猴', '照片張數(萬)': 160 },
-          { species: '白鼻心', '照片張數(萬)': 50 },
-          { species: '野豬', '照片張數(萬)': 65 },
-          { species: '食蟹獴', '照片張數(萬)': 35 },
-        ],
+        rows: [{}],
       },
-      regionData,
+      regionData: {
+        totalProject: '',
+        totalCameraLocation: '',
+        totalIdentifiedSpecies: '',
+        totalPictrue: '',
+        totalCameraWorkHour: '',
+        species: [],
+      },
       regionDataString,
     };
+  },
+  async mounted() {
+    this.setRegionData();
+    this.dataount.rows = [];
+    this.speciesLocationCount.rows = [];
+    this.speciesPictureCount.rows = [];
+    this.funderRatio.rows = [];
+
+    await this.getSstatistics();
+    this.dataStatistics.year.forEach(data => {
+      this.dataount.rows.push({
+        year: data.year,
+        '照片累積張數(萬)': data.totalPicture / 10000,
+        相機位置數: data.totalCameraLocation,
+      });
+    });
+
+    this.dataStatistics.species.forEach(data => {
+      this.speciesLocationCount.rows.push({
+        species: data.name,
+        分佈位置數: data.totalLocation,
+      });
+      this.speciesPictureCount.rows.push({
+        species: data.name,
+        '照片張數(萬)': data.totalPicture / 10000,
+      });
+    });
+
+    this.dataStatistics.funder.forEach(data => {
+      this.funderRatio.rows.push({
+        funder: data.name,
+        funderCount: data.totalData,
+      });
+    });
   },
   watch: {
     'map.mode': function(mode) {
@@ -750,30 +762,44 @@ export default {
       // }
       return mode;
     },
+    countyStatistics: 'setRegionData',
   },
   computed: {
     ...account.mapGetters(['isLogin']),
+    ...statistic.mapState(['dataStatistics', 'countyStatistics']),
     studyAreaDataEvents: function() {
       const self = this;
       return {
         click: function(e) {
           self.map.cameraLocation.name = e.name;
+          self.map.cameraLocation.detail =
+            self.countyStatistics.studyArea.items[
+              self.map.studyArea.index
+            ].cameraLocation.items[e.dataIndex];
         },
       };
     },
   },
   methods: {
-    handleStudyAreaClick({ id, ...l }) {
+    ...statistic.mapActions(['getSstatistics', 'getSstatisticsByCountyName']),
+    async handleStudyAreaClick(l) {
       this.map.mode = 'studyArea';
-      console.log('==', this.map.mode);
-      // 進入花蓮
-      console.log('-id', id);
+      this.map.studyArea.index = l.studyAreaIndex;
       this.map.cameraLocation.name = '';
       this.map.studyArea.name = l.title;
       this.center = {
         lat: l.latlng.lat,
         lng: l.latlng.lng,
       };
+
+      this.studyAreaDataCount.rows = this.countyStatistics.studyArea.items[
+        l.studyAreaIndex
+      ].cameraLocation.items.map(cameraLocation => {
+        return {
+          cameraLocation: cameraLocation.name,
+          累積資料量: cameraLocation.data.total,
+        };
+      });
     },
     click() {},
     zoomUpdated(e) {
@@ -794,6 +820,22 @@ export default {
     },
     backTo(mode) {
       this.map.mode = mode;
+    },
+    setRegionData() {
+      this.regionData = {
+        totalProject: this.countyStatistics.project.total,
+        totalCameraLocation: this.countyStatistics.cameraLocation.total,
+        totalIdentifiedSpecies: this.countyStatistics.identifiedSpecies
+          .percentage,
+        totalPictrue: this.countyStatistics.picture.total,
+        totalCameraWorkHour: this.countyStatistics.camera.totalWorkHour,
+        species: this.countyStatistics.identifiedSpecies.items.map(
+          ({ name }) => name['zh-TW'],
+        ),
+      };
+    },
+    dateFormatYYYYMMDD(dateString) {
+      return dateString ? dateFormatYYYYMMDD(dateString) : '';
     },
   },
   async created() {
