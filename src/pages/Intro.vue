@@ -179,7 +179,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
     </section>
     <carousel-3d :autoplay="true" :height="320" :width="460" :border="0">
       <slide v-for="(slide, i) in slides" :index="i" :key="i">
-        <img src="https://placehold.it/460x320" />
+        <img :src="images[i]" />
       </slide>
     </carousel-3d>
 
@@ -541,6 +541,7 @@ import 'echarts/lib/chart/line';
 import 'leaflet/dist/leaflet.css';
 const account = createNamespacedHelpers('account');
 const statistic = createNamespacedHelpers('statistic');
+const carousel = createNamespacedHelpers('carousel');
 
 const regionDataString = {
   totalProject: '計畫總數',
@@ -718,6 +719,7 @@ export default {
         species: [],
       },
       regionDataString,
+      images: [],
     };
   },
   async mounted() {
@@ -753,6 +755,13 @@ export default {
         funderCount: data.totalData,
       });
     });
+
+    await this.getCarousel();
+    const images = this.carouselImages.map(img => {
+      return `${img.uri}/${img.name}.${img.file_extension}`;
+    });
+    this.images = images;
+    this.slides = images.length;
   },
   watch: {
     'map.mode': function(mode) {
@@ -767,6 +776,7 @@ export default {
   computed: {
     ...account.mapGetters(['isLogin']),
     ...statistic.mapState(['dataStatistics', 'countyStatistics']),
+    ...carousel.mapState(['carouselImages']),
     studyAreaDataEvents: function() {
       const self = this;
       return {
@@ -782,6 +792,7 @@ export default {
   },
   methods: {
     ...statistic.mapActions(['getSstatistics', 'getSstatisticsByCountyName']),
+    ...carousel.mapActions(['getCarousel']),
     async handleStudyAreaClick(l) {
       this.map.mode = 'studyArea';
       this.map.studyArea.index = l.studyAreaIndex;

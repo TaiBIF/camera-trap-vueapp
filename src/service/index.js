@@ -14,3 +14,4 @@ export * from './modules/projectCamera';
 export * from './modules/camera';
 export * from './modules/trip';
 export * from './modules/statistic';
+export * from './modules/carousel';
