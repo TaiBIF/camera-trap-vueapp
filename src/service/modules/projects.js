@@ -10,6 +10,14 @@ const getProjects = async query => {
   return res;
 };
 
+const getPublicProjects = async query => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/public?${queryString.stringify(query)}`,
+    method: 'GET',
+  });
+  return res;
+};
+
 const getAllProjects = async (query, items = []) => {
   /*
   Fetch all projects.
@@ -166,6 +174,7 @@ const getRetrievalDataByCameraLocation = async ({
 
 export {
   getProjects,
+  getPublicProjects,
   getAllProjects,
   getProjectDetail,
   postProject,

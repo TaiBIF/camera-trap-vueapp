@@ -9,6 +9,7 @@ import {
   getProjectDetail,
   getProjectSpecies,
   getProjects,
+  getPublicProjects,
   getRetrievalDataByCameraLocation,
   getRetrievalDataByProject,
   getRetrievalDataByStudyArea,
@@ -25,6 +26,7 @@ import { getLanguage } from '@/utils/i18n';
 const state = {
   projects: [],
   projectsTotal: 0,
+  projectsPublicTotal: 0,
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
@@ -143,11 +145,17 @@ const mutations = {
   setProjects(state, payload) {
     state.projects = payload;
   },
+  setPublicProjects(state, payload) {
+    state.projects = payload;
+  },
   appendProjects(state, payload) {
     state.projects = [...state.projects, ...payload];
   },
   setProjectsTotal(state, payload) {
     state.projectsTotal = payload;
+  },
+  setProjectsPublicTotal(state, payload) {
+    state.projectsPublicTotal = payload;
   },
   setProjectDetail(state, data) {
     state.projectDetail = data;
@@ -200,6 +208,14 @@ const actions = {
       idx(data, _ => _.items) || [],
     );
     commit('setProjectsTotal', data.total);
+  },
+  async getPublicProjects({ commit }, payload) {
+    const data = await getPublicProjects(payload);
+    commit(
+      payload.index === 0 ? 'setPublicProjects' : 'appendProjects',
+      idx(data, _ => _.items) || [],
+    );
+    commit('setProjectsPublicTotal', data.total);
   },
   async getAllProjects({ commit }, query) {
     const data = await getAllProjects(query);

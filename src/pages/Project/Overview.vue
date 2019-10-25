@@ -51,10 +51,10 @@
             <div v-for="(option, index) in speciesOption" :key="index">
               <i
                 class="el-icon-check"
-                v-show="selectedFilters.species === option.name"
+                v-show="selectedFilters.species === option.id"
               />
               <span
-                :id="option.name"
+                :id="option.id"
                 class="filter-option"
                 @click="selectSingleFilter('species', $event)"
               >
@@ -289,6 +289,7 @@ import infiniteScroll from 'vue-infinite-scroll';
 
 const projects = createNamespacedHelpers('projects');
 const account = createNamespacedHelpers('account');
+const config = createNamespacedHelpers('config');
 
 const PROJECT_PAGE = 12;
 const SORTED_BY_ENUM = {
@@ -301,25 +302,21 @@ const projectTypeOption = [
   { name: '我的計畫', count: 0 },
   { name: '公開計畫', count: 1500 },
 ];
-const speciesOption = [
-  { name: '山羌', count: 200 },
-  { name: '山羊', count: 150 },
-  { name: '台灣獼猴', count: 80 },
-];
+const speciesOption = [];
 const areaOption = [
   {
     name: '北部',
-    count: 200,
+    count: 0,
     county: [
-      { name: '台北市', count: 100 },
-      { name: '新北市', count: 95 },
-      { name: '基隆市', count: 5 },
+      // { name: '台北市', count: 100 },
+      // { name: '新北市', count: 95 },
+      // { name: '基隆市', count: 5 },
     ],
   },
   {
     name: '中部',
-    count: 50,
-    county: [{ name: '台中市', count: 20 }, { name: '彰化縣', count: 30 }],
+    count: 0,
+    county: [],
   },
   {
     name: '南部',
@@ -328,8 +325,8 @@ const areaOption = [
   },
   {
     name: '東部',
-    count: 100,
-    county: [{ name: '花蓮縣', count: 50 }, { name: '台東市', count: 50 }],
+    count: 0,
+    county: [],
   },
 ];
 
@@ -361,11 +358,17 @@ export default {
     };
   },
   mounted() {
+    // this.getProjectAreasOrientationTotal()
+    this.getSpeciesTypeAndCountRequest();
+    this.getProjectAreasRequest();
+    this.getPublicProjectsRequest();
     this.getProjectRequest();
+    this.initProjectAndPublicProjectTotalCount();
   },
   watch: {
     sortedBy() {
       this.getProjectRequest();
+      this.getPublicProjectsRequest();
     },
     selectedFilters: {
       handler() {
@@ -400,14 +403,24 @@ export default {
     },
   },
   computed: {
-    ...account.mapGetters(['userName', 'isLogin']),
-    ...projects.mapState(['projects', 'projectsTotal']),
+    ...account.mapGetters(['userName', 'isLogin', 'species']),
+    ...projects.mapState(['projects', 'projectsTotal', 'projectsPublicTotal']),
+    ...config.mapGetters(['projectAreas', 'projectAreasOrientationTotal']),
     disableLoadMoreProjects() {
       return this.busy || this.projectsTotal === this.projects.length;
     },
   },
   methods: {
-    ...projects.mapActions(['getProjects']),
+    ...projects.mapActions(['getProjects', 'getPublicProjects']),
+    ...account.mapActions(['loadSpecies']),
+    ...config.mapActions([
+      'getProjectAreas',
+      'getProjectAreasOrientationTotal',
+    ]),
+    async initProjectAndPublicProjectTotalCount() {
+      projectTypeOption[1].count = this.projectsTotal;
+      projectTypeOption[0].count = this.projectsPublicTotal;
+    },
     async getProjectRequest(index = 0) {
       this.busy = true;
       await this.getProjects({
@@ -427,12 +440,98 @@ export default {
       });
       this.busy = false;
     },
+    async getPublicProjectsRequest(index = 0) {
+      this.busy = true;
+      await this.getPublicProjects({
+        index,
+        size: PROJECT_PAGE,
+        sort: this.sortedBy,
+        projectType: this.selectedFilters.projectType,
+        species: this.selectedFilters.species || undefined,
+        county: this.selectedFilters.county || undefined,
+        startDate: this.formatDatetime(
+          this.selectedFilters.datetime[0],
+        ).replace('/', '-'),
+        endDate: this.formatDatetime(this.selectedFilters.datetime[1]).replace(
+          '/',
+          '-',
+        ),
+      });
+      this.busy = false;
+    },
+    async getSpeciesTypeAndCountRequest() {
+      await this.loadSpecies();
+      this.species.map(specie => {
+        speciesOption.push({
+          id: specie.id,
+          name: specie.title,
+          count: specie.dataCount,
+        });
+      });
+    },
+    async getProjectAreasRequest() {
+      await this.getProjectAreas();
+      await this.getProjectAreasOrientationTotal();
+      areaOption[0].count = this.projectAreasOrientationTotal.north;
+      areaOption[1].count = this.projectAreasOrientationTotal.west;
+      areaOption[2].count = this.projectAreasOrientationTotal.south;
+      areaOption[3].count = this.projectAreasOrientationTotal.east;
+      this.projectAreas.map(projectArea => {
+        // switch(projectArea.title){
+        //     case '台北市':
+        //         break;
+        //     case '新北市':
+        //         break;
+        //         ...
+        // }
+        if (projectArea.type) {
+          if (projectArea.type === 'north') {
+            areaOption[0].county.push({
+              id: projectArea.id,
+              name: projectArea.title,
+              count: projectArea.dataCount,
+              type: 'north',
+            });
+          } else if (projectArea.type === 'south') {
+            areaOption[2].county.push({
+              id: projectArea.id,
+              name: projectArea.title,
+              count: projectArea.dataCount,
+              type: 'south',
+            });
+          } else if (projectArea.type === 'east') {
+            areaOption[3].county.push({
+              id: projectArea.id,
+              name: projectArea.title,
+              count: projectArea.dataCount,
+              type: 'east',
+            });
+          } else if (projectArea.type === 'west') {
+            areaOption[1].county.push({
+              id: projectArea.id,
+              name: projectArea.title,
+              count: projectArea.dataCount,
+              type: 'west',
+            });
+          }
+        }
+      });
+    },
     loadMoreProjects() {
       this.getProjectRequest(this.projects.length / PROJECT_PAGE);
     },
     selectSingleFilter(key, event) {
       this.selectedFilters[key] = event.currentTarget.id;
-      if (key === 'projectType') this.getProjectRequest();
+      // if (key === 'projectType' && event.currentTarget.id === '我的計畫')
+      //   this.getProjectRequest();
+      // else if (key === 'projectType' && event.currentTarget.id === '公開計畫')
+      //   this.getPublicProjectsRequest();
+
+      if (this.selectedFilters.projectType === '我的計畫') {
+        this.getProjectRequest();
+      } else if (this.selectedFilters.projectType === '公開計畫') {
+        this.getPublicProjectsRequest();
+      }
     },
     clearFilter(type) {
       if (type === 'datetime') this.selectedFilters[type] = [0, MaxDateTime];
