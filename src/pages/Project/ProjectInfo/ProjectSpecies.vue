@@ -262,7 +262,7 @@ export default {
       'identifiedSpecies',
       'identifiedSpeciesLastUpdate',
     ]),
-    ...trip.mapState(['trips']),
+    ...trip.mapState(['projectTrips']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -350,7 +350,7 @@ export default {
       ];
     },
     tripOptions: function() {
-      return this.trips.reduce(
+      return this.projectTrips.reduce(
         (pre, trip) => {
           return [...pre, { key: trip.id, value: trip.sn }];
         },
@@ -380,7 +380,10 @@ export default {
       if (!this.selectedTripId) {
         return null;
       }
-      return this.trips.filter(({ id }) => id === this.selectedTripId)[0] || {};
+      return (
+        this.projectTrips.filter(({ id }) => id === this.selectedTripId)[0] ||
+        {}
+      );
     },
   },
   mounted() {

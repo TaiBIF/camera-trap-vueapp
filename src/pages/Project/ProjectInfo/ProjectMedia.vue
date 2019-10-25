@@ -171,7 +171,7 @@ export default {
   },
   async mounted() {
     this.updateSelectArea();
-    this.getProjectTrips(this.projectId);
+    await this.getProjectTrips(this.projectId);
   },
   watch: {
     allAreas: 'updateSelectArea',
@@ -180,7 +180,7 @@ export default {
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     ...projects.mapGetters(['retrievalDataLastUpdate']),
-    ...trip.mapState(['trips']),
+    ...trip.mapState(['projectTrips']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -246,7 +246,7 @@ export default {
       ];
     },
     tripOptions: function() {
-      return this.trips.reduce(
+      return this.projectTrips.reduce(
         (pre, trip) => {
           return [...pre, { key: trip.id, value: trip.sn }];
         },
@@ -276,7 +276,10 @@ export default {
       if (!this.selectedTripId) {
         return null;
       }
-      return this.trips.filter(({ id }) => id === this.selectedTripId)[0] || {};
+      return (
+        this.projectTrips.filter(({ id }) => id === this.selectedTripId)[0] ||
+        {}
+      );
     },
   },
   methods: {
