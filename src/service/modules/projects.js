@@ -131,6 +131,14 @@ const getIdentifiedSpecies = async projectId => {
   return res;
 };
 
+const getIdentifiedStudyAreaSpecies = async (projectId, studyAreaId) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${projectId}/study-areas/${studyAreaId}/image-species-group`,
+    method: 'GET',
+  });
+  return res;
+};
+
 // https://cameratraptw.docs.apiary.io/#/reference/metrics/get-retrieval-metrics-by-project/get-retrieval-metrics-by-project/200?mc=reference%2Fmetrics%2Fget-retrieval-metrics-by-project%2Fget-retrieval-metrics-by-project%2F200
 const getRetrievalDataByProject = async ({ year, projectId }) => {
   const res = await fetchWrap({
@@ -176,6 +184,7 @@ export {
   putProjectSpecies,
   postCameraLocationAbnormality,
   getIdentifiedSpecies,
+  getIdentifiedStudyAreaSpecies,
   getRetrievalDataByProject,
   getRetrievalDataByStudyArea,
   getRetrievalDataByCameraLocation,

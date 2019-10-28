@@ -1,7 +1,7 @@
 <template>
   <div class="tab-content active">
     <div class="row control-bar">
-      <div class="col-sm-5 col-md-4">
+      <div class="col-4">
         <div class="form-group row mb-0">
           <label class="col-5 text-right">
             樣區：
@@ -23,10 +23,7 @@
           </div>
         </div>
       </div>
-      <div
-        class="col-sm-5 col-md-4"
-        v-if="childAreaOptions && childAreaOptions.length > 0"
-      >
+      <div class="col-4" v-if="childAreaOptions && childAreaOptions.length > 0">
         <div class="form-group row mb-0">
           <label class="col-5 text-right">
             子樣區：
@@ -39,6 +36,24 @@
             >
               <option
                 v-for="area in childAreaOptions"
+                :key="area.key"
+                :value="area.key"
+              >
+                {{ area.value }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-4" v-if="tripOptions && tripOptions.length > 0">
+        <div class="form-group row mb-0">
+          <label class="col-5 text-right">
+            行程：
+          </label>
+          <div class="col-7">
+            <select class="form-control" v-model="selectedTripId">
+              <option
+                v-for="area in tripOptions"
                 :key="area.key"
                 :value="area.key"
               >
@@ -69,12 +84,18 @@
                 selectedCamera ? selectedCamera.name : selectedStudyArea.value
               }}
             </h1>
-            <small class="sub-heading text-gray"
-              >最後更新時間： {{ retrievalDataLastUpdate }}</small
-            >
+            <small class="sub-heading text-gray">
+              <span v-show="selectedTripId === 'all'">
+                最後更新時間： {{ retrievalDataLastUpdate }}
+              </span>
+              <span v-show="selectedTripId !== 'all'">
+                行程： {{ selectedTrip.sn }} <br />
+                拍攝區間： {{ dateFormatYYYYMMDD(selectedTrip.date) }}
+              </span>
+            </small>
           </div>
           <div
-            v-if="!selectedCameraId"
+            v-if="!selectedChildAreaId"
             class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-4 text-right"
           >
             <div class="btn-group">
@@ -132,6 +153,7 @@ import ProjectMap from '@/pages/Project/ProjectInfo/ProjectMap.vue';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 const projects = createNamespacedHelpers('projects');
+const trip = createNamespacedHelpers('trip');
 
 export default {
   name: 'project-media',
@@ -143,11 +165,13 @@ export default {
     return {
       selectedParentAreaId: '',
       selectedChildAreaId: '',
+      selectedTripId: 'all',
       activeCameraId: '',
     };
   },
-  mounted() {
+  async mounted() {
     this.updateSelectArea();
+    await this.getProjectTrips(this.projectId);
   },
   watch: {
     allAreas: 'updateSelectArea',
@@ -156,6 +180,7 @@ export default {
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     ...projects.mapGetters(['retrievalDataLastUpdate']),
+    ...trip.mapState(['projectTrips']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -174,11 +199,9 @@ export default {
       return this.studyAreas.reduce(
         (arr, { id, title, children }) => {
           const parentId = id;
-          let firstChildrenId;
           let childrenAreas = [];
 
           if (children && children.length > 0) {
-            firstChildrenId = children[0].id;
             childrenAreas = children.map(({ id, title }) => ({
               key: id,
               value: title,
@@ -190,14 +213,14 @@ export default {
             key: id,
             value: title,
             parentId: null,
-            path: firstChildrenId || id, // if area have children, use first child id as path
+            path: id, // if area have children, use first child id as path
           };
           return [...arr, parentArea, ...childrenAreas];
         },
         [
           {
             key: 'all',
-            value: '所有樣區',
+            value: '全部樣區',
             parentId: null,
             path: 'all',
           },
@@ -208,8 +231,31 @@ export default {
       return this.allAreas.filter(({ parentId }) => !parentId);
     },
     childAreaOptions: function() {
-      return this.allAreas.filter(
+      const childArea = this.allAreas.filter(
         ({ parentId }) => parentId === this.selectedParentAreaId,
+      );
+
+      return [
+        {
+          key: 'all',
+          value: '全部子樣區',
+          parentId: null,
+          path: this.selectedParentAreaId,
+        },
+        ...childArea,
+      ];
+    },
+    tripOptions: function() {
+      return this.projectTrips.reduce(
+        (pre, trip) => {
+          return [...pre, { key: trip.id, value: trip.sn }];
+        },
+        [
+          {
+            key: 'all',
+            value: '全部行程',
+          },
+        ],
       );
     },
     selectedStudyArea: function() {
@@ -221,13 +267,23 @@ export default {
       if (!this.selectedCameraId) {
         return null;
       }
+      return this.cameraLocations.filter(
+        ({ id }) => id === this.selectedCameraId,
+        {},
+      )[0];
+    },
+    selectedTrip: function() {
+      if (!this.selectedTripId) {
+        return null;
+      }
       return (
-        this.cameraLocations.find(({ id }) => id === this.selectedCameraId) ||
+        this.projectTrips.filter(({ id }) => id === this.selectedTripId)[0] ||
         {}
       );
     },
   },
   methods: {
+    ...trip.mapActions(['getProjectTrips']),
     dateFormatYYYYMMDD(dateString) {
       return dateFormatYYYYMMDD(dateString);
     },
@@ -244,10 +300,11 @@ export default {
           this.selectedParentAreaId = selectedArea.parentId || selectedArea.key;
           this.selectedChildAreaId = selectedArea.parentId
             ? selectedArea.key
-            : '';
+            : 'all';
         }, 0);
       } else {
         this.selectedParentAreaId = 'all';
+        this.selectedChildAreaId = 'all';
       }
     },
     changeRoute(event) {

@@ -1,20 +1,99 @@
 <template>
   <div class="tab-content pt-4 active">
-    <div class="row">
+    <div class="row control-bar">
+      <div class="col-4">
+        <div class="form-group row mb-0">
+          <label class="col-5 text-right">
+            樣區：
+          </label>
+          <div class="col-7">
+            <select
+              class="form-control"
+              @change="changeRoute"
+              :value="selectedParentAreaId"
+            >
+              <option
+                v-for="area in parentAreaOptions"
+                :key="area.key"
+                :value="area.key"
+              >
+                {{ area.value }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-4" v-if="childAreaOptions && childAreaOptions.length > 0">
+        <div class="form-group row mb-0">
+          <label class="col-5 text-right">
+            子樣區：
+          </label>
+          <div class="col-7">
+            <select
+              class="form-control"
+              @change="changeRoute"
+              :value="selectedChildAreaId"
+            >
+              <option
+                v-for="area in childAreaOptions"
+                :key="area.key"
+                :value="area.key"
+              >
+                {{ area.value }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-4" v-if="tripOptions && tripOptions.length > 0">
+        <div class="form-group row mb-0">
+          <label class="col-5 text-right">
+            行程：
+          </label>
+          <div class="col-7">
+            <select class="form-control" v-model="selectedTripId">
+              <option
+                v-for="area in tripOptions"
+                :key="area.key"
+                :value="area.key"
+              >
+                {{ area.value }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding-top: 20px">
       <div class="col-6 text-center">
-        <h5 class="mt-0">本計畫已辨識物種比例</h5>
+        <h5 class="mt-0">
+          {{
+            selectedTripId === 'all' ? '本計畫' : selectedTrip.sn
+          }}已辨識物種比例
+        </h5>
         <small class="sub-heading text-gray"
-          >(依據本計畫回收的照片張數計算)</small
-        >
+          >(依據{{ selectedTripId === 'all' ? '本計畫' : '本行程'
+          }}{{
+            selectedCamera ? selectedCamera.name : selectedStudyArea.value
+          }}回收的照片張數計算)
+        </small>
         <v-charts :options="pieOption" ref="pieCharts" />
       </div>
       <div class="col-6">
         <h3>
-          本計畫已辨識物種 <big>{{ identifiedSpecies.length }}</big> 種
+          {{
+            selectedCamera ? selectedCamera.name : selectedStudyArea.value
+          }}已辨識物種 <big>{{ identifiedSpecies.length }}</big> 種
         </h3>
-        <small class="sub-heading text-gray"
-          >最後更新時間：{{ identifiedSpeciesLastUpdate }}</small
-        >
+        <small class="sub-heading text-gray">
+          <span v-show="selectedTripId === 'all'">
+            最後更新時間：{{ identifiedSpeciesLastUpdate }}
+          </span>
+          <span v-show="selectedTripId !== 'all'">
+            行程日期： {{ dateFormatYYYYMMDD(selectedTrip.date) }} <br />
+            拍攝區間： {{ dateFormatYYYYMMDD(selectedTrip.date) }}
+          </span>
+        </small>
         <hr />
         <div class="row">
           <div class="col-5">
@@ -112,11 +191,14 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import { dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import VueHighcharts from 'vue2-highcharts';
 import chartColors from '@/constant/chartColors';
 import speciesNamecodeMapping from '@/constant/speciesNamecodeMapping.js';
 
+const studyAreas = createNamespacedHelpers('studyAreas');
 const projects = createNamespacedHelpers('projects');
+const trip = createNamespacedHelpers('trip');
 
 export default {
   name: 'project-species',
@@ -168,13 +250,19 @@ export default {
         },
         series: null,
       },
+      selectedParentAreaId: '',
+      selectedChildAreaId: '',
+      selectedTripId: 'all',
+      activeCameraId: '',
     };
   },
   computed: {
+    ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
     ...projects.mapGetters([
       'identifiedSpecies',
       'identifiedSpeciesLastUpdate',
     ]),
+    ...trip.mapState(['projectTrips']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -205,14 +293,114 @@ export default {
       });
       return r;
     },
+    selectedStudyAreaId: function() {
+      return this.$route.params.selectedStudyAreaId || 'all';
+    },
+    selectedCameraId: function() {
+      return this.$route.params.selectedCameraId;
+    },
+    allAreas: function() {
+      return this.studyAreas.reduce(
+        (arr, { id, title, children }) => {
+          const parentId = id;
+          let childrenAreas = [];
+
+          if (children && children.length > 0) {
+            childrenAreas = children.map(({ id, title }) => ({
+              key: id,
+              value: title,
+              parentId,
+              path: id,
+            }));
+          }
+          const parentArea = {
+            key: id,
+            value: title,
+            parentId: null,
+            path: id, // if area have children, use first child id as path
+          };
+          return [...arr, parentArea, ...childrenAreas];
+        },
+        [
+          {
+            key: 'all',
+            value: '全部樣區',
+            parentId: null,
+            path: 'all',
+          },
+        ],
+      );
+    },
+    parentAreaOptions: function() {
+      return this.allAreas.filter(({ parentId }) => !parentId);
+    },
+    childAreaOptions: function() {
+      const childArea = this.allAreas.filter(
+        ({ parentId }) => parentId === this.selectedParentAreaId,
+      );
+
+      return [
+        {
+          key: 'all',
+          value: '全部子樣區',
+          parentId: null,
+          path: this.selectedParentAreaId,
+        },
+        ...childArea,
+      ];
+    },
+    tripOptions: function() {
+      return this.projectTrips.reduce(
+        (pre, trip) => {
+          return [...pre, { key: trip.id, value: trip.sn }];
+        },
+        [
+          {
+            key: 'all',
+            value: '全部行程',
+          },
+        ],
+      );
+    },
+    selectedStudyArea: function() {
+      return (
+        this.allAreas.find(({ key }) => key === this.selectedStudyAreaId) || {}
+      );
+    },
+    selectedCamera: function() {
+      if (!this.selectedCameraId) {
+        return null;
+      }
+      return this.cameraLocations.filter(
+        ({ id }) => id === this.selectedCameraId,
+        {},
+      )[0];
+    },
+    selectedTrip: function() {
+      if (!this.selectedTripId) {
+        return null;
+      }
+      return (
+        this.projectTrips.filter(({ id }) => id === this.selectedTripId)[0] ||
+        {}
+      );
+    },
   },
   mounted() {
-    this.loadIdentifiedSpecies(this.projectId);
+    this.loadIdentifiedSpecies({ projectId: this.projectId });
+    this.updateSelectArea();
+    this.getProjectTrips(this.projectId);
   },
   watch: {
     identifiedSpecies: 'loadPieChart',
+    allAreas: 'updateSelectArea',
+    selectedStudyAreaId: 'updateSelectArea',
   },
   methods: {
+    ...trip.mapActions(['getProjectTrips']),
+    dateFormatYYYYMMDD(dateString) {
+      return dateFormatYYYYMMDD(dateString);
+    },
     getPercentage(num) {
       return `${(100 * (num / this.totalSpeciesPhotos)).toFixed(1)} %`;
     },
@@ -249,6 +437,51 @@ export default {
         data: chartData,
       };
       pieCharts.addSeries(PieChartOpt);
+    },
+    updateSelectArea() {
+      const selectedArea = this.allAreas.find(
+        ({ key }) => key === this.selectedStudyAreaId,
+      );
+      if (selectedArea) {
+        // move to next tick to wait options ready
+        setTimeout(() => {
+          this.selectedParentAreaId = selectedArea.parentId || selectedArea.key;
+          this.selectedChildAreaId = selectedArea.parentId
+            ? selectedArea.key
+            : 'all';
+        }, 0);
+      } else {
+        this.selectedParentAreaId = 'all';
+        this.selectedChildAreaId = 'all';
+      }
+    },
+    async changeRoute(event) {
+      const studyArea = await this.allAreas.find(
+        ({ key }) => key === event.target.value,
+      );
+      setTimeout(() => {
+        const pieCharts = this.$refs.pieCharts;
+        const PieChartOpt = {
+          type: 'pie',
+          name: 'speices',
+          size: '80%',
+          innerSize: '50%',
+        };
+        pieCharts.removeSeries(PieChartOpt);
+        this.loadIdentifiedSpecies({
+          projectId: this.projectId,
+          studyAreaId: this.selectedStudyAreaId,
+        });
+      }, 0);
+      if (studyArea) {
+        this.$router.push({
+          name: 'projectSpecies',
+          params: {
+            projectId: this.projectId,
+            selectedStudyAreaId: studyArea.path,
+          },
+        });
+      }
     },
   },
 };
