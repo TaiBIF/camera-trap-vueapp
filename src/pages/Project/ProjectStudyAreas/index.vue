@@ -138,29 +138,27 @@
                     </button>
                   </div>
                 </div>
-                <a
-                  class="btn btn-green-border float-right"
-                  :style="{ margin: '4px' }"
-                  style="height: 32px"
-                  v-tooltip.bottom="
-                    '將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'
-                  "
-                  :href="canSearch ? exportCSVLink : undefined"
-                  target="_blank"
-                  :disabled="!canSearch"
-                >
-                  下載篩選結果
-                </a>
-                <button
-                  class="btn btn-green float-right"
-                  :style="{ margin: '4px' }"
-                  @click="setEdit(true)"
-                  :disabled="disabledEdit"
-                >
-                  <i class="fa fa-pencil-alt"></i> 編輯模式
-                </button>
               </div>
             </form>
+            <a
+              class="btn btn-green-border float-right"
+              :style="{ margin: '4px' }"
+              style="height: 32px"
+              v-tooltip.bottom="'將目前頁面或篩選範圍之資料輸出為 CSV 檔並下載'"
+              :href="canSearch ? exportCSVLink : undefined"
+              target="_blank"
+              :disabled="!canSearch"
+            >
+              下載篩選結果
+            </a>
+            <button
+              class="btn btn-green float-right"
+              :style="{ margin: '4px' }"
+              @click="setEdit(true)"
+              :disabled="disabledEdit"
+            >
+              <i class="fa fa-pencil-alt"></i> 編輯模式
+            </button>
           </div>
         </div>
       </div>
