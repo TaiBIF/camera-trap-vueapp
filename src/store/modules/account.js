@@ -30,9 +30,10 @@ const getters = {
   isAdministrator: state =>
     idx(state, _ => _.profile.permission) === 'administrator',
   species: state =>
-    (state.species || []).map(({ id, title }) => ({
+    (state.species || []).map(({ id, title, dataCount }) => ({
       id,
       title: title[getLanguage()],
+      dataCount,
     })),
 };
 
