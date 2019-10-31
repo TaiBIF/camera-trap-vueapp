@@ -254,27 +254,24 @@
             </router-link>
           </div>
           <!-- List -->
-          <div v-show="!displayByGrid">
-            <div class="row project-item-title">
-              <div class="col-4">計劃名稱</div>
-              <div class="col-2">資料起始年份</div>
-              <div class="col-2">委託單位</div>
-              <div class="col-1">樣區數量</div>
-              <div class="col-2">相機位置數</div>
-              <div class="col-1">資料量</div>
-            </div>
-            <router-link
-              class="row project-item-content"
-              v-for="proj in projects"
-              :key="proj.id"
-              :to="proj.id"
-            >
-              <div class="col-4">{{ proj.title }}</div>
-              <div class="col-2">{{ proj.startTime.split('-')[0] }}</div>
-              <div class="col-2">{{ proj.funder }}</div>
-              <div class="col-1">58</div>
-              <div class="col-2">1200</div>
-              <div class="col-1">400,000</div>
+          <div v-show="!displayByGrid" class="mx-3">
+            <el-row class="project-item-title">
+              <el-col :span="8">計劃名稱</el-col>
+              <el-col :span="4">資料起始年份</el-col>
+              <el-col :span="4">委託單位</el-col>
+              <el-col :span="3">樣區數量</el-col>
+              <el-col :span="3">相機位置數</el-col>
+              <el-col :span="2">資料量</el-col>
+            </el-row>
+            <router-link v-for="proj in projects" :key="proj.id" :to="proj.id">
+              <el-row class="project-item-content">
+                <el-col :span="8">{{ proj.title }}</el-col>
+                <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
+                <el-col :span="4">{{ proj.funder }}</el-col>
+                <el-col :span="3">{{ proj.totalStudyArea }}</el-col>
+                <el-col :span="3">{{ proj.totalLcameraLocation }}</el-col>
+                <el-col :span="2">{{ proj.totalData }}</el-col>
+              </el-row>
             </router-link>
           </div>
         </div>
@@ -341,7 +338,7 @@ export default {
       SORTED_BY_ENUM,
       sortedBy: '-oldestAnnotationTime',
       busy: false,
-      displayByGrid: true,
+      displayByGrid: false,
       projectTypeOption,
       speciesOption,
       areaOption,
