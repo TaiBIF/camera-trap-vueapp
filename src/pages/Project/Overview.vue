@@ -177,9 +177,9 @@
               </span>
             </div>
             <div class="col-4 text-right">
-              <router-link to="/project/create" class="btn btn-orange"
-                >上傳計畫</router-link
-              >
+              <router-link to="/project/create" class="btn btn-orange">
+                新增計畫
+              </router-link>
             </div>
           </div>
           <div class="row">
