@@ -56,7 +56,7 @@
                     class="btn btn-text px-2 pt-3"
                     style="margin-top: -10px"
                     v-tooltip.right="{
-                      content: '若無顯示物種，只能篩選資料，無法進行資料分析．',
+                      content: '行程與時間只能擇一篩選',
                     }"
                   >
                     <i class="icon-info"></i>
