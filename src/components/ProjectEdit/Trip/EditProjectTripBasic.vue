@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="project-name" class="col-4 required">計畫時間：</label>
+          <label for="project-name" class="col-4 required">行程時間：</label>
           <div class="col-6">
             <div
               class="input-group"
@@ -49,7 +49,7 @@
               v-show="errors.has('project_trip_date')"
               class="invalid-feedback"
             >
-              計畫時間不能留空
+              行程時間不能留空
             </span>
           </div>
         </div>
