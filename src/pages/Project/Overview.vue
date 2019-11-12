@@ -297,7 +297,7 @@ const SORTED_BY_ENUM = {
 };
 const projectTypeOption = [
   { name: '我的計畫', count: 0 },
-  { name: '公開計畫', count: 1500 },
+  { name: '公開計畫', count: 0 },
 ];
 const speciesOption = [];
 const areaOption = [
@@ -355,17 +355,17 @@ export default {
     };
   },
   mounted() {
+    console.log('mounted');
     // this.getProjectAreasOrientationTotal()
     this.getSpeciesTypeAndCountRequest();
     this.getProjectAreasRequest();
-    this.getPublicProjectsRequest();
+    // this.getPublicProjectsRequest();
     this.getProjectRequest();
-    this.initProjectAndPublicProjectTotalCount();
   },
   watch: {
     sortedBy() {
       this.getProjectRequest();
-      this.getPublicProjectsRequest();
+      // this.getPublicProjectsRequest();
     },
     selectedFilters: {
       handler() {
@@ -398,6 +398,12 @@ export default {
       },
       deep: true,
     },
+    projectsPublicTotal: function(val) {
+      projectTypeOption[0].count = val;
+    },
+    projectsTotal: function(val) {
+      projectTypeOption[1].count = val;
+    },
   },
   computed: {
     ...account.mapGetters(['userName', 'isLogin', 'species']),
@@ -414,10 +420,6 @@ export default {
       'getProjectAreas',
       'getProjectAreasOrientationTotal',
     ]),
-    async initProjectAndPublicProjectTotalCount() {
-      projectTypeOption[1].count = this.projectsTotal;
-      projectTypeOption[0].count = this.projectsPublicTotal;
-    },
     async getProjectRequest(index = 0) {
       this.busy = true;
       await this.getProjects({
