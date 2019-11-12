@@ -296,8 +296,8 @@ const SORTED_BY_ENUM = {
   title: '依計畫名稱筆畫排序',
 };
 const projectTypeOption = [
-  { name: '我的計畫', count: 0 },
-  { name: '公開計畫', count: 1500 },
+  { name: '我的計畫', count: ' ' },
+  { name: '公開計畫', count: ' ' },
 ];
 const speciesOption = [];
 const areaOption = [
