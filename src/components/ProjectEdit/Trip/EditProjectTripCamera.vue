@@ -312,9 +312,9 @@ import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
 
-const batteryTypeOptions = ['鹼性電池', '充電電池'];
-const brightnessOptions = ['自動'];
-const sensitivityOptions = ['自動'];
+const batteryTypeOptions = ['鹼性電池', '鋰電池', '鎳氫電池(充電電池)'];
+const brightnessOptions = ['關', '自動', '高', '中', '低'];
+const sensitivityOptions = ['高', '中', '低'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)

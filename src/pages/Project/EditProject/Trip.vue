@@ -101,10 +101,16 @@ const trip = createNamespacedHelpers('trip');
 const cmaeraLocationEvenString = {
   setting: '設置',
   exchange: '替換',
+  removed: '移除',
+  lost: '遺失且未設置',
+  lostAndSet: '遺失並設置',
 };
 const cameraStateString = {
-  active: '正常',
-  broken: '毀損',
+  active: '使用中',
+  maintain: '廠商維修或保養中',
+  stock: '庫存',
+  lost: '遺失',
+  broken: '報廢',
 };
 
 export default {
