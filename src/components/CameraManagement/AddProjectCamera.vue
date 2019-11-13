@@ -106,9 +106,12 @@
         :row-class-name="selectedStyle"
         @row-click="selectCamera"
       >
-        <el-table-column prop="name" label="相機編號"></el-table-column>
         <el-table-column prop="sn" label="相機序號"></el-table-column>
         <el-table-column prop="vn" label="廠商維護編號"> </el-table-column>
+        <el-table-column
+          label="相機財產編號"
+          prop="propertyNumber"
+        ></el-table-column>
         <el-table-column prop="manufacturer" label="廠牌"> </el-table-column>
         <el-table-column prop="model" label="型號"> </el-table-column>
       </el-table>
@@ -182,7 +185,6 @@ export default {
   },
   methods: {
     selectCamera(row) {
-      Object.assign(row, { nickname: row.name });
       const new_addProjectCameraList = Array.from(this.addProjectCameraList);
       const index = new_addProjectCameraList.indexOf(row);
       if (index !== -1) new_addProjectCameraList.splice(index, 1);
@@ -190,7 +192,6 @@ export default {
       this.setAddProjectCameraList(new_addProjectCameraList);
     },
     selectedStyle({ row }) {
-      Object.assign(row, { nickname: row.name });
       const index = this.addProjectCameraList.indexOf(row);
       if (index !== -1) return 'add-project-selected';
     },

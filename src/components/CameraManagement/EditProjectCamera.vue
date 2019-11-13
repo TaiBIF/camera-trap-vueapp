@@ -6,7 +6,7 @@
         :key="projectCamera.id"
       >
         <div
-          v-text="projectCamera.name"
+          v-text="projectCamera.displayName"
           class="project-camera-sidebar-item pl-5"
           :class="{ 'is-active': selectProjectCameraIndex === index }"
           @click="chooseProjectCamera(projectCamera.id, index)"
