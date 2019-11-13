@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="container project-overview"
-    v-infinite-scroll="loadMoreProjects"
-    infinite-scroll-disabled="disableLoadMoreProjects"
-    infinite-scroll-distance="300"
-  >
+  <div class="container project-overview">
     <h1 class="heading">計畫總覽</h1>
     <div class="project-overview-content">
       <div class="collapse-filter" @click="collapseFilter = !collapseFilter">
@@ -254,7 +249,13 @@
             </router-link>
           </div>
           <!-- List -->
-          <div v-show="!displayByGrid" class="mx-3">
+          <div
+            v-show="!displayByGrid"
+            class="mx-3"
+            v-infinite-scroll="loadMoreProjects"
+            infinite-scroll-disabled="disableLoadMoreProjects"
+            infinite-scroll-distance="300"
+          >
             <el-row class="project-item-title">
               <el-col :span="8">計劃名稱</el-col>
               <el-col :span="4">資料起始年份</el-col>
@@ -358,7 +359,6 @@ export default {
     // this.getProjectAreasOrientationTotal()
     await this.getSpeciesTypeAndCountRequest();
     await this.getProjectAreasRequest();
-    await this.getPublicProjectsRequest();
     await this.getProjectRequest();
     this.initProjectAndPublicProjectTotalCount();
   },
@@ -407,7 +407,12 @@ export default {
     ...projects.mapState(['projects', 'projectsTotal', 'projectsPublicTotal']),
     ...config.mapGetters(['projectAreas', 'projectAreasOrientationTotal']),
     disableLoadMoreProjects() {
-      return this.busy || this.projectsTotal === this.projects.length;
+      if (this.selectedFilters.projectType === '我的計畫') {
+        return this.busy || this.projectsTotal === this.projects.length;
+      } else {
+        // 公開計畫
+        return this.busy || this.projectsPublicTotal === this.projects.length;
+      }
     },
   },
   methods: {
@@ -518,7 +523,12 @@ export default {
       });
     },
     loadMoreProjects() {
-      this.getProjectRequest(this.projects.length / PROJECT_PAGE);
+      if (this.selectedFilters.projectType === '我的計畫') {
+        this.getProjectRequest(this.projects.length / PROJECT_PAGE);
+      } else {
+        // 公開計畫
+        this.getPublicProjectsRequest(this.projects.length / PROJECT_PAGE);
+      }
     },
     selectSingleFilter(key, event) {
       this.selectedFilters[key] = event.currentTarget.id;
