@@ -141,7 +141,7 @@
         </div>
       </div>
       <div style="width: 100%">
-        <div v-if="projects.length === 0">
+        <div v-if="currentProjects.length === 0">
           <div class="empty-content">
             <img
               src="/assets/common/empty-project.png"
@@ -154,7 +154,7 @@
             >
           </div>
         </div>
-        <div v-else>
+        <div v-else class="123">
           <!-- Controlbar -->
           <div class="row">
             <div class="col-8">
@@ -223,7 +223,7 @@
               class="card"
               :to="proj.id"
               :key="proj.id"
-              v-for="proj in projects"
+              v-for="proj in currentProjects"
             >
               <div class="image">
                 <img :src="proj.coverImageFile && proj.coverImageFile.url" />
@@ -264,7 +264,11 @@
               <el-col :span="3">相機位置數</el-col>
               <el-col :span="2">資料量</el-col>
             </el-row>
-            <router-link v-for="proj in projects" :key="proj.id" :to="proj.id">
+            <router-link
+              v-for="proj in currentProjects"
+              :key="proj.id"
+              :to="proj.id"
+            >
               <el-row class="project-item-content">
                 <el-col :span="8">{{ proj.title }}</el-col>
                 <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
@@ -353,21 +357,26 @@ export default {
       selectedFiltersLabel: [],
       MaxDateTime,
       collapseFilter: true,
+      currentProjects: [],
     };
   },
   async mounted() {
     // this.getProjectAreasOrientationTotal()
+    await this.getProjectRequest();
+    this.currentProjects = this.projects;
     await this.getSpeciesTypeAndCountRequest();
     await this.getProjectAreasRequest();
-    await this.getProjectRequest();
+    await this.getPublicProjectsRequest();
     this.initProjectAndPublicProjectTotalCount();
   },
   watch: {
-    sortedBy() {
+    async sortedBy() {
       if (this.selectedFilters.projectType === '我的計畫') {
-        this.getProjectRequest();
+        await this.getProjectRequest();
+        this.currentProjects = this.projects;
       } else if (this.selectedFilters.projectType === '公開計畫') {
-        this.getPublicProjectsRequest();
+        await this.getPublicProjectsRequest();
+        this.currentProjects = this.projects;
       }
     },
     selectedFilters: {
@@ -408,10 +417,12 @@ export default {
     ...config.mapGetters(['projectAreas', 'projectAreasOrientationTotal']),
     disableLoadMoreProjects() {
       if (this.selectedFilters.projectType === '我的計畫') {
-        return this.busy || this.projectsTotal === this.projects.length;
+        return this.busy || this.projectsTotal === this.currentProjects.length;
       } else {
         // 公開計畫
-        return this.busy || this.projectsPublicTotal === this.projects.length;
+        return (
+          this.busy || this.projectsPublicTotal === this.currentProjects.length
+        );
       }
     },
   },
@@ -522,15 +533,21 @@ export default {
         }
       });
     },
-    loadMoreProjects() {
+    async loadMoreProjects() {
       if (this.selectedFilters.projectType === '我的計畫') {
-        this.getProjectRequest(this.projects.length / PROJECT_PAGE);
+        await this.getProjectRequest(
+          this.currentProjects.length / PROJECT_PAGE,
+        );
+        this.currentProjects = this.projects;
       } else {
         // 公開計畫
-        this.getPublicProjectsRequest(this.projects.length / PROJECT_PAGE);
+        await this.getPublicProjectsRequest(
+          this.currentProjects.length / PROJECT_PAGE,
+        );
+        this.currentProjects = this.projects;
       }
     },
-    selectSingleFilter(key, event) {
+    async selectSingleFilter(key, event) {
       this.selectedFilters[key] = event.currentTarget.id;
       // if (key === 'projectType' && event.currentTarget.id === '我的計畫')
       //   this.getProjectRequest();
@@ -538,9 +555,11 @@ export default {
       //   this.getPublicProjectsRequest();
 
       if (this.selectedFilters.projectType === '我的計畫') {
-        this.getProjectRequest();
+        await this.getProjectRequest();
+        this.currentProjects = this.projects;
       } else if (this.selectedFilters.projectType === '公開計畫') {
-        this.getPublicProjectsRequest();
+        await this.getPublicProjectsRequest();
+        this.currentProjects = this.projects;
       }
     },
     clearFilter(type) {
