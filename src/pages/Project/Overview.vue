@@ -141,143 +141,146 @@
         </div>
       </div>
       <div style="width: 100%">
-        <div v-if="currentProjects.length === 0">
-          <div class="empty-content">
-            <img
-              src="/assets/common/empty-project.png"
-              width="212px"
-              srcset="/assets/common/empty-project@2x.png"
-            />
-            <h1 class="empty">您目前沒有任何計畫</h1>
-            <router-link to="create" class="btn btn-orange"
-              >新增計畫</router-link
-            >
-          </div>
-        </div>
-        <div v-else class="123">
-          <!-- Controlbar -->
-          <div class="row">
-            <div class="col-8">
-              <span class="filter-label">
-                {{ selectedFilters.projectType }}
-              </span>
-              <span
-                class="filter-label deleteable"
-                v-for="(label, index) in selectedFiltersLabel"
-                :key="index"
-                @click="clearFilter(label.type)"
+        <div
+          v-infinite-scroll="loadMoreProjects"
+          infinite-scroll-disabled="disableLoadMoreProjects"
+          infinite-scroll-distance="300"
+        >
+          <div v-if="currentProjects.length === 0">
+            <div class="empty-content">
+              <img
+                src="/assets/common/empty-project.png"
+                width="212px"
+                srcset="/assets/common/empty-project@2x.png"
+              />
+              <h1 class="empty">您目前沒有任何計畫</h1>
+              <router-link to="create" class="btn btn-orange"
+                >新增計畫</router-link
               >
-                {{ label.value }}
-                <i class="el-icon-close"></i>
-              </span>
             </div>
-            <div class="col-4 text-right">
-              <router-link to="/project/create" class="btn btn-orange">
-                新增計畫
+          </div>
+          <div v-else class="123">
+            <!-- Controlbar -->
+            <div class="row">
+              <div class="col-8">
+                <span class="filter-label">
+                  {{ selectedFilters.projectType }}
+                </span>
+                <span
+                  class="filter-label deleteable"
+                  v-for="(label, index) in selectedFiltersLabel"
+                  :key="index"
+                  @click="clearFilter(label.type)"
+                >
+                  {{ label.value }}
+                  <i class="el-icon-close"></i>
+                </span>
+              </div>
+              <div class="col-4 text-right">
+                <router-link to="/project/create" class="btn btn-orange">
+                  新增計畫
+                </router-link>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-8">
+                <div class="dropdown">
+                  <a
+                    class="btn btn-link pl-0 dropdown-toggle"
+                    id="dropdownMenuButton"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    依 {{ SORTED_BY_ENUM[sortedBy] }} 排序
+                  </a>
+                  <div
+                    class="dropdown-menu"
+                    aria-labelledby="dropdownMenuButton"
+                  >
+                    <a
+                      class="dropdown-item"
+                      :key="key"
+                      v-for="(item, key) in SORTED_BY_ENUM"
+                      @click="sortedBy = key"
+                    >
+                      {{ item }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div
+                  class="display_type float-right"
+                  @click="displayByGrid = !displayByGrid"
+                >
+                  <!-- <span v-show="displayByGrid"> -->
+                  <span v-show="false">
+                    <i class="el-icon-s-grid" /> 格狀顯示
+                  </span>
+                  <!-- <span v-show="!displayByGrid"> -->
+                  <span v-show="false">
+                    <i class="el-icon-s-unfold" /> 條狀顯示
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Cards -->
+            <div v-show="displayByGrid" class="three cards">
+              <router-link
+                class="card"
+                :to="proj.id"
+                :key="proj.id"
+                v-for="proj in currentProjects"
+              >
+                <div class="image">
+                  <img :src="proj.coverImageFile && proj.coverImageFile.url" />
+                  <div class="badget" v-if="proj.members">
+                    <i class="fa fa-user"></i>{{ proj.members.length }}
+                  </div>
+                </div>
+                <div class="content">
+                  <h3 class="card-heading">{{ proj.title }}</h3>
+                  <div class="row description">
+                    <div class="col-6">
+                      <small class="text-gray label">資料起始年份</small>
+                      <span class="text-green">{{
+                        proj.startTime.split('-')[0]
+                      }}</span>
+                    </div>
+                    <div class="col-6">
+                      <small class="text-gray label">委託單位</small>
+                      <span class="text-green">{{ proj.funder }}</span>
+                    </div>
+                  </div>
+                </div>
               </router-link>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-8">
-              <div class="dropdown">
-                <a
-                  class="btn btn-link pl-0 dropdown-toggle"
-                  id="dropdownMenuButton"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  依 {{ SORTED_BY_ENUM[sortedBy] }} 排序
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a
-                    class="dropdown-item"
-                    :key="key"
-                    v-for="(item, key) in SORTED_BY_ENUM"
-                    @click="sortedBy = key"
-                  >
-                    {{ item }}
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div
-                class="display_type float-right"
-                @click="displayByGrid = !displayByGrid"
-              >
-                <!-- <span v-show="displayByGrid"> -->
-                <span v-show="false">
-                  <i class="el-icon-s-grid" /> 格狀顯示
-                </span>
-                <!-- <span v-show="!displayByGrid"> -->
-                <span v-show="false">
-                  <i class="el-icon-s-unfold" /> 條狀顯示
-                </span>
-              </div>
-            </div>
-          </div>
-          <!-- Cards -->
-          <div v-show="displayByGrid" class="three cards">
-            <router-link
-              class="card"
-              :to="proj.id"
-              :key="proj.id"
-              v-for="proj in currentProjects"
-            >
-              <div class="image">
-                <img :src="proj.coverImageFile && proj.coverImageFile.url" />
-                <div class="badget" v-if="proj.members">
-                  <i class="fa fa-user"></i>{{ proj.members.length }}
-                </div>
-              </div>
-              <div class="content">
-                <h3 class="card-heading">{{ proj.title }}</h3>
-                <div class="row description">
-                  <div class="col-6">
-                    <small class="text-gray label">資料起始年份</small>
-                    <span class="text-green">{{
-                      proj.startTime.split('-')[0]
-                    }}</span>
-                  </div>
-                  <div class="col-6">
-                    <small class="text-gray label">委託單位</small>
-                    <span class="text-green">{{ proj.funder }}</span>
-                  </div>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          <!-- List -->
-          <div
-            v-show="!displayByGrid"
-            class="mx-3"
-            v-infinite-scroll="loadMoreProjects"
-            infinite-scroll-disabled="disableLoadMoreProjects"
-            infinite-scroll-distance="300"
-          >
-            <el-row class="project-item-title">
-              <el-col :span="8">計劃名稱</el-col>
-              <el-col :span="4">資料起始年份</el-col>
-              <el-col :span="4">委託單位</el-col>
-              <el-col :span="3">樣區數量</el-col>
-              <el-col :span="3">相機位置數</el-col>
-              <el-col :span="2">資料量</el-col>
-            </el-row>
-            <router-link
-              v-for="proj in currentProjects"
-              :key="proj.id"
-              :to="proj.id"
-            >
-              <el-row class="project-item-content">
-                <el-col :span="8">{{ proj.title }}</el-col>
-                <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
-                <el-col :span="4">{{ proj.funder }}</el-col>
-                <el-col :span="3">{{ proj.totalStudyArea }}</el-col>
-                <el-col :span="3">{{ proj.totalLcameraLocation }}</el-col>
-                <el-col :span="2">{{ proj.totalData }}</el-col>
+            <!-- List -->
+            <div v-show="!displayByGrid" class="mx-3">
+              <el-row class="project-item-title">
+                <el-col :span="8">計劃名稱</el-col>
+                <el-col :span="4">資料起始年份</el-col>
+                <el-col :span="4">委託單位</el-col>
+                <el-col :span="3">樣區數量</el-col>
+                <el-col :span="3">相機位置數</el-col>
+                <el-col :span="2">資料量</el-col>
               </el-row>
-            </router-link>
+              <router-link
+                v-for="proj in currentProjects"
+                :key="proj.id"
+                :to="proj.id"
+              >
+                <el-row class="project-item-content">
+                  <el-col :span="8">{{ proj.title }}</el-col>
+                  <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
+                  <el-col :span="4">{{ proj.funder }}</el-col>
+                  <el-col :span="3">{{ proj.totalStudyArea }}</el-col>
+                  <el-col :span="3">{{ proj.totalLcameraLocation }}</el-col>
+                  <el-col :span="2">{{ proj.totalData }}</el-col>
+                </el-row>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -417,11 +420,11 @@ export default {
     ...config.mapGetters(['projectAreas', 'projectAreasOrientationTotal']),
     disableLoadMoreProjects() {
       if (this.selectedFilters.projectType === '我的計畫') {
-        return this.busy || this.projectsTotal === this.currentProjects.length;
+        return this.busy || this.projectsTotal <= this.currentProjects.length;
       } else {
         // 公開計畫
         return (
-          this.busy || this.projectsPublicTotal === this.currentProjects.length
+          this.busy || this.projectsPublicTotal <= this.currentProjects.length
         );
       }
     },
@@ -454,7 +457,9 @@ export default {
           '-',
         ),
       });
-      this.busy = false;
+      setTimeout(() => {
+        this.busy = false;
+      }, 1000);
     },
     async getPublicProjectsRequest(index = 0) {
       this.busy = true;
@@ -473,7 +478,9 @@ export default {
           '-',
         ),
       });
-      this.busy = false;
+      setTimeout(() => {
+        this.busy = false;
+      }, 1000);
     },
     async getSpeciesTypeAndCountRequest() {
       await this.loadSpecies();
@@ -536,13 +543,13 @@ export default {
     async loadMoreProjects() {
       if (this.selectedFilters.projectType === '我的計畫') {
         await this.getProjectRequest(
-          this.currentProjects.length / PROJECT_PAGE,
+          parseInt(this.projects.length / PROJECT_PAGE),
         );
         this.currentProjects = this.projects;
       } else {
         // 公開計畫
         await this.getPublicProjectsRequest(
-          this.currentProjects.length / PROJECT_PAGE,
+          parseInt(this.projects.length / PROJECT_PAGE),
         );
         this.currentProjects = this.projects;
       }
