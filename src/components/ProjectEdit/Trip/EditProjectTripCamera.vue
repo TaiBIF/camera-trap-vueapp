@@ -392,7 +392,7 @@ export default {
       value => ({ label: this.cameraStateString[value], value }),
     );
 
-    // 預設選項只有 事件: 設置 狀態: 正常
+    // 預設選項只有 事件: 設置 狀態: 使用中
     this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
     this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
@@ -632,8 +632,8 @@ export default {
     changeLimit() {
       this.projectCameraLimit =
         this.projectTrip.cameraLocationEvent &&
-        this.projectTrip.cameraLocationEvent.value ==
-          this.cmaeraLocationEvenOptionsAll[1].value
+        (this.projectTrip.cameraLocationEvent.value == 'exchange' ||
+          this.projectTrip.cameraLocationEvent.value == 'lostAndSet')
           ? 2
           : 1;
 
