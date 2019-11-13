@@ -61,7 +61,7 @@
                   >
                     <i class="icon-info"></i>
                   </span>
-                  <span v-show="funder.includes('林務局')">
+                  <span v-show="funder ? funder.includes('林務局') : false">
                     <label class="ml-5">品質註記</label>
                     <div class="select d-inline-block" style="width: 200px">
                       <v-select
