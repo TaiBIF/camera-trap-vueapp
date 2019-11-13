@@ -312,9 +312,9 @@ import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
 
-const batteryTypeOptions = ['鹼性電池', '充電電池'];
-const brightnessOptions = ['自動'];
-const sensitivityOptions = ['自動'];
+const batteryTypeOptions = ['鹼性電池', '鋰電池', '鎳氫電池(充電電池)'];
+const brightnessOptions = ['關', '自動', '高', '中', '低'];
+const sensitivityOptions = ['高', '中', '低'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
@@ -392,7 +392,7 @@ export default {
       value => ({ label: this.cameraStateString[value], value }),
     );
 
-    // 預設選項只有 事件: 設置 狀態: 正常
+    // 預設選項只有 事件: 設置 狀態: 使用中
     this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
     this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
@@ -632,8 +632,8 @@ export default {
     changeLimit() {
       this.projectCameraLimit =
         this.projectTrip.cameraLocationEvent &&
-        this.projectTrip.cameraLocationEvent.value ==
-          this.cmaeraLocationEvenOptionsAll[1].value
+        (this.projectTrip.cameraLocationEvent.value == 'exchange' ||
+          this.projectTrip.cameraLocationEvent.value == 'lostAndSet')
           ? 2
           : 1;
 
