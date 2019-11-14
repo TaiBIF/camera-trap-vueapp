@@ -18,7 +18,7 @@
                 font-size: 60px
                 color: #7C9C2D
 
-        p.desp
+        .desp
             color: #8B8B8B
             font-size: 16px
             line-height: 26px
@@ -50,13 +50,17 @@
 
             .caption
                 position: absolute
-                bottom: 85px
+                bottom: 140px
                 color: #FFF
 
                 h1.header
                     font-size: 72px
                     color: #FFF
                     margin: 0
+                h2.header
+                    font-size: 36px
+                    margin-top: 10px
+                    margin-bottom: 52px
 
                 p
                     margin-top: 10px
@@ -74,6 +78,22 @@
 
                 div[class*="col-"]
                     margin-bottom: 20px
+
+            .total-data-chart
+                span
+                    color: #7C9C2D
+                    font-size: 30px
+
+                hr
+                    border: 0
+                    border-top: 3px solid #7C9C2D
+                    width: 170px
+                    margin: 10px 0 20px
+
+                .pipe-chart-des
+                    margin-top: -70px
+                    color: #8B8B8B
+                    font-size: 10px
 
             .image
                 text-align: center
@@ -249,6 +269,50 @@
 
                         .description
                             font-size: 14px
+
+.project-overview
+    .row
+        margin: 0px
+    .project-overview-content
+        display: flex
+        flex-direction: row
+    .collapse-filter
+        height: 31px
+        width: 40px
+        background-color: white
+        box-shadow: -2px 0px 3px rgba(0, 0, 0, 0.11)
+        z-index: 1
+        cursor: pointer
+        i
+            margin: 8px
+    .display_type
+        padding: 5px
+        cursor: pointer
+    .project-item-title
+        padding: 0 10px
+        color: $gray
+        font-size: 16px
+        line-height: 40px
+    .project-item-content
+        padding: 25px 10px
+        margin-bottom: 10px
+        background-color: white
+        box-shadow: 0px 2px 4px rgba(146, 145, 145, 0.5)
+        border-radius: 2px
+        font-size: 18px
+        color: #464646
+        &:hover
+            color: #464646
+    .filter-label
+        background: #F0F1F3
+        border: 1px solid #979797
+        border-radius: 3px
+        padding: 5px 10px
+        margin-right: 10px
+        ~.deleteable
+            cursor: pointer
+        >i
+            margin-left: 10px
 
 .page-project
     width: 100%
@@ -430,41 +494,6 @@
     .add-project-camera
         display: flex
         flex-direction: row
-        .camera-filter
-            width: 300px
-            border: 1px solid #e6e7e8
-            .camera-filter-title
-                font-size: 16px
-            hr
-                border-top: 1px solid #e6e7e8
-        .camera-filter-option-type
-            span
-                font-size: 14px
-                cursor: pointer
-            >input
-                border: 0
-                outline: 0
-                padding: 13px 0
-                background-color: transparent
-                display: block
-                &:focus
-                    outline: 0
-                    &::placeholder
-                        opacity: 0
-            .camera-filter-option
-                font-size: 14px
-                line-height: 24px
-                cursor: pointer
-            .el-checkbox__inner
-                background-color: transparent
-                border-color: black
-                &::after
-                    border-color: black
-            .el-checkbox__label
-                color: black
-                font-weight: normal
-                font-size: 14px
-                line-height: 24px
         .camera-list
             width: 100%
             .add-project-selected
@@ -472,7 +501,6 @@
                 color: $green
             .el-table__row:hover > td
                 background: none
-
     .edit-project-camera
         display: flex
         flex-direction: row
@@ -492,6 +520,59 @@
             padding: 20px 40px
         .form-group
             line-height: 38px
+
+    .project-trip
+        .panel-heading
+            .el-input
+                width: 100px
+                height: 20px
+                input
+                    height: 20px
+                    margin-left: 10px
+                    margin-right: 10px
+                    &:focus
+                        border: none
+                .el-input__icon
+                    line-height: 20px
+
+    .list-project-trip
+        .trip-detail
+            border: 2px solid #979797
+            line-height: 40px
+            width: 100%
+            height: 200px
+            overflow: scroll
+            h5
+                margin: 0px
+                line-height: 40px
+                padding-left: 20px
+            .el-table__row:hover > td
+                background: none
+        .trip-camera-detail
+            .camera-setting-title
+                color: $gray
+            .el-table__expanded-cell
+                padding: 10px 0
+            div
+                line-height: 20px
+            span
+                font-size: 5px
+        .study-area-row,
+        .el-table .cell,
+        .el-table .cell div
+            white-space: nowrap
+            text-overflow: ellipsis
+            overflow: hidden
+        .el-table__expanded-cell
+            padding: 20px
+        .is-active
+            background: $bg-green
+            color: $green
+        .project-trip-sidebar-item
+            border-bottom: 1px solid #E6E7E8
+            line-height: 38px
+            cursor: pointer
+            padding-left: 20px
 
     .edit-project-trip-basic
         .edit-project-trip-basic-content
@@ -633,7 +714,6 @@
 
     aside
         display: block
-        width: 248px
         background: #F9FBFA
         overflow: auto
         height: calc(100vh - 64px)
@@ -844,6 +924,8 @@
         .search-content
             background: #FFF
             padding: 20px 20px 10px
+            a
+                line-height: 20px
 
     .sheet-container
         flex: 1

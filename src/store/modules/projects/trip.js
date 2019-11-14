@@ -1,24 +1,29 @@
-import { addProjectTrip, getProjectTrips } from '@/service';
+import {
+  addProjectTrip,
+  deleteProjectTrip,
+  editProjectTrip,
+  getProjectTrips,
+} from '@/service';
 import idx from 'idx';
 
 const state = {
-  trips: [],
-  editProjectTrip: {},
+  projectTrips: [],
+  editProjectTripData: {},
 };
 
 const mutations = {
-  setTrips(state, payload) {
-    state.trips = payload;
+  setProjectTrips(state, payload) {
+    state.projectTrips = payload;
   },
-  setEditProjectTrip(state, payload) {
-    state.editProjectTrip = payload;
+  setEditProjectTripData(state, payload) {
+    state.editProjectTripData = payload;
   },
 };
 
 const actions = {
   async getProjectTrips({ commit }, projectId) {
     const data = await getProjectTrips(projectId);
-    commit('setTrips', idx(data, _ => _.items) || []);
+    commit('setProjectTrips', idx(data, _ => _.items) || []);
   },
   async addProjectTrip({ dispatch }, { projectId, body, reGetProjectTrip }) {
     await addProjectTrip(projectId, body);
@@ -26,8 +31,22 @@ const actions = {
       dispatch('getProjectTrips', projectId);
     }
   },
-  async setEditProjectTrip({ commit }, payload) {
-    commit('setEditProjectTrip', payload);
+  async setEditProjectTripData({ commit }, payload) {
+    commit('setEditProjectTripData', payload);
+  },
+  async editProjectTrip(
+    { dispatch },
+    { projectId, tripId, body, reGetProjectTrip = true },
+  ) {
+    await editProjectTrip(projectId, tripId, body);
+    if (reGetProjectTrip) dispatch('getProjectTrips', projectId);
+  },
+  async deleteProjectTrip(
+    { dispatch },
+    { projectId, tripId, reGetProjectTrip = true },
+  ) {
+    await deleteProjectTrip(projectId, tripId);
+    if (reGetProjectTrip) dispatch('getProjectTrips', projectId);
   },
 };
 

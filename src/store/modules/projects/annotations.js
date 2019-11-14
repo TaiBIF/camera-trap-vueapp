@@ -16,6 +16,7 @@ import { getLanguage } from '@/utils/i18n';
 
 const state = {
   query: {}, // 暫存最後一次的 annotations query，讓還原版本之後可以再次取值
+  queryCameraLocations: [],
   annotations: [],
   annotationsTotal: 0,
   revision: [],
@@ -38,6 +39,7 @@ const getters = {
       isCurrent: v.isCurrent,
       createTime: dateFormatYYYYMMDDHHmmss(v.createTime),
     })),
+  queryCameraLocations: state => state.queryCameraLocations,
 };
 
 const mutations = {
@@ -49,6 +51,9 @@ const mutations = {
   },
   saveQuery(state, query) {
     state.query = query;
+  },
+  setQueryCameraLocations(state, payload) {
+    state.queryCameraLocations = payload;
   },
   resetAnnotations(state) {
     state.annotations = [];

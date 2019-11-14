@@ -6,7 +6,7 @@
         :key="projectCamera.id"
       >
         <div
-          v-text="projectCamera.name"
+          v-text="projectCamera.displayName"
           class="project-camera-sidebar-item pl-5"
           :class="{ 'is-active': selectProjectCameraIndex === index }"
           @click="chooseProjectCamera(projectCamera.id, index)"
@@ -104,9 +104,9 @@
 import idx from 'idx';
 import vSelect from 'vue-select';
 
-const batteryTypeOptions = ['鹼性電池', '充電電池'];
-const brightnessOptions = ['自動'];
-const sensitivityOptions = ['自動'];
+const batteryTypeOptions = ['鹼性電池', '鋰電池', '鎳氫電池(充電電池)'];
+const brightnessOptions = ['關', '自動', '高', '中', '低'];
+const sensitivityOptions = ['高', '中', '低'];
 
 export default {
   name: 'EditProjectCamera',

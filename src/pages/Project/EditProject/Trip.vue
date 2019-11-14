@@ -6,14 +6,34 @@
           <h4>
             行程管理
           </h4>
-          <button
-            class="float-right btn btn-light-green btn-sm"
-            @click="openEditProjectTripBasic"
-            v-show="showListTrip"
-          >
-            新增行程
-          </button>
+          <span class="float-right" v-show="showListTrip">
+            <button
+              class=" btn btn-light-green btn-sm"
+              @click="openAddProjectTripBasic"
+            >
+              新增行程
+            </button>
+            <el-input
+              placeholder="搜尋..."
+              suffix-icon="el-icon-search"
+              v-model="searchTrip"
+            ></el-input>
+          </span>
         </div>
+      </div>
+      <div
+        class="project-trip-list"
+        v-if="!showEditProjectTripBasic && !showEditProjectTripCamera"
+      >
+        <list-project-trip
+          :projectId="projectId"
+          :projectTripsData="projectTrips"
+          :searchTrip="searchTrip"
+          :cmaeraLocationEvenString="cmaeraLocationEvenString"
+          :cameraStateString="cameraStateString"
+          @deleteProjectTrip="deleteProjectTrip"
+          @openEditProjectTripBasic="openEditProjectTripBasic"
+        />
       </div>
       <div class="project-trip-edit-basic" v-if="showEditProjectTripBasic">
         <edit-project-trip-basic
@@ -23,18 +43,20 @@
           :getProjectCameraLocations="getProjectCameraLocations"
           :closeEditProjectTripBasic="closeEditProjectTripBasic"
           :openEditProjectTripCamera="openEditProjectTripCamera"
-          :addProjectTripRequest="addProjectTripRequest"
-          :setEditProjectTrip="setEditProjectTrip"
-          :editProjectTripData="editProjectTrip"
+          :addEditProjectTripRequest="addEditProjectTripRequest"
+          :setEditProjectTripData="setEditProjectTripData"
+          :editProjectTripData="editProjectTripData"
         ></edit-project-trip-basic>
       </div>
       <div class="project-trip-edit-camera" v-if="showEditProjectTripCamera">
         <edit-project-trip-camera
-          :editProjectTripData="editProjectTrip"
+          :editProjectTripData="editProjectTripData"
           :projectCameras="projectCameras"
           :getProjectCameras="getProjectCameras"
           :projectId="projectId"
-          :setEditProjectTrip="setEditProjectTrip"
+          :setEditProjectTripData="setEditProjectTripData"
+          :cmaeraLocationEvenString="cmaeraLocationEvenString"
+          :cameraStateString="cameraStateString"
         ></edit-project-trip-camera>
       </div>
     </div>
@@ -59,7 +81,7 @@
       :open="showCheckCameraDetailModal"
       title="您確定不填入相機資料嗎？"
       description="不填寫相機位置內的相機資料，往後將無法依據行程篩選資料．"
-      @summit="addProjectTripRequest(true)"
+      @summit="addEditProjectTripRequest(true)"
       @close="closeCheckCameraDetailModal"
     />
   </div>
@@ -70,16 +92,33 @@ import { createNamespacedHelpers } from 'vuex';
 import DoubleCheckModalWithStyle from '@/components/Modal/DoubleCheckModalWithStyle.vue';
 import EditProjectTripBasic from '@/components/ProjectEdit/Trip/EditProjectTripBasic.vue';
 import EditProjectTripCamera from '@/components/ProjectEdit/Trip/EditProjectTripCamera.vue';
+import ListProjectTrip from '@/components/ProjectEdit/Trip/ListProjectTrip.vue';
 
 const projectCamera = createNamespacedHelpers('projectCamera');
 const studyAreas = createNamespacedHelpers('studyAreas');
 const trip = createNamespacedHelpers('trip');
+
+const cmaeraLocationEvenString = {
+  setting: '設置',
+  exchange: '替換',
+  removed: '移除',
+  lost: '遺失且未設置',
+  lostAndSet: '遺失並設置',
+};
+const cameraStateString = {
+  active: '使用中',
+  maintain: '廠商維修或保養中',
+  stock: '庫存',
+  lost: '遺失',
+  broken: '報廢',
+};
 
 export default {
   components: {
     EditProjectTripBasic,
     EditProjectTripCamera,
     DoubleCheckModalWithStyle,
+    ListProjectTrip,
   },
   data: function() {
     return {
@@ -88,12 +127,15 @@ export default {
       showEditProjectTripCamera: false,
       projectId: this.$route.params.projectId,
       showCheckCameraDetailModal: false,
+      searchTrip: '',
+      cmaeraLocationEvenString,
+      cameraStateString,
     };
   },
   computed: {
     ...projectCamera.mapState(['projectCameras']),
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
-    ...trip.mapState(['editProjectTrip']),
+    ...trip.mapState(['projectTrips', 'editProjectTripData']),
   },
   methods: {
     ...projectCamera.mapActions(['getProjectCameras']),
@@ -101,9 +143,21 @@ export default {
       'getProjectStudyAreas',
       'getProjectCameraLocations',
     ]),
-    ...trip.mapActions(['addProjectTrip', 'setEditProjectTrip']),
-    openEditProjectTripBasic: function() {
-      this.setEditProjectTrip({});
+    ...trip.mapActions([
+      'getProjectTrips',
+      'addProjectTrip',
+      'setEditProjectTripData',
+      'editProjectTrip',
+      'deleteProjectTrip',
+    ]),
+    openAddProjectTripBasic: async function() {
+      await this.getProjectStudyAreas(this.projectId);
+      this.setEditProjectTripData({});
+      this.showEditProjectTripBasic = true;
+    },
+    openEditProjectTripBasic: async function(currentTrip) {
+      await this.getProjectStudyAreas(this.projectId);
+      this.setEditProjectTripData(currentTrip);
       this.showEditProjectTripBasic = true;
     },
     closeEditProjectTripBasic: function() {
@@ -119,12 +173,20 @@ export default {
       this.showEditProjectTripBasic = true;
       this.closeEditProjectTripCamera();
     },
-    addProjectTripRequest: async function(reGetProjectTrip) {
-      await this.addProjectTrip({
-        projectId: this.projectId,
-        body: this.editProjectTrip,
-        reGetProjectTrip,
-      });
+    addEditProjectTripRequest: async function(reGetProjectTrip) {
+      if (this.editProjectTripData.id) {
+        await this.editProjectTrip({
+          projectId: this.projectId,
+          tripId: this.editProjectTripData.id,
+          body: this.editProjectTripData,
+        });
+      } else {
+        await this.addProjectTrip({
+          projectId: this.projectId,
+          body: this.editProjectTripData,
+          reGetProjectTrip,
+        });
+      }
       this.closeEditProjectTripCamera();
       this.closeCheckCameraDetailModal();
     },
@@ -136,7 +198,7 @@ export default {
     },
     async checkAddProjectTripRequest() {
       await this.$emit('setEditProjectTripReduest');
-      const emptyCameraDetail = this.editProjectTrip.studyAreas.reduce(
+      const emptyCameraDetail = this.editProjectTripData.studyAreas.reduce(
         (previous, current) => {
           let result = current.cameraLocations.reduce((pre, curr) => {
             if (curr.projectCameras && curr.projectCameras[0]) {
@@ -154,19 +216,21 @@ export default {
       );
 
       if (emptyCameraDetail) this.openCheckCameraDetailModal();
-      else this.addProjectTripRequest(true);
+      else this.addEditProjectTripRequest(true);
     },
   },
   watch: {
     showEditProjectTripBasic: function(value) {
       this.showListTrip = !value;
+      this.searchTrip = '';
     },
     showEditProjectTripCamera: function(value) {
       this.showListTrip = !value;
+      this.searchTrip = '';
     },
   },
   mounted() {
-    this.getProjectStudyAreas(this.projectId);
+    this.getProjectTrips(this.projectId);
   },
 };
 </script>
