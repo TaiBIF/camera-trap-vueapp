@@ -57,7 +57,7 @@ export default new Router({
                     import('@/pages/Project/ProjectInfo/ProjectMedia.vue'),
                 },
                 {
-                  path: 'species',
+                  path: 'species/:selectedStudyAreaId/:selectedCameraId?',
                   name: 'projectSpecies',
                   meta: { projectAside: true },
                   component: () =>

@@ -127,7 +127,7 @@
               </router-link>
             </li>
             <li :class="{ active: $route.name === 'projectSpecies' }">
-              <router-link :to="`/project/${projectId}/info/species`">
+              <router-link :to="`/project/${projectId}/info/species/all`">
                 已辨識物種
               </router-link>
             </li>

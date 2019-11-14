@@ -17,6 +17,51 @@
         @select="toggleExpand(studyArea, true)"
         @editArea="editArea"
       />
+      <div
+        v-show="
+          showCameraLocation &&
+            cameraLocations.length > 0 &&
+            currentStudyAreaId === studyArea.id &&
+            currentStudyAreaId === cameraLocations[0].studyArea
+        "
+        class="tree-menu-checkbox"
+      >
+        <input
+          type="text"
+          placeholder="搜尋"
+          v-model="searchCameraLocation"
+          style="width: 120px"
+        />
+        <el-checkbox
+          v-show="!searchCameraLocation"
+          :indeterminate="isIndeterminate"
+          v-model="selectAllCamera"
+          @change="selectAllCameraLocation"
+          >全部相機位置</el-checkbox
+        >
+        <el-checkbox-group
+          v-model="selectedCamera"
+          @change="selectCameraLocation"
+        >
+          <el-checkbox
+            v-for="(cameraLocation, index) in cameraLocationsOption"
+            :key="index"
+            :label="cameraLocation.name"
+          >
+            {{ cameraLocation.name }}
+            <span class="icon" v-if="cameraLocation.isLocked">
+              <i
+                class="icon-lock align-middle"
+                v-tooltip.top="`${cameraLocation.lockUser.name} 正在編輯中`"
+              ></i>
+            </span>
+            <span class="error-label" v-if="cameraLocation.failures > 0">
+              {{ cameraLocation.failures }}
+            </span>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+
       <ul
         class="tree-menu-child"
         v-for="studyArea in studyArea.children"
@@ -31,6 +76,50 @@
             @select="toggleExpand(studyArea)"
             @editArea="editArea"
           />
+          <div
+            v-show="
+              showCameraLocation &&
+                cameraLocations.length > 0 &&
+                currentStudyAreaId === studyArea.id &&
+                currentStudyAreaId === cameraLocations[0].studyArea
+            "
+            class="tree-menu-checkbox"
+          >
+            <input
+              type="text"
+              placeholder="搜尋"
+              v-model="searchCameraLocation"
+              style="width: 120px"
+            />
+            <el-checkbox
+              v-show="!searchCameraLocation"
+              :indeterminate="isIndeterminate"
+              v-model="selectAllCamera"
+              @change="selectAllCameraLocation"
+              >全部相機位置</el-checkbox
+            >
+            <el-checkbox-group
+              v-model="selectedCamera"
+              @change="selectCameraLocation"
+            >
+              <el-checkbox
+                v-for="(cameraLocation, index) in cameraLocationsOption"
+                :key="index"
+                :label="cameraLocation.name"
+              >
+                {{ cameraLocation.name }}
+                <span class="icon" v-if="cameraLocation.isLocked">
+                  <i
+                    class="icon-lock align-middle"
+                    v-tooltip.top="`${cameraLocation.lockUser.name} 正在編輯中`"
+                  ></i>
+                </span>
+                <span class="error-label" v-if="cameraLocation.failures > 0">
+                  {{ cameraLocation.failures }}
+                </span>
+              </el-checkbox>
+            </el-checkbox-group>
+          </div>
         </li>
       </ul>
       <ul v-show="isEditMode" class="tree-menu-child">
@@ -99,13 +188,53 @@ export default {
       type: Boolean,
       default: false,
     },
+    cameraLocations: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
+    showCameraLocation: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       expandId: null,
       newStudyArea: '',
       newSubStudyArea: '',
+      selectedCamera: [],
+      selectAllCamera: false,
+      isIndeterminate: false,
+      cameraLocationsOption: [],
+      cameraLocationsNameId: [],
+      searchCameraLocation: '',
     };
+  },
+  watch: {
+    cameraLocations: function(value) {
+      this.cameraLocationsNameId = value.reduce((previous, { name, id }) => {
+        return { ...previous, [name]: id };
+      }, {});
+      this.cameraLocationsOption = value;
+    },
+    searchCameraLocation: function(value) {
+      if (!value) {
+        this.cameraLocationsOption = this.cameraLocations;
+      } else {
+        this.cameraLocationsOption = this.cameraLocations.filter(({ name }) =>
+          name.toLowerCase().includes(value.toLowerCase()),
+        );
+      }
+    },
+    currentStudyAreaId: function() {
+      this.selectedCamera = [];
+      this.setSelectedCameraLocations();
+      this.selectAllCamera = false;
+      this.isIndeterminate = false;
+      this.searchCameraLocation = '';
+    },
   },
   methods: {
     toggleExpand(studyArea, isParent) {
@@ -120,10 +249,7 @@ export default {
       }
     },
     generateAreaLink(studyArea) {
-      if (
-        this.isEditMode ||
-        (studyArea.children && studyArea.children.length > 0)
-      ) {
+      if (this.isEditMode) {
         return '';
       }
       return `/project/${this.projectId}/study-areas/${studyArea.id}`;
@@ -150,6 +276,26 @@ export default {
     editArea(name, id) {
       this.$emit('editArea', name, id);
     },
+    selectAllCameraLocation(isCheck) {
+      this.selectedCamera = isCheck
+        ? this.cameraLocations.map(({ name }) => name)
+        : [];
+      this.isIndeterminate = false;
+      this.setSelectedCameraLocations();
+    },
+    selectCameraLocation(value) {
+      let checkedCount = value.length;
+      this.selectAllCamera = checkedCount === this.cameraLocations.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.cameraLocations.length;
+      this.setSelectedCameraLocations();
+    },
+    setSelectedCameraLocations() {
+      this.$emit(
+        'setSelectedCameraLocations',
+        this.selectedCamera.map(name => this.cameraLocationsNameId[name]),
+      );
+    },
   },
 };
 </script>
@@ -165,7 +311,6 @@ export default {
     outline: 0;
     padding: 13px 0;
     background-color: transparent;
-
     &:focus {
       outline: 0;
       box-shadow: inset 0px -1px lightgray;

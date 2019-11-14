@@ -17,40 +17,7 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div
-          v-if="!isLogin"
-          class="collapse navbar-collapse justify-content-end"
-          id="navbarSupportedContent"
-        >
-          <div class="navbar-nav justify-content-md-end subnav">
-            <div class="nav-item dropdown help">
-              <a
-                class="nav-link dropdown-toggle"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                >幫助</a
-              >
-              <div class="dropdown-menu dropdown-menu-right">
-                <router-link to="/help/faq" class="dropdown-item"
-                  >常見問題</router-link
-                >
-                <router-link to="/help/contact-us" class="dropdown-item"
-                  >聯絡我們</router-link
-                >
-                <router-link to="/help/privacy" class="dropdown-item"
-                  >隱私權政策</router-link
-                >
-              </div>
-            </div>
-            <div class="divider"></div>
-            <div class="nav-item ml-3">
-              <a @click="loginModalOpen = true" class="btn btn-orange">登入</a>
-            </div>
-          </div>
-        </div>
-        <div class="collapse navbar-collapse" v-if="isLogin">
+        <div class="collapse navbar-collapse">
           <ul class="navbar-nav main-nav">
             <li class="nav-item">
               <router-link
@@ -72,7 +39,7 @@
                 <span class="sr-only" v-if="isDownloadPath">(current)</span>
               </router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="isLogin">
               <router-link
                 class="nav-link"
                 :class="isHistoryPath ? 'active' : ''"
@@ -105,7 +72,7 @@
             </li>
             <li class="divider"></li>
           </ul>
-          <div class="navbar-nav subnav">
+          <div class="navbar-nav subnav" v-if="isLogin">
             <div class="divider"></div>
             <div
               class="nav-item dropdown notification"
@@ -144,6 +111,39 @@
                 >
                 <a class="dropdown-item" href="#" @click="doLogout()">登出</a>
               </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="!isLogin"
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarSupportedContent"
+        >
+          <div class="navbar-nav justify-content-md-end subnav">
+            <div class="nav-item dropdown help">
+              <a
+                class="nav-link dropdown-toggle"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                >幫助</a
+              >
+              <div class="dropdown-menu dropdown-menu-right">
+                <router-link to="/help/faq" class="dropdown-item"
+                  >常見問題</router-link
+                >
+                <router-link to="/help/contact-us" class="dropdown-item"
+                  >聯絡我們</router-link
+                >
+                <router-link to="/help/privacy" class="dropdown-item"
+                  >隱私權政策</router-link
+                >
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="nav-item ml-3">
+              <a @click="loginModalOpen = true" class="btn btn-orange">登入</a>
             </div>
           </div>
         </div>

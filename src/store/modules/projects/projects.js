@@ -6,9 +6,11 @@ import { dateFormatYYYY, dateFormatYYYYMMDD } from '@/utils/dateHelper';
 import {
   getAllProjects,
   getIdentifiedSpecies,
+  getIdentifiedStudyAreaSpecies,
   getProjectDetail,
   getProjectSpecies,
   getProjects,
+  getPublicProjects,
   getRetrievalDataByCameraLocation,
   getRetrievalDataByProject,
   getRetrievalDataByStudyArea,
@@ -25,6 +27,7 @@ import { getLanguage } from '@/utils/i18n';
 const state = {
   projects: [],
   projectsTotal: 0,
+  projectsPublicTotal: 0,
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
@@ -143,11 +146,17 @@ const mutations = {
   setProjects(state, payload) {
     state.projects = payload;
   },
+  setPublicProjects(state, payload) {
+    state.projects = payload;
+  },
   appendProjects(state, payload) {
     state.projects = [...state.projects, ...payload];
   },
   setProjectsTotal(state, payload) {
     state.projectsTotal = payload;
+  },
+  setProjectsPublicTotal(state, payload) {
+    state.projectsPublicTotal = payload;
   },
   setProjectDetail(state, data) {
     state.projectDetail = data;
@@ -159,6 +168,17 @@ const mutations = {
     state.projectSpecies = data;
   },
   setIdentifiedSpecies(state, data) {
+    let records = [];
+    if (data.records && data.records.length > 0) {
+      records = [...data.records];
+      records.sort(({ count: countA }, { count: countB }) => countB - countA);
+    }
+    state.identifiedSpecies = {
+      ...data,
+      records,
+    };
+  },
+  setIdentifiedStudyAreaSpecies(state, data) {
     let records = [];
     if (data.records && data.records.length > 0) {
       records = [...data.records];
@@ -200,6 +220,14 @@ const actions = {
       idx(data, _ => _.items) || [],
     );
     commit('setProjectsTotal', data.total);
+  },
+  async getPublicProjects({ commit }, payload) {
+    const data = await getPublicProjects(payload);
+    commit(
+      payload.index === 0 ? 'setPublicProjects' : 'appendProjects',
+      idx(data, _ => _.items) || [],
+    );
+    commit('setProjectsPublicTotal', data.total);
   },
   async getAllProjects({ commit }, query) {
     const data = await getAllProjects(query);
@@ -263,9 +291,14 @@ const actions = {
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
   },
-  async loadIdentifiedSpecies({ commit }, projectId) {
-    const data = await getIdentifiedSpecies(projectId);
-    commit('setIdentifiedSpecies', data || {});
+  async loadIdentifiedSpecies({ commit }, { projectId, studyAreaId }) {
+    if (studyAreaId && studyAreaId !== 'all') {
+      const data = await getIdentifiedStudyAreaSpecies(projectId, studyAreaId);
+      commit('setIdentifiedStudyAreaSpecies', data || {});
+    } else {
+      const data = await getIdentifiedSpecies(projectId);
+      commit('setIdentifiedSpecies', data || {});
+    }
   },
   async loadRetrievalData(
     { commit },

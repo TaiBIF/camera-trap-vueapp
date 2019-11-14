@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="project-name" class="col-4 required">計畫時間：</label>
+          <label for="project-name" class="col-4 required">行程時間：</label>
           <div class="col-6">
             <div
               class="input-group"
@@ -49,7 +49,7 @@
               v-show="errors.has('project_trip_date')"
               class="invalid-feedback"
             >
-              計畫時間不能留空
+              行程時間不能留空
             </span>
           </div>
         </div>
@@ -128,7 +128,7 @@
         </div>
       </form>
     </div>
-    <div class="edit-project-trip-basic-footer float-right mt-3">
+    <div class="edit-project-trip-basic-footer float-right mt-3 mb-3">
       <button
         class="btn btn-green-border mr-3"
         @click="closeEditProjectTripBasic"
@@ -190,10 +190,10 @@ export default {
     openEditProjectTripCamera: {
       type: Function,
     },
-    addProjectTripRequest: {
+    addEditProjectTripRequest: {
       type: Function,
     },
-    setEditProjectTrip: {
+    setEditProjectTripData: {
       type: Function,
     },
     editProjectTripData: {
@@ -301,9 +301,53 @@ export default {
               if (this.projectTripCameraLocations[value]) {
                 cameraLocations = this.projectTripCameraLocations[value].map(
                   cameraLocation => {
+                    let cameraLocationEvent = undefined;
+                    let cameraLocationMark = undefined;
+                    let projectCameras = undefined;
+                    if (
+                      this.editProjectTripData.id &&
+                      this.editProjectTripData.studyAreas
+                    ) {
+                      this.editProjectTripData.studyAreas.some(
+                        studyAreaData => {
+                          if (
+                            studyAreaData.studyArea === value &&
+                            studyAreaData.cameraLocations
+                          ) {
+                            studyAreaData.cameraLocations.some(
+                              cameraLocationData => {
+                                if (
+                                  cameraLocationData.cameraLocation ===
+                                  cameraLocation.value
+                                ) {
+                                  cameraLocationEvent =
+                                    cameraLocationData.cameraLocationEvent;
+                                  cameraLocationMark =
+                                    cameraLocationData.cameraLocationMark;
+                                  if (
+                                    cameraLocationData.projectCameras &&
+                                    cameraLocationData.projectCameras.length > 0
+                                  )
+                                    projectCameras =
+                                      cameraLocationData.projectCameras;
+
+                                  return true;
+                                }
+                              },
+                            );
+                          }
+                          if (projectCameras) {
+                            return true;
+                          }
+                        },
+                      );
+                    }
                     return {
                       cameraLocation: cameraLocation.value,
                       title: cameraLocation.label,
+                      cameraLocationEvent: cameraLocationEvent || '',
+                      cameraLocationMark: cameraLocationMark || '',
+                      projectCameras: projectCameras || [],
                     };
                   },
                 );
@@ -320,14 +364,17 @@ export default {
           }
 
           const { sn, member, mark } = this.projectTrip;
-          const body = {
+          let body = {
             sn,
             member,
             mark,
             studyAreas,
             date: this.projectTripDate,
           };
-          this.setEditProjectTrip(body);
+          if (this.editProjectTripData.id)
+            body = { id: this.editProjectTripData.id, ...body };
+
+          this.setEditProjectTripData(body);
 
           if (this.showNextStep) {
             if (emptyCameraLocation) this.openCheckCameraLocationsModal();
@@ -355,13 +402,13 @@ export default {
       this.showCheckCameraLocationsModal = false;
     },
     checkAddProjectTripRequest() {
-      this.addProjectTripRequest(true);
+      this.addEditProjectTripRequest(true);
       this.closeCheckStudyAreasModal();
       this.closeEditProjectTripBasic();
     },
     checkGoEditProjectTripCamera() {
       if (this.showNextStep) this.openEditProjectTripCamera();
-      else this.addProjectTripRequest(true);
+      else this.addEditProjectTripRequest(true);
 
       this.closeCheckCameraLocationsModal();
       this.closeEditProjectTripBasic();
