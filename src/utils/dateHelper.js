@@ -11,6 +11,9 @@ export const subNYears = (dateTimeString, n = 1) =>
 export const dateFormatYYYYMMDD = dateTimeString =>
   moment(dateTimeString).format('YYYY-MM-DD');
 
+export const dateFormatHHmm = dateTimeString =>
+  moment(dateTimeString).format('HH:mm');
+
 export const dateFormatYYYYMMDDHHmmss = dateTimeString =>
   moment(dateTimeString).format('YYYY-MM-DD HH:mm:ss');
 

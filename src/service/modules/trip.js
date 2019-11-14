@@ -5,6 +5,11 @@ const getProjectTrips = async projectId =>
     url: `/api/v1/projects/${projectId}/trips`,
     method: 'GET',
   });
+const getProjectTripsDateTimeInterval = async (projectId, tripId) =>
+  await fetchWrap({
+    url: `/api/v1/projects/${projectId}/trips/${tripId}`,
+    method: 'GET',
+  });
 
 const addProjectTrip = async (projectId, body) =>
   await fetchWrap({
@@ -28,4 +33,10 @@ const deleteProjectTrip = async (projectId, tripId) => {
   return data;
 };
 
-export { getProjectTrips, addProjectTrip, editProjectTrip, deleteProjectTrip };
+export {
+  getProjectTrips,
+  addProjectTrip,
+  editProjectTrip,
+  deleteProjectTrip,
+  getProjectTripsDateTimeInterval,
+};

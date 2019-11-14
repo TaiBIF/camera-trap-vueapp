@@ -203,12 +203,15 @@ import moment from 'moment';
 import vSelect from 'vue-select';
 
 import {
+  dateFormatHHmm,
+  dateFormatYYYYMMDD,
   dateFormatYYYYMMDDHHmmss,
   getTodayDate,
   subNYears,
 } from '@/utils/dateHelper.js';
 import InfoModal from '@/components/Modal/InfoModal.vue';
 
+import { getProjectTripsDateTimeInterval } from '@/service';
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
 import queryString from 'query-string';
@@ -285,7 +288,6 @@ export default {
       label: sn,
       value: id,
     }));
-
     if (Object.keys(this.projectDetail).length === 0)
       await this.getProjectDetail(this.projectId);
     this.funder = this.projectDetail.funder;
@@ -486,12 +488,44 @@ export default {
     setSheetHeight() {
       this.$refs.sheet.setSheetHeight();
     },
-    resetValue(resetType) {
+    async resetValue(resetType) {
       if (resetType === 'datetime' && this.correctQueryType === 'trip') {
-        this.query.startDate = defaultQuery.startDate;
-        this.query.endDate = defaultQuery.endDate;
-        this.query.startTime = defaultQuery.startTime;
-        this.query.endTime = defaultQuery.endTime;
+        const projectTripsDateTimeInterval = await getProjectTripsDateTimeInterval(
+          this.$route.params.projectId,
+          this.query.trip.value,
+        );
+        if (
+          projectTripsDateTimeInterval.startTime !== '' ||
+          projectTripsDateTimeInterval.endTime !== ''
+        ) {
+          this.query.startDate = dateFormatYYYYMMDD(
+            projectTripsDateTimeInterval.startTime,
+          );
+          this.query.endDate = dateFormatYYYYMMDD(
+            projectTripsDateTimeInterval.endTime,
+          );
+          const startTimeTemp = dateFormatHHmm(
+            projectTripsDateTimeInterval.startTime,
+          ).split(':');
+
+          this.query.startTime = {
+            HH: startTimeTemp[0],
+            mm: startTimeTemp[1],
+          };
+          const endTimeTemp = dateFormatHHmm(
+            projectTripsDateTimeInterval.endTime,
+          ).split(':');
+
+          this.query.endTime = {
+            HH: endTimeTemp[0],
+            mm: endTimeTemp[1],
+          };
+        } else {
+          this.query.startDate = defaultQuery.startDate;
+          this.query.endDate = defaultQuery.endDate;
+          this.query.startTime = defaultQuery.startTime;
+          this.query.endTime = defaultQuery.endTime;
+        }
       }
 
       if (resetType === 'trip' && this.correctQueryType === 'datetime') {
