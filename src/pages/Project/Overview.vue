@@ -23,12 +23,15 @@
             <div v-for="(option, index) in projectTypeOption" :key="index">
               <i
                 class="el-icon-check"
-                v-show="selectedFilters.projectType === option.name"
+                v-show="selectedFilters.projectType.id === option.id"
               />
               <span
-                :id="option.name"
+                :id="option.id"
+                :name="option.name"
                 class="filter-option"
-                @click="selectSingleFilter('projectType', $event)"
+                @click="
+                  selectSingleFilter('projectType', option.id, option.name)
+                "
               >
                 {{ option.name }}
               </span>
@@ -46,12 +49,13 @@
             <div v-for="(option, index) in speciesOption" :key="index">
               <i
                 class="el-icon-check"
-                v-show="selectedFilters.species === option.id"
+                v-show="selectedFilters.species.id === option.id"
               />
               <span
                 :id="option.id"
+                :name="option.name"
                 class="filter-option"
-                @click="selectSingleFilter('species', $event)"
+                @click="selectSingleFilter('species', option.id, option.name)"
               >
                 {{ option.name }}
               </span>
@@ -84,12 +88,13 @@
                 <div>
                   <i
                     class="el-icon-check"
-                    v-show="selectedFilters.county === area.name"
+                    v-show="selectedFilters.county.id === area.id"
                   />
                   <span
-                    :id="area.name"
+                    :id="area.id"
+                    :name="area.name"
                     class="filter-option"
-                    @click="selectSingleFilter('county', $event)"
+                    @click="selectSingleFilter('county', area.id, area.name)"
                   >
                     全部
                   </span>
@@ -98,12 +103,15 @@
                 <div v-for="(county, index) in area.county" :key="index">
                   <i
                     class="el-icon-check"
-                    v-show="selectedFilters.county === county.name"
+                    v-show="selectedFilters.county.id === county.id"
                   />
                   <span
-                    :id="county.name"
+                    :id="county.id"
+                    :name="county.name"
                     class="filter-option"
-                    @click="selectSingleFilter('county', $event)"
+                    @click="
+                      selectSingleFilter('county', county.id, county.name)
+                    "
                   >
                     {{ county.name }}
                   </span>
@@ -164,7 +172,7 @@
             <div class="row">
               <div class="col-8">
                 <span class="filter-label">
-                  {{ selectedFilters.projectType }}
+                  {{ selectedFilters.projectType.name }}
                 </span>
                 <span
                   class="filter-label deleteable"
@@ -304,8 +312,8 @@ const SORTED_BY_ENUM = {
   title: '依計畫名稱筆畫排序',
 };
 const projectTypeOption = [
-  { name: '我的計畫', count: ' ' },
-  { name: '公開計畫', count: ' ' },
+  { id: '我的計畫', name: '我的計畫', count: ' ' },
+  { id: '公開計畫', name: '公開計畫', count: ' ' },
 ];
 const speciesOption = [];
 const areaOption = [
@@ -352,9 +360,9 @@ export default {
       areaOption,
       selectedArea: '',
       selectedFilters: {
-        projectType: '我的計畫',
-        species: '',
-        county: '',
+        projectType: { id: '我的計畫', name: '我的計畫' },
+        species: { id: '', name: '' },
+        county: { id: '', name: '' },
         datetime: [0, MaxDateTime],
       },
       selectedFiltersLabel: [],
@@ -374,10 +382,10 @@ export default {
   },
   watch: {
     async sortedBy() {
-      if (this.selectedFilters.projectType === '我的計畫') {
+      if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest();
         this.currentProjects = this.projects;
-      } else if (this.selectedFilters.projectType === '公開計畫') {
+      } else if (this.selectedFilters.projectType.id === '公開計畫') {
         await this.getPublicProjectsRequest();
         this.currentProjects = this.projects;
       }
@@ -402,9 +410,12 @@ export default {
                 ];
             } else if (
               key !== 'projectType' &&
-              this.selectedFilters[key] !== ''
+              this.selectedFilters[key].name !== ''
             ) {
-              return [...pre, { type: key, value: this.selectedFilters[key] }];
+              return [
+                ...pre,
+                { type: key, value: this.selectedFilters[key].name },
+              ];
             }
             return pre;
           },
@@ -419,7 +430,7 @@ export default {
     ...projects.mapState(['projects', 'projectsTotal', 'projectsPublicTotal']),
     ...config.mapGetters(['projectAreas', 'projectAreasOrientationTotal']),
     disableLoadMoreProjects() {
-      if (this.selectedFilters.projectType === '我的計畫') {
+      if (this.selectedFilters.projectType.id === '我的計畫') {
         return this.busy || this.projectsTotal <= this.currentProjects.length;
       } else {
         // 公開計畫
@@ -446,9 +457,9 @@ export default {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
-        projectType: this.selectedFilters.projectType,
-        species: this.selectedFilters.species || undefined,
-        county: this.selectedFilters.county || undefined,
+        projectType: this.selectedFilters.projectType.id,
+        species: this.selectedFilters.species.id || undefined,
+        county: this.selectedFilters.county.id || undefined,
         startDate: this.formatDatetime(
           this.selectedFilters.datetime[0],
         ).replace('/', '-'),
@@ -467,9 +478,9 @@ export default {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
-        projectType: this.selectedFilters.projectType,
-        species: this.selectedFilters.species || undefined,
-        county: this.selectedFilters.county || undefined,
+        projectType: this.selectedFilters.projectType.id,
+        species: this.selectedFilters.species.id || undefined,
+        county: this.selectedFilters.county.id || undefined,
         startDate: this.formatDatetime(
           this.selectedFilters.datetime[0],
         ).replace('/', '-'),
@@ -541,7 +552,7 @@ export default {
       });
     },
     async loadMoreProjects() {
-      if (this.selectedFilters.projectType === '我的計畫') {
+      if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest(
           parseInt(this.projects.length / PROJECT_PAGE),
         );
@@ -554,24 +565,23 @@ export default {
         this.currentProjects = this.projects;
       }
     },
-    async selectSingleFilter(key, event) {
-      this.selectedFilters[key] = event.currentTarget.id;
-      // if (key === 'projectType' && event.currentTarget.id === '我的計畫')
-      //   this.getProjectRequest();
-      // else if (key === 'projectType' && event.currentTarget.id === '公開計畫')
-      //   this.getPublicProjectsRequest();
+    async selectSingleFilter(key, id, name) {
+      this.selectedFilters[key] = { id, name };
 
-      if (this.selectedFilters.projectType === '我的計畫') {
+      if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest();
         this.currentProjects = this.projects;
-      } else if (this.selectedFilters.projectType === '公開計畫') {
+      } else if (this.selectedFilters.projectType.id === '公開計畫') {
         await this.getPublicProjectsRequest();
         this.currentProjects = this.projects;
       }
     },
     clearFilter(type) {
-      if (type === 'datetime') this.selectedFilters[type] = [0, MaxDateTime];
-      else this.selectedFilters[type] = '';
+      if (type === 'datetime') {
+        this.selectedFilters[type] = [0, MaxDateTime];
+      } else {
+        this.selectedFilters[type] = { id: '', name: '' };
+      }
     },
     formatDatetime(value) {
       const year = Math.floor(value / 12);
