@@ -13,6 +13,7 @@ import 'bootstrap';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'handsontable/languages/zh-TW';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+import 'vue2-timepicker/dist/VueTimepicker.css';
 
 Vue.use(VeeValidate);
 Vue.use(VTooltip);
