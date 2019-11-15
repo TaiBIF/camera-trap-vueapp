@@ -222,7 +222,7 @@
               ></textarea>
             </div>
           </div>
-          <div class="form-group row">
+          <!--<div class="form-group row">
             <label for="project-name" class="col-2">計畫封面：</label>
             <div class="col-4">
               <input type="hidden" v-model="project.cover" />
@@ -256,7 +256,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div>-->
         </div>
       </div>
       <ActionBtns

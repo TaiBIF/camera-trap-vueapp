@@ -35,7 +35,8 @@
               >
                 {{ option.name }}
               </span>
-              <span class="float-right"> ({{ option.count }}) </span>
+              <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
+              <!-- <span class="float-right"> ({{ option.count }}) </span> -->
             </div>
           </div>
           <hr v-show="isLogin" />
@@ -59,7 +60,8 @@
               >
                 {{ option.name }}
               </span>
-              <span class="float-right"> ({{ option.count }}) </span>
+              <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
+              <!-- <span class="float-right"> ({{ option.count }}) </span> -->
             </div>
           </div>
           <hr />
@@ -79,7 +81,8 @@
               >
                 {{ area.name }}
               </span>
-              <span class="float-right"> ({{ area.count }}) </span>
+              <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
+              <!-- <span class="float-right"> ({{ area.count }}) </span> -->
               <!-- 縣市 -->
               <div
                 v-show="area.count !== 0 && selectedArea === area.name"
