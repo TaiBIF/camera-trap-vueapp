@@ -145,7 +145,7 @@
         </div>
       </div>
     </div>
-
+    <!--
     <h4>TaiCol 臺灣物種名錄對照</h4>
     <hr />
     <div class="row">
@@ -185,7 +185,7 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div>-->
   </div>
 </template>
 
