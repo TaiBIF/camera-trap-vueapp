@@ -85,6 +85,7 @@
                         v-model="query.startDate"
                         placeholder="請選擇日期"
                         style="width: 200px"
+                        :disabled="query.trip"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -99,6 +100,7 @@
                       <vue-timepicker
                         v-model="query.startTime"
                         hide-clear-button
+                        :disabled="query.trip"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
@@ -112,6 +114,7 @@
                         :first-day-of-week="1"
                         v-model="query.endDate"
                         placeholder="請選擇日期"
+                        :disabled="query.trip"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -126,6 +129,7 @@
                       <vue-timepicker
                         v-model="query.endTime"
                         hide-clear-button
+                        :disabled="query.trip"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
