@@ -85,7 +85,7 @@
                         v-model="query.startDate"
                         placeholder="請選擇日期"
                         style="width: 200px"
-                        :disabled="query.trip"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -100,7 +100,7 @@
                       <vue-timepicker
                         v-model="query.startTime"
                         hide-clear-button
-                        :disabled="query.trip"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
@@ -114,7 +114,7 @@
                         :first-day-of-week="1"
                         v-model="query.endDate"
                         placeholder="請選擇日期"
-                        :disabled="query.trip"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -129,7 +129,7 @@
                       <vue-timepicker
                         v-model="query.endTime"
                         hide-clear-button
-                        :disabled="query.trip"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
@@ -201,11 +201,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import DatePicker from 'vue2-datepicker';
-import VueTimepicker from 'vue2-timepicker';
-import moment from 'moment';
-import vSelect from 'vue-select';
-
 import {
   dateFormatHHmm,
   dateFormatYYYYMMDD,
@@ -213,7 +208,11 @@ import {
   getTodayDate,
   subNYears,
 } from '@/utils/dateHelper.js';
+import DatePicker from 'vue2-datepicker';
 import InfoModal from '@/components/Modal/InfoModal.vue';
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
+import vSelect from 'vue-select';
 
 import { getProjectTripsDateTimeInterval } from '@/service';
 import AnnotationsSheet from './AnnotationsSheet';
@@ -316,6 +315,13 @@ export default {
         this.doSearch();
       }, 2000);
     },
+    'query.trip'(value) {
+      if (value) {
+        this.setProjectTrip(value.value);
+      } else {
+        this.setProjectTrip(null);
+      }
+    },
     'query.startDate': 'swapDate',
     'query.endDate': 'swapDate',
     'query.startTime': 'swapDate',
@@ -391,6 +397,7 @@ export default {
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     ...trip.mapActions(['getProjectTrips']),
+    ...projects.mapMutations(['setProjectTrip']),
     updateDateRange() {
       if (
         this.projectDetail.oldestAnnotationTime &&
@@ -468,7 +475,7 @@ export default {
     async doSearch() {
       this.resetPagination();
       this.currentAnnotationIdx = -1;
-      if (this.queryCameraLocations.length === 0) {
+      if (this.queryCameraLocations.length === 0 && !this.query.trip) {
         this.resetAnnotations();
         return;
       }

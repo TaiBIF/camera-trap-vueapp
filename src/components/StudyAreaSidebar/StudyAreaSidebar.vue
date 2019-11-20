@@ -33,6 +33,7 @@
           style="width: 120px"
         />
         <el-checkbox
+          :disabled="projectTrip != null"
           v-show="!searchCameraLocation"
           :indeterminate="isIndeterminate"
           v-model="selectAllCamera"
@@ -41,10 +42,12 @@
         >
         <el-checkbox-group
           v-model="selectedCamera"
+          :disabled="projectTrip != null"
           @change="selectCameraLocation"
         >
           <el-checkbox
             v-for="(cameraLocation, index) in cameraLocationsOption"
+            :disabled="projectTrip != null"
             :key="index"
             :label="cameraLocation.name"
           >
@@ -92,6 +95,7 @@
               style="width: 120px"
             />
             <el-checkbox
+              :disabled="projectTrip != null"
               v-show="!searchCameraLocation"
               :indeterminate="isIndeterminate"
               v-model="selectAllCamera"
@@ -99,10 +103,12 @@
               >全部相機位置</el-checkbox
             >
             <el-checkbox-group
+              :disabled="projectTrip != null"
               v-model="selectedCamera"
               @change="selectCameraLocation"
             >
               <el-checkbox
+                :disabled="projectTrip != null"
                 v-for="(cameraLocation, index) in cameraLocationsOption"
                 :key="index"
                 :label="cameraLocation.name"
@@ -162,7 +168,10 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import StudyAreaItem from '@/components/StudyAreaSidebar/StudyAreaItem.vue';
+
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'study-area-sidebar',
@@ -213,6 +222,15 @@ export default {
     };
   },
   watch: {
+    projectTrip: function(value) {
+      if (value != null) {
+        this.selectedCamera = [];
+        this.setSelectedCameraLocations();
+        this.selectAllCamera = false;
+        this.isIndeterminate = false;
+        this.searchCameraLocation = '';
+      }
+    },
     cameraLocations: function(value) {
       this.cameraLocationsNameId = value.reduce((previous, { name, id }) => {
         return { ...previous, [name]: id };
@@ -235,6 +253,9 @@ export default {
       this.isIndeterminate = false;
       this.searchCameraLocation = '';
     },
+  },
+  computed: {
+    ...projects.mapState(['projectTrip']),
   },
   methods: {
     toggleExpand(studyArea, isParent) {
