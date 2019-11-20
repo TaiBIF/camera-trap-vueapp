@@ -25,6 +25,7 @@
             currentStudyAreaId === cameraLocations[0].studyArea
         "
         class="tree-menu-checkbox"
+        :class="{ 'checkbox-disabled': projectTrip }"
       >
         <input
           type="text"
@@ -87,6 +88,7 @@
                 currentStudyAreaId === cameraLocations[0].studyArea
             "
             class="tree-menu-checkbox"
+            :class="{ 'checkbox-disabled': projectTrip }"
           >
             <input
               type="text"

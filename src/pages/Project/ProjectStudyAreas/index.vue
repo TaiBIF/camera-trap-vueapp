@@ -294,6 +294,7 @@ export default {
     if (Object.keys(this.projectDetail).length === 0)
       await this.getProjectDetail(this.projectId);
     this.funder = this.projectDetail.funder;
+    this.setProjectTrip(null);
   },
   watch: {
     galleryShow: 'setSheetHeight',
@@ -371,7 +372,7 @@ export default {
       const queryParams = {
         studyAreaId: this.studyAreaId,
         cameraLocations: this.queryCameraLocations,
-        trip: query.trip ? query.trip.value : [],
+        projectTripId: query.trip ? query.trip.value : [],
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
@@ -383,7 +384,7 @@ export default {
       }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
     },
     canSearch: function() {
-      return this.queryCameraLocations.length > 0;
+      return this.queryCameraLocations.length > 0 || this.query.trip;
     },
   },
   methods: {
