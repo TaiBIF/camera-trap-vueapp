@@ -73,7 +73,6 @@
               :options="projectOptions"
               v-model="params.projects[index].project"
               v-on:input="changeProject(index)"
-              placeholder="請選擇計畫名稱"
             />
           </div>
           <div class="form-group col-4">
@@ -82,7 +81,6 @@
               :disabled="!item.options.trips.length"
               :options="item.options.trips"
               v-model="params.projects[index].trips"
-              placeholder="請選擇行程"
             />
           </div>
         </div>
@@ -96,7 +94,6 @@
               v-model="params.projects[index].studyAreas"
               v-on:input="changeStudyArea(index)"
               multiple
-              placeholder="請選擇樣區 - 子樣區"
             />
           </div>
           <div class="col-4">
@@ -107,7 +104,6 @@
                 :options="item.options.cameraLocations"
                 v-model="params.projects[index].cameraLocations"
                 multiple
-                placeholder="請選擇相機位置"
               />
             </div>
           </div>
@@ -131,7 +127,6 @@
         >
           <label v-text="dataField.title[lang]"></label>
           <v-select
-            :placeholder="dataField.title[lang]"
             v-model="params.others[dataField.id]"
             :reduce="x => x.value"
             :options="
@@ -269,20 +264,17 @@ export default {
     },
   },
   beforeMount: async function() {
-    await this.prepareOptions();
+    // species options
+    const species = await fetchSpecies();
+    species.items.forEach(x => {
+      this.speciesOptions.push({
+        label: x.title[getLanguage()],
+        value: x.id,
+      });
+    });
   },
   mounted() {},
   methods: {
-    async prepareOptions() {
-      // species options
-      const species = await fetchSpecies();
-      species.items.forEach(x => {
-        this.speciesOptions.push({
-          label: x.title[getLanguage()],
-          value: x.id,
-        });
-      });
-    },
     async changeProject(index) {
       const { options } = this.form.items[index];
       const selected = this.params.projects[index];

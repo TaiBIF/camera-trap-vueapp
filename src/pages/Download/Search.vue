@@ -20,11 +20,29 @@
       <hr />
       <div class="panel-body">
         <h3>計算分析</h3>
-        <calculate-filters v-on:filter="filter"></calculate-filters>
+        <calculate-filters v-on:calculate="calculate"></calculate-filters>
       </div>
       <hr />
       <div class="panel-body" v-if="isCalculateEnd">
         <h3>分析結果</h3>
+        <work-hours
+          v-if="calculateType === 'work-hours'"
+          :rangeType="calculateRangeType"
+          :data="calculateData"
+        ></work-hours>
+        <valid-pics
+          v-else-if="calculateType === 'valid-pics'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        ></valid-pics>
+        <events
+          v-else-if="calculateType === 'events'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </events>
       </div>
     </div>
   </div>
@@ -35,9 +53,12 @@ import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import annotationSheet from './AnnotationsSheet';
 import calculateFilters from './CalculateFilters';
+import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
 import queryString from 'query-string';
+import validPics from './ValidPics';
+import workHours from './WorkHours';
 import 'vue2-timepicker/dist/VueTimepicker.css';
 
 const projects = createNamespacedHelpers('projects');
@@ -48,6 +69,9 @@ export default {
     filters,
     calculateFilters,
     annotationSheet,
+    workHours,
+    validPics,
+    events,
   },
   data() {
     return {
@@ -59,6 +83,8 @@ export default {
       annotations: [],
       annotationsTotal: 0,
       searchParams: {},
+      calculateData: [],
+      calculateRangeType: '',
       query: {
         index: 1,
       },
@@ -78,6 +104,45 @@ export default {
     changeFilterResultPage(val) {
       this.query.index = val;
       this.filter(this.searchParams);
+    },
+    async calculate(typeObject, rangeTypeObject, params) {
+      let studyAreaIds = [];
+      this.searchParams.projects.forEach(project => {
+        studyAreaIds = studyAreaIds.concat(
+          project.studyAreas.map(s => s.value),
+        );
+      });
+
+      let cameraLocations = [];
+      this.searchParams.projects.forEach(project => {
+        cameraLocations = cameraLocations.concat(
+          project.cameraLocations.map(c => c.value),
+        );
+      });
+
+      const query = {
+        index: this.query.index,
+        'cameraLocationIds[]': cameraLocations,
+        'speciesIds[]': this.searchParams.species.map(x => x.value),
+        'projectIds[]': this.searchParams.projects.map(p => p.project.value),
+        ...this.searchParams.others,
+        startDateTime: this.searchParams.startDateTime,
+        endDateTime: this.searchParams.endDateTime,
+      };
+
+      this.calculateType = typeObject.value;
+      this.calculateRangeType = rangeTypeObject.value;
+      query.range = this.calculateRangeType;
+      query.calculateTimeIntervel = params.calculateTimeIntervel.value;
+
+      const data = await fetchWrap({
+        url: `/api/v1/calculator/${this.calculateType}?${queryString.stringify(
+          query,
+        )}`,
+        method: 'GET',
+      });
+      this.isCalculateEnd = true;
+      this.calculateData = data;
     },
     async filter(params) {
       this.searchParams = params;
