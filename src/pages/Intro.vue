@@ -25,55 +25,75 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
               返回
             </h6>
             <h6 v-else>點擊地圖區塊進行資料探索</h6>
-            <l-map
-              style="height: 600px; width: 100%"
-              :zoom="map.mode === 'studyArea' ? 10 : 7"
-              :center="center"
-              @update:zoom="zoomUpdated"
-              @update:center="centerUpdated"
-              @update:bounds="boundsUpdated"
-              :options="controlableMapOptions"
-            >
-              <l-geo-json
+            <div class="studyArea" v-if="mapType === 'studyArea'">
+              <l-map
+                style="height: 600px; width: 100%"
+                :zoom="map.mode === 'studyArea' ? 10 : 7"
+                :center="center"
+                @update:zoom="zoomUpdated"
+                @update:center="centerUpdated"
+                @update:bounds="boundsUpdated"
+                :options="controlableMapOptions"
+              >
+                <l-geo-json
+                  ref="geoRef"
+                  :geojson="geojson"
+                  :options="geoOptions"
+                />
+                <l-tile-layer :url="url" :attribution="attribution" />
+                <l-circle-marker
+                  v-for="l in locations"
+                  :key="l.id"
+                  :lat-lng="l.latlng"
+                  :radius="5"
+                  color="orange"
+                  :fillOpacity="1"
+                  fillColor="orange"
+                  @click="handleStudyAreaClick(l)"
+                >
+                  <l-tooltip
+                    :content="l.text"
+                    :options="{
+                      direction: 'top',
+                    }"
+                  />
+                </l-circle-marker>
+              </l-map>
+            </div>
+            <div class="cameraLocation" v-if="mapType === 'cameraLocation'">
+              <l-map
+                style="height: 600px; width: 100%"
+                :zoom="map.mode === 'studyArea' ? 10 : 7"
+                :center="center"
+                @update:zoom="zoomUpdated"
+                @update:center="centerUpdated"
+                @update:bounds="boundsUpdated"
+                :options="controlableMapOptions"
+              >
+                <!-- <l-geo-json
                 ref="geoRef"
                 :geojson="geojson"
                 :options="geoOptions"
-              />
-              <l-tile-layer :url="url" :attribution="attribution" />
-              <l-circle-marker
-                v-for="l in locations"
-                :key="l.id"
-                :lat-lng="l.latlng"
-                :radius="5"
-                color="orange"
-                :fillOpacity="1"
-                fillColor="orange"
-                @click="handleStudyAreaClick(l)"
-              >
-                <l-tooltip
-                  :content="l.text"
-                  :options="{
-                    direction: 'top',
-                  }"
-                />
-              </l-circle-marker>
-              <l-layer-group layer-type="overlay" name="Layer Camera">
-                <l-marker
-                  v-for="(camera, idx) in cameraLocations"
-                  :key="`project-camera-${idx}`"
-                  :icon="camera.icon"
-                  :lat-lng="camera.position"
-                  :draggable="false"
-                  @mouseover="setSelectedCameraLocation(camera.id)"
-                  @mouseout="delSelectedCameraLocation(camera.id)"
-                >
-                  <l-tooltip
-                    :content="camera.name"
-                    :options="{ permanent: true, direction: 'top' }"
-                  />
-                </l-marker>
-              </l-layer-group>
-            </l-map>
+              /> -->
+                <l-tile-layer :url="url" :attribution="attribution" />
+                <l-layer-group layer-type="overlay" name="Layer Camera">
+                  <l-marker
+                    v-for="(camera, idx) in cameraLocations"
+                    :key="`project-camera-${idx}`"
+                    :icon="camera.icon"
+                    :lat-lng="camera.position"
+                    :draggable="false"
+                    @mouseover="setSelectedCameraLocation(camera.id)"
+                    @mouseout="delSelectedCameraLocation()"
+                  >
+                    <l-tooltip
+                      :content="camera.name"
+                      :options="{ permanent: true, direction: 'top' }"
+                    />
+                  </l-marker>
+                </l-layer-group>
+              </l-map>
+            </div>
           </div>
           <div class="col-xs-12 col-sm-12 col-md-6 text-right mt-5 pt-3">
             <div v-if="map.mode === 'none'">
@@ -627,6 +647,7 @@ export default {
       },
     };
     return {
+      mapType: 'studyArea',
       selectedCameraLocation: '',
       markerColor: {
         area: 'rgb(42, 127, 96)',
@@ -910,6 +931,7 @@ export default {
       });
 
       this.cameraLocations = cameraLocations;
+      this.mapType = 'cameraLocation';
     },
     click() {},
     zoomUpdated(e) {
@@ -947,6 +969,7 @@ export default {
         });
       });
       this.locations = locations;
+      this.mapType = 'studyArea';
     },
     setRegionData() {
       this.regionData = {
@@ -982,11 +1005,28 @@ export default {
 
 
 .page-intro
-  .cameraLocationInfo
+  .studyArea
     width: 100%
     padding: 10px
     background-color: #f6f5f5
     color: #8b8b8b
     box-sizing: border-box
     font-size: 10px
+
+.cameraLocation
+  .leaflet-pane
+    .leaflet-tooltip-pane
+      .leaflet-tooltip
+        background: none !important
+        border: 0
+        box-shadow: none
+        color: #FFF
+
+        &.leaflet-tooltip-top
+          color: black
+          margin-top: -35px
+          font-size: 11px
+
+          &:before
+            display: none
 </style>
