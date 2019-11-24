@@ -747,7 +747,7 @@ export default {
     this.dataStatistics.funder.forEach(data => {
       this.funderRatio.rows.push({
         funder: data.name,
-        funderCount: data.totalData,
+        funderCount: (data.totalData / 1024 / 1024).toFixed(2),
       });
     });
 
