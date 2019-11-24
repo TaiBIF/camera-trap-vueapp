@@ -94,12 +94,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                   {{ regionData[key] }}
                 </div>
                 <div class="col-6 text-left" v-else>
-                  {{
-                    regionData[key].reduce(
-                      (pre, cur) => (pre === '' ? cur : `${pre}、${cur}`),
-                      '',
-                    )
-                  }}
+                  {{ regionData[key].slice(0, 5).join('、') }}
                 </div>
               </div>
             </div>
