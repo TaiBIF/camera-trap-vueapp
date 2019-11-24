@@ -11,7 +11,7 @@
             篩選條件
             <span
               class="btn btn-sm btn-black-border float-right"
-              @click="getProjectRequest(0)"
+              @click="selectByFilter()"
               >篩選</span
             >
           </div>
@@ -580,9 +580,7 @@ export default {
         this.currentProjects = this.projects;
       }
     },
-    async selectSingleFilter(key, id, name) {
-      this.selectedFilters[key] = { id, name };
-
+    async selectByFilter() {
       if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest();
         this.currentProjects = this.projects;
@@ -590,6 +588,10 @@ export default {
         await this.getPublicProjectsRequest();
         this.currentProjects = this.projects;
       }
+    },
+    async selectSingleFilter(key, id, name) {
+      this.selectedFilters[key] = { id, name };
+      this.selectByFilter();
     },
     clearFilter(type) {
       if (type === 'datetime') {
