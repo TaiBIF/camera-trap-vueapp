@@ -47,7 +47,10 @@
                 >清除 －</span
               >
             </div>
-            <div v-for="(option, index) in speciesOption" :key="index">
+            <div
+              v-for="(option, index) in speciesOptionForDisplay"
+              :key="index"
+            >
               <i
                 class="el-icon-check"
                 v-show="selectedFilters.species.id === option.id"
@@ -62,6 +65,10 @@
               </span>
               <span class="float-right"> ({{ option.count }}) </span>
             </div>
+            <span @click="showAllSpeciesOption = !showAllSpeciesOption">
+              <span v-if="showAllSpeciesOption">折疊</span>
+              <span v-if="!showAllSpeciesOption">更多</span>
+            </span>
           </div>
           <hr />
           <div class="filter-option-type">
@@ -359,6 +366,7 @@ export default {
       displayByGrid: false,
       projectTypeOption,
       speciesOption,
+      showAllSpeciesOption: false,
       areaOption,
       selectedArea: '',
       selectedFilters: {
@@ -440,6 +448,11 @@ export default {
           this.busy || this.projectsPublicTotal <= this.currentProjects.length
         );
       }
+    },
+    speciesOptionForDisplay() {
+      return this.showAllSpeciesOption
+        ? this.speciesOption
+        : this.speciesOption.slice(0, 10);
     },
   },
   methods: {
