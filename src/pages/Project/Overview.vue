@@ -60,8 +60,7 @@
               >
                 {{ option.name }}
               </span>
-              <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
-              <!-- <span class="float-right"> ({{ option.count }}) </span> -->
+              <span class="float-right"> ({{ option.count }}) </span>
             </div>
           </div>
           <hr />
