@@ -556,9 +556,10 @@ export default {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
           // 從表單用格式轉換成資料 相機位置事件
-          let cameraLocationEvent = {};
-          if (this.projectTrip.cameraLocationEvent)
+          let cameraLocationEvent = '';
+          if (this.projectTrip.cameraLocationEvent) {
             cameraLocationEvent = this.projectTrip.cameraLocationEvent.value;
+          }
           // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
