@@ -134,12 +134,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                   {{ regionData[key] }}
                 </div>
                 <div class="col-6 text-left" v-else>
-                  {{
-                    regionData[key].reduce(
-                      (pre, cur) => (pre === '' ? cur : `${pre}、${cur}`),
-                      '',
-                    )
-                  }}
+                  {{ regionData[key].slice(0, 5).join('、') }}
                 </div>
               </div>
             </div>
@@ -819,7 +814,7 @@ export default {
     this.dataStatistics.funder.forEach(data => {
       this.funderRatio.rows.push({
         funder: data.name,
-        funderCount: data.totalData,
+        funderCount: (data.totalData / 1024 / 1024).toFixed(2),
       });
     });
 
