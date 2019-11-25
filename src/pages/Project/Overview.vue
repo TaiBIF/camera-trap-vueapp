@@ -291,7 +291,7 @@
                 <el-row class="project-item-content">
                   <el-col :span="8">{{ proj.title }}</el-col>
                   <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
-                  <el-col :span="4">{{ proj.funder }}</el-col>
+                  <el-col :span="4">{{ proj.funder || '&nbsp;' }}</el-col>
                   <el-col :span="3">{{ proj.totalStudyArea }}</el-col>
                   <el-col :span="3">{{ proj.totalLcameraLocation }}</el-col>
                   <el-col :span="2">{{ proj.totalData }}</el-col>
