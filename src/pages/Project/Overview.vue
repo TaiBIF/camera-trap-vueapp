@@ -132,7 +132,7 @@
           <hr />
           <div class="filter-option-type">
             <div class="filter-option-type-header">
-              資料時間
+              計畫時間
               <span class="float-right" @click="clearFilter('datetime')"
                 >清除 －</span
               >
