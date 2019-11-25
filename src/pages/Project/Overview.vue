@@ -276,7 +276,7 @@
             <!-- List -->
             <div v-show="!displayByGrid" class="mx-3">
               <el-row class="project-item-title">
-                <el-col :span="8">計劃名稱</el-col>
+                <el-col :span="8">計畫名稱</el-col>
                 <el-col :span="4">資料起始年份</el-col>
                 <el-col :span="4">委託單位</el-col>
                 <el-col :span="3">樣區數量</el-col>
