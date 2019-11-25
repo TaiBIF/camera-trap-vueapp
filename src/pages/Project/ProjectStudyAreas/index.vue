@@ -85,6 +85,7 @@
                         v-model="query.startDate"
                         placeholder="請選擇日期"
                         style="width: 200px"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -99,6 +100,7 @@
                       <vue-timepicker
                         v-model="query.startTime"
                         hide-clear-button
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
@@ -112,6 +114,7 @@
                         :first-day-of-week="1"
                         v-model="query.endDate"
                         placeholder="請選擇日期"
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></date-picker>
                       <div class="input-group-append">
@@ -126,6 +129,7 @@
                       <vue-timepicker
                         v-model="query.endTime"
                         hide-clear-button
+                        :disabled="query.trip != null"
                         @change="resetValue('trip')"
                       ></vue-timepicker>
                     </div>
@@ -197,18 +201,20 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import DatePicker from 'vue2-datepicker';
-import VueTimepicker from 'vue2-timepicker';
-import moment from 'moment';
-import vSelect from 'vue-select';
-
 import {
+  dateFormatHHmm,
+  dateFormatYYYYMMDD,
   dateFormatYYYYMMDDHHmmss,
   getTodayDate,
   subNYears,
 } from '@/utils/dateHelper.js';
+import DatePicker from 'vue2-datepicker';
 import InfoModal from '@/components/Modal/InfoModal.vue';
+import VueTimepicker from 'vue2-timepicker';
+import moment from 'moment';
+import vSelect from 'vue-select';
 
+import { getProjectTripsDateTimeInterval } from '@/service';
 import AnnotationsSheet from './AnnotationsSheet';
 import RightSide from './RightSide.vue';
 import queryString from 'query-string';
@@ -285,10 +291,10 @@ export default {
       label: sn,
       value: id,
     }));
-
     if (Object.keys(this.projectDetail).length === 0)
       await this.getProjectDetail(this.projectId);
     this.funder = this.projectDetail.funder;
+    this.setProjectTrip(null);
   },
   watch: {
     galleryShow: 'setSheetHeight',
@@ -309,6 +315,13 @@ export default {
         this.query.index = 0;
         this.doSearch();
       }, 2000);
+    },
+    'query.trip'(value) {
+      if (value) {
+        this.setProjectTrip(value.value);
+      } else {
+        this.setProjectTrip(null);
+      }
     },
     'query.startDate': 'swapDate',
     'query.endDate': 'swapDate',
@@ -359,7 +372,7 @@ export default {
       const queryParams = {
         studyAreaId: this.studyAreaId,
         cameraLocations: this.queryCameraLocations,
-        trip: query.trip ? query.trip.value : [],
+        projectTripId: query.trip ? query.trip.value : [],
         startTime: getTime(query.startDate, query.startTime).toISOString(),
         endTime: getTime(query.endDate, query.endTime, 59, 999).toISOString(),
         index: query.index,
@@ -371,7 +384,7 @@ export default {
       }/api/v1/annotations.csv?${queryString.stringify(queryParams)}`;
     },
     canSearch: function() {
-      return this.queryCameraLocations.length > 0;
+      return this.queryCameraLocations.length > 0 || this.query.trip;
     },
   },
   methods: {
@@ -385,6 +398,7 @@ export default {
     ...annotations.mapActions(['getAnnotations']),
     ...annotations.mapMutations(['resetAnnotations']),
     ...trip.mapActions(['getProjectTrips']),
+    ...projects.mapMutations(['setProjectTrip']),
     updateDateRange() {
       if (
         this.projectDetail.oldestAnnotationTime &&
@@ -462,7 +476,7 @@ export default {
     async doSearch() {
       this.resetPagination();
       this.currentAnnotationIdx = -1;
-      if (this.queryCameraLocations.length === 0) {
+      if (this.queryCameraLocations.length === 0 && !this.query.trip) {
         this.resetAnnotations();
         return;
       }
@@ -486,12 +500,44 @@ export default {
     setSheetHeight() {
       this.$refs.sheet.setSheetHeight();
     },
-    resetValue(resetType) {
+    async resetValue(resetType) {
       if (resetType === 'datetime' && this.correctQueryType === 'trip') {
-        this.query.startDate = defaultQuery.startDate;
-        this.query.endDate = defaultQuery.endDate;
-        this.query.startTime = defaultQuery.startTime;
-        this.query.endTime = defaultQuery.endTime;
+        const projectTripsDateTimeInterval = await getProjectTripsDateTimeInterval(
+          this.$route.params.projectId,
+          this.query.trip.value,
+        );
+        if (
+          projectTripsDateTimeInterval.startTime !== '' ||
+          projectTripsDateTimeInterval.endTime !== ''
+        ) {
+          this.query.startDate = dateFormatYYYYMMDD(
+            projectTripsDateTimeInterval.startTime,
+          );
+          this.query.endDate = dateFormatYYYYMMDD(
+            projectTripsDateTimeInterval.endTime,
+          );
+          const startTimeTemp = dateFormatHHmm(
+            projectTripsDateTimeInterval.startTime,
+          ).split(':');
+
+          this.query.startTime = {
+            HH: startTimeTemp[0],
+            mm: startTimeTemp[1],
+          };
+          const endTimeTemp = dateFormatHHmm(
+            projectTripsDateTimeInterval.endTime,
+          ).split(':');
+
+          this.query.endTime = {
+            HH: endTimeTemp[0],
+            mm: endTimeTemp[1],
+          };
+        } else {
+          this.query.startDate = defaultQuery.startDate;
+          this.query.endDate = defaultQuery.endDate;
+          this.query.startTime = defaultQuery.startTime;
+          this.query.endTime = defaultQuery.endTime;
+        }
       }
 
       if (resetType === 'trip' && this.correctQueryType === 'datetime') {

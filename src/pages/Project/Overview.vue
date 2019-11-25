@@ -11,7 +11,7 @@
             篩選條件
             <span
               class="btn btn-sm btn-black-border float-right"
-              @click="getProjectRequest(0)"
+              @click="selectByFilter()"
               >篩選</span
             >
           </div>
@@ -47,7 +47,10 @@
                 >清除 －</span
               >
             </div>
-            <div v-for="(option, index) in speciesOption" :key="index">
+            <div
+              v-for="(option, index) in speciesOptionForDisplay"
+              :key="index"
+            >
               <i
                 class="el-icon-check"
                 v-show="selectedFilters.species.id === option.id"
@@ -60,9 +63,12 @@
               >
                 {{ option.name }}
               </span>
-              <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
-              <!-- <span class="float-right"> ({{ option.count }}) </span> -->
+              <span class="float-right"> ({{ option.count }}) </span>
             </div>
+            <span @click="showAllSpeciesOption = !showAllSpeciesOption">
+              <span v-if="showAllSpeciesOption">折疊</span>
+              <span v-if="!showAllSpeciesOption">更多</span>
+            </span>
           </div>
           <hr />
           <div class="filter-option-type">
@@ -126,7 +132,7 @@
           <hr />
           <div class="filter-option-type">
             <div class="filter-option-type-header">
-              資料時間
+              計畫時間
               <span class="float-right" @click="clearFilter('datetime')"
                 >清除 －</span
               >
@@ -270,7 +276,7 @@
             <!-- List -->
             <div v-show="!displayByGrid" class="mx-3">
               <el-row class="project-item-title">
-                <el-col :span="8">計劃名稱</el-col>
+                <el-col :span="8">計畫名稱</el-col>
                 <el-col :span="4">資料起始年份</el-col>
                 <el-col :span="4">委託單位</el-col>
                 <el-col :span="3">樣區數量</el-col>
@@ -285,7 +291,7 @@
                 <el-row class="project-item-content">
                   <el-col :span="8">{{ proj.title }}</el-col>
                   <el-col :span="4">{{ proj.startTime.split('-')[0] }}</el-col>
-                  <el-col :span="4">{{ proj.funder }}</el-col>
+                  <el-col :span="4">{{ proj.funder || '&nbsp;' }}</el-col>
                   <el-col :span="3">{{ proj.totalStudyArea }}</el-col>
                   <el-col :span="3">{{ proj.totalLcameraLocation }}</el-col>
                   <el-col :span="2">{{ proj.totalData }}</el-col>
@@ -360,6 +366,7 @@ export default {
       displayByGrid: false,
       projectTypeOption,
       speciesOption,
+      showAllSpeciesOption: false,
       areaOption,
       selectedArea: '',
       selectedFilters: {
@@ -441,6 +448,11 @@ export default {
           this.busy || this.projectsPublicTotal <= this.currentProjects.length
         );
       }
+    },
+    speciesOptionForDisplay() {
+      return this.showAllSpeciesOption
+        ? this.speciesOption
+        : this.speciesOption.slice(0, 10);
     },
   },
   methods: {
@@ -568,9 +580,7 @@ export default {
         this.currentProjects = this.projects;
       }
     },
-    async selectSingleFilter(key, id, name) {
-      this.selectedFilters[key] = { id, name };
-
+    async selectByFilter() {
       if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest();
         this.currentProjects = this.projects;
@@ -578,6 +588,10 @@ export default {
         await this.getPublicProjectsRequest();
         this.currentProjects = this.projects;
       }
+    },
+    async selectSingleFilter(key, id, name) {
+      this.selectedFilters[key] = { id, name };
+      this.selectByFilter();
     },
     clearFilter(type) {
       if (type === 'datetime') {

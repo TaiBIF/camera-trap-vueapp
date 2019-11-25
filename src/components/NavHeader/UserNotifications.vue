@@ -25,7 +25,7 @@
             {{ dateFormatYYYYMMDDHHmmss(notification.createTime) }}
           </div>
           <div class="notification-item-message">
-            {{ notification.sender.name }} 於計劃
+            {{ notification.sender.name }} 於計畫
             <!-- TODO: project name and id for link -->
             <router-link :to="`/project/${notification.xxx}`">
               XXX
@@ -46,7 +46,7 @@
           </div>
           <div class="notification-item-message">
             <!-- TODO: project name, id-->
-            系統管理員已通過您於計劃
+            系統管理員已通過您於計畫
             <router-link :to="`/project/${notification.xxx}/edit/setting`"
               >XXX</router-link
             >
@@ -121,7 +121,7 @@
           </div>
           <div class="notification-item-message">
             <!-- TODO: projectId, name -->
-            XXX 於計劃 <router-link to="/xxx">XXX</router-link> 中提出問題回報
+            XXX 於計畫 <router-link to="/xxx">XXX</router-link> 中提出問題回報
           </div>
         </div>
         <div class="notification-item-link">
