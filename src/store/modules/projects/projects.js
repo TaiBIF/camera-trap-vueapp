@@ -28,6 +28,7 @@ const state = {
   projects: [],
   projectsTotal: 0,
   projectsPublicTotal: 0,
+  projectTrip: null, //這是用來判斷是否有projectTrip的依據
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
@@ -143,6 +144,9 @@ const getters = {
 };
 
 const mutations = {
+  setProjectTrip(state, payload) {
+    state.projectTrip = payload;
+  },
   setProjects(state, payload) {
     state.projects = payload;
   },

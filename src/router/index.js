@@ -165,14 +165,6 @@ export default new Router({
           path: 'search',
           component: () => import('@/pages/Download/Search.vue'),
         },
-        {
-          path: 'results',
-          component: () => import('@/pages/Download/Results.vue'),
-        },
-        {
-          path: 'calculate',
-          component: () => import('@/pages/Download/Calculate.vue'),
-        },
       ],
     },
     {

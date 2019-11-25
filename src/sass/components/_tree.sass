@@ -63,18 +63,22 @@ ul.tree-menu
             outline: 0
             &::placeholder
                 opacity: 0
-      .el-checkbox__inner
-        background-color: transparent
-        border-color: black
-        &::before
-          background-color: black
-        &::after
+      .el-checkbox:not(.is-disabled)
+        .el-checkbox__inner
+          background-color: transparent
           border-color: black
-      .el-checkbox__label
-        color: black
-        font-weight: normal
-        font-size: 14px
-        line-height: 24px
+          &::before
+            background-color: black
+          &::after
+            border-color: black
+        .el-checkbox__label
+          color: black
+          font-weight: normal
+          font-size: 14px
+          line-height: 24px
+    .checkbox-disabled
+      label
+        cursor: not-allowed
 
 
 

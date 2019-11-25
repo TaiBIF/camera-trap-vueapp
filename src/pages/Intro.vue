@@ -17,43 +17,83 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-6">
-            <h6 v-if="map.mode === 'studyArea'" @click="backTo('region')">
+            <h6
+              class="backTo"
+              v-if="map.mode === 'studyArea'"
+              @click="backTo('region')"
+            >
               返回
             </h6>
             <h6 v-else>點擊地圖區塊進行資料探索</h6>
-            <l-map
-              style="height: 600px; width: 100%"
-              :zoom="map.mode === 'studyArea' ? 10 : 7"
-              :center="center"
-              @update:zoom="zoomUpdated"
-              @update:center="centerUpdated"
-              @update:bounds="boundsUpdated"
-              :options="controlableMapOptions"
-            >
-              <l-geo-json
+            <div class="studyArea" v-if="mapType === 'studyArea'">
+              <l-map
+                style="height: 600px; width: 100%"
+                :zoom="map.mode === 'studyArea' ? 10 : 7"
+                :center="center"
+                @update:zoom="zoomUpdated"
+                @update:center="centerUpdated"
+                @update:bounds="boundsUpdated"
+                :options="controlableMapOptions"
+              >
+                <l-geo-json
+                  ref="geoRef"
+                  :geojson="geojson"
+                  :options="geoOptions"
+                />
+                <l-tile-layer :url="url" :attribution="attribution" />
+                <l-circle-marker
+                  v-for="l in locations"
+                  :key="l.id"
+                  :lat-lng="l.latlng"
+                  :radius="5"
+                  color="orange"
+                  :fillOpacity="1"
+                  fillColor="orange"
+                  @click="handleStudyAreaClick(l)"
+                >
+                  <l-tooltip
+                    :content="l.text"
+                    :options="{
+                      direction: 'top',
+                    }"
+                  />
+                </l-circle-marker>
+              </l-map>
+            </div>
+            <div class="cameraLocation" v-if="mapType === 'cameraLocation'">
+              <l-map
+                style="height: 600px; width: 100%"
+                :zoom="map.mode === 'studyArea' ? 10 : 7"
+                :center="center"
+                @update:zoom="zoomUpdated"
+                @update:center="centerUpdated"
+                @update:bounds="boundsUpdated"
+                :options="controlableMapOptions"
+              >
+                <!-- <l-geo-json
                 ref="geoRef"
                 :geojson="geojson"
                 :options="geoOptions"
-              />
-              <l-tile-layer :url="url" :attribution="attribution" />
-              <l-circle-marker
-                v-for="l in locations"
-                :key="l.id"
-                :lat-lng="l.latlng"
-                :radius="5"
-                color="orange"
-                :fillOpacity="1"
-                fillColor="orange"
-                @click="handleStudyAreaClick(l)"
-              >
-                <l-tooltip
-                  :content="l.text"
-                  :options="{
-                    direction: 'top',
-                  }"
-                />
-              </l-circle-marker>
-            </l-map>
+              /> -->
+                <l-tile-layer :url="url" :attribution="attribution" />
+                <l-layer-group layer-type="overlay" name="Layer Camera">
+                  <l-marker
+                    v-for="(camera, idx) in cameraLocations"
+                    :key="`project-camera-${idx}`"
+                    :icon="camera.icon"
+                    :lat-lng="camera.position"
+                    :draggable="false"
+                    @mouseover="setSelectedCameraLocation(camera.id)"
+                    @mouseout="delSelectedCameraLocation()"
+                  >
+                    <l-tooltip
+                      :content="camera.name"
+                      :options="{ permanent: true, direction: 'top' }"
+                    />
+                  </l-marker>
+                </l-layer-group>
+              </l-map>
+            </div>
           </div>
           <div class="col-xs-12 col-sm-12 col-md-6 text-right mt-5 pt-3">
             <div v-if="map.mode === 'none'">
@@ -94,12 +134,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                   {{ regionData[key] }}
                 </div>
                 <div class="col-6 text-left" v-else>
-                  {{
-                    regionData[key].reduce(
-                      (pre, cur) => (pre === '' ? cur : `${pre}、${cur}`),
-                      '',
-                    )
-                  }}
+                  {{ regionData[key].slice(0, 5).join('、') }}
                 </div>
               </div>
             </div>
@@ -521,9 +556,9 @@ import {
   // LControl,
   LGeoJson,
   // LIconDefault,
-  // LLayerGroup,
+  LLayerGroup,
   LMap,
-  // LMarker,
+  LMarker,
   // LPolygon,
   // LPopup,
   LTileLayer,
@@ -533,6 +568,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDD } from '@/utils/dateHelper.js';
 import { latLng } from 'leaflet';
 import $ from 'jquery';
+import L from 'leaflet';
 import LoginModal from '@/components/Modal/LoginModal';
 import veBar from 'v-charts/lib/bar.common.min';
 import veHistogram from 'v-charts/lib/histogram.common.min';
@@ -543,6 +579,23 @@ const account = createNamespacedHelpers('account');
 const statistic = createNamespacedHelpers('statistic');
 const carousel = createNamespacedHelpers('carousel');
 
+const CameraIcon = L.icon({
+  iconUrl: '/assets/common/marker-icon@2x.png',
+  iconSize: [66, 120],
+  iconAnchor: [33, 80],
+  popupAnchor: [-3, -76],
+  shadowSize: [66, 120],
+  shadowAnchor: [31, 77],
+});
+
+const CameraIconSelect = L.icon({
+  iconUrl: '/assets/common/marker-icon-select@2x.png',
+  iconSize: [66, 120],
+  iconAnchor: [33, 80],
+  popupAnchor: [-3, -76],
+  shadowSize: [66, 120],
+  shadowAnchor: [31, 77],
+});
 const regionDataString = {
   totalProject: '計畫總數',
   totalCameraLocation: '相機位置',
@@ -553,6 +606,7 @@ const regionDataString = {
 };
 
 export default {
+  name: 'intro',
   components: {
     LoginModal,
     Carousel3d,
@@ -564,11 +618,11 @@ export default {
     // LIconDefault,
     // LCircle,
     // LControl,
-    // LLayerGroup,
+    LLayerGroup,
     LCircleMarker,
     LMap,
     // LPopup,
-    // LMarker,
+    LMarker,
     // LPolygon,
     LTileLayer,
     LTooltip,
@@ -588,6 +642,14 @@ export default {
       },
     };
     return {
+      mapType: 'studyArea',
+      selectedCameraLocation: '',
+      markerColor: {
+        area: 'rgb(42, 127, 96)',
+        camera: 'rgb(17, 138, 178)',
+      },
+      cameraRadius: 5000,
+      cameraLocations: [],
       locations: [],
       map: {
         // none, region, studyArea,
@@ -752,7 +814,7 @@ export default {
     this.dataStatistics.funder.forEach(data => {
       this.funderRatio.rows.push({
         funder: data.name,
-        funderCount: data.totalData,
+        funderCount: (data.totalData / 1024 / 1024).toFixed(2),
       });
     });
 
@@ -791,9 +853,46 @@ export default {
     },
   },
   methods: {
+    setSelectedCameraLocation: function(id) {
+      this.selectedCameraLocation = id;
+      this.cameraLocations = this.cameraLocations.map(cameraLocation => {
+        return {
+          id: cameraLocation.id,
+          position: {
+            lat: cameraLocation.position.lat,
+            lng: cameraLocation.position.lng,
+          },
+          cameraLocationIndex: cameraLocation.cameraLocationIndex,
+          icon: this.getMarkerIcon(cameraLocation.id, ''),
+          name: cameraLocation.name,
+        };
+      });
+    },
+    delSelectedCameraLocation: function() {
+      this.selectedCameraLocation = '';
+      this.cameraLocations = this.cameraLocations.map(cameraLocation => {
+        return {
+          id: cameraLocation.id,
+          position: {
+            lat: cameraLocation.position.lat,
+            lng: cameraLocation.position.lng,
+          },
+          cameraLocationIndex: cameraLocation.cameraLocationIndex,
+          icon: this.getMarkerIcon(cameraLocation.id, ''),
+          name: cameraLocation.name,
+        };
+      });
+    },
     ...statistic.mapActions(['getSstatistics', 'getSstatisticsByCountyName']),
     ...carousel.mapActions(['getCarousel']),
+    getMarkerIcon: function(id) {
+      if (id === this.selectedCameraLocation) {
+        return CameraIconSelect;
+      }
+      return CameraIcon;
+    },
     async handleStudyAreaClick(l) {
+      this.locations = [];
       this.map.mode = 'studyArea';
       this.map.studyArea.index = l.studyAreaIndex;
       this.map.cameraLocation.name = '';
@@ -802,7 +901,6 @@ export default {
         lat: l.latlng.lat,
         lng: l.latlng.lng,
       };
-
       this.studyAreaDataCount.rows = this.countyStatistics.studyArea.items[
         l.studyAreaIndex
       ].cameraLocation.items.map(cameraLocation => {
@@ -811,6 +909,24 @@ export default {
           累積資料量: cameraLocation.data.total,
         };
       });
+      let cameraLocations = [];
+      cameraLocations = this.countyStatistics.studyArea.items[
+        l.studyAreaIndex
+      ].cameraLocation.items.map((item, i) => {
+        return {
+          id: item.cameraLocation,
+          position: {
+            lat: item.latitude,
+            lng: item.longitude,
+          },
+          cameraLocationIndex: i,
+          icon: this.getMarkerIcon(item.cameraLocation),
+          name: item.name,
+        };
+      });
+
+      this.cameraLocations = cameraLocations;
+      this.mapType = 'cameraLocation';
     },
     click() {},
     zoomUpdated(e) {
@@ -831,6 +947,24 @@ export default {
     },
     backTo(mode) {
       this.map.mode = mode;
+      this.cameraLocations = [];
+      const locations = [];
+      this.countyStatistics.studyArea.items.map((studyArea, i) => {
+        locations.push({
+          studyAreaIndex: i,
+          latlng: latLng(
+            studyArea.cameraLocation.items[0].latitude,
+            studyArea.cameraLocation.items[0].longitude,
+          ),
+          title: studyArea.title['zh-TW'],
+          text: `${studyArea.title['zh-TW']} <br/>
+                  ${studyArea.cameraLocation.total}個相機位置，${
+            studyArea.data.total
+          }筆資料`,
+        });
+      });
+      this.locations = locations;
+      this.mapType = 'studyArea';
     },
     setRegionData() {
       this.regionData = {
@@ -859,12 +993,35 @@ export default {
 };
 </script>
 <style lang="sass">
+
+
+.backTo
+    cursor: pointer
+
+
 .page-intro
-  .cameraLocationInfo
+  .studyArea
     width: 100%
     padding: 10px
     background-color: #f6f5f5
     color: #8b8b8b
     box-sizing: border-box
     font-size: 10px
+
+.cameraLocation
+  .leaflet-pane
+    .leaflet-tooltip-pane
+      .leaflet-tooltip
+        background: none !important
+        border: 0
+        box-shadow: none
+        color: #FFF
+
+        &.leaflet-tooltip-top
+          color: black
+          margin-top: -35px
+          font-size: 11px
+
+          &:before
+            display: none
 </style>
