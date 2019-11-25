@@ -99,7 +99,6 @@ import { getProjectCameraLocations } from '@/service';
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
 
 const studyAreas = createNamespacedHelpers('studyAreas');
 

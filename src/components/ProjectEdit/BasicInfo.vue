@@ -275,7 +275,6 @@
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
 
 import { uploadCoverImage } from '@/service';
 import ActionBtns from '@/components/ActionBtns/ActionBtns.vue';

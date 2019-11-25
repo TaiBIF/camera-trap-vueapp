@@ -196,7 +196,6 @@ import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
 import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
 
 const projects = createNamespacedHelpers('projects');
 const studyAreas = createNamespacedHelpers('studyAreas');

@@ -207,7 +207,6 @@ import filesize from 'filesize';
 import idx from 'idx';
 import vSelect from 'vue-select';
 import * as R from 'ramda';
-import 'vue-select/dist/vue-select.css';
 
 import uploadAccept from '@/constant/uploadAccept.js';
 import uploadStatus from '@/constant/uploadStatus.js';

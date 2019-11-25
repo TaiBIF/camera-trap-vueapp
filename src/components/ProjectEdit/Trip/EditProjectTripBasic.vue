@@ -161,7 +161,6 @@ import DatePicker from 'vue2-datepicker';
 import DoubleCheckModalWithStyle from '@/components/Modal/DoubleCheckModalWithStyle.vue';
 import moment from 'moment';
 import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
 
 export default {
   name: 'EditProjectTripBasic',
