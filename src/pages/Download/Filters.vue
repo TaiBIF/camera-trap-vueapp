@@ -115,55 +115,6 @@
           <span class="text">新增資料來源</span>
         </a>
       </div>
-      <hr />
-      <label>其他條件</label>
-      <div class="row">
-        <div
-          class="form-group col-3"
-          v-for="(dataField, index) in dataFields.filter(
-            d => d.widgetType === 'select',
-          )"
-          :key="index"
-        >
-          <label v-text="dataField.title[lang]"></label>
-          <v-select
-            v-model="params.others[dataField.id]"
-            :reduce="x => x.value"
-            :options="
-              dataField.options.map(x => ({
-                value: x.id,
-                label: x[lang] || '',
-              }))
-            "
-          />
-        </div>
-
-        <div class="col-3">
-          <div class="form-group">
-            <label class="required">備註</label>
-            <input type="text" v-model="params.note" class="form-control" />
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div class="form-group">
-            <label>拍攝時段</label>
-            <div class="input-group">
-              <div class="input-group-inline">
-                <vue-timepicker
-                  v-model="form.timeRangeStart"
-                  input-class="form-control"
-                />
-              </div>
-              <div class="text px-2">到</div>
-              <div class="input-group-inline">
-                <vue-timepicker v-model="form.timeRangeEnd" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="col-12 text-right action">
         <button type="reset" class="btn btn-green-border">
           清空選項
