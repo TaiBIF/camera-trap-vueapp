@@ -19,7 +19,7 @@
             <td>相機位置</td>
             <td v-if="rangeType === 'month'">年</td>
             <td v-if="rangeType === 'month'">月</td>
-            <td>目擊事件</td>
+            <td>OI3</td>
           </tr>
         </thead>
         <tr
@@ -29,7 +29,7 @@
           <td>{{ row.title }}</td>
           <td v-if="rangeType === 'month'">{{ row.year }}</td>
           <td v-if="rangeType === 'month'">{{ row.month }}</td>
-          <td>{{ row.value === null ? '-' : row.value }}</td>
+          <td>{{ row.count === null ? '-' : row.count }}</td>
         </tr>
       </table>
     </div>

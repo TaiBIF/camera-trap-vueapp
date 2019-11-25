@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="container">
     <hr />
-    <h4>目擊事件</h4>
+    <h4>捕獲回合比例</h4>
     <div class="tab">
       <ul class="nav-tab" v-for="(s, index) in species" :key="index">
         <li class="tab-item" :class="{ active: currentSpecies === s._id }">
@@ -16,20 +16,22 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <td>相機位置</td>
             <td v-if="rangeType === 'month'">年</td>
             <td v-if="rangeType === 'month'">月</td>
-            <td>目擊事件</td>
+            <td>拍到台天</td>
+            <td>總台天</td>
+            <td>捕獲回合比例</td>
           </tr>
         </thead>
         <tr
           v-for="(row, index) in data.filter(d => d.species === currentSpecies)"
           :key="index"
         >
-          <td>{{ row.title }}</td>
           <td v-if="rangeType === 'month'">{{ row.year }}</td>
           <td v-if="rangeType === 'month'">{{ row.month }}</td>
-          <td>{{ row.value === null ? '-' : row.value }}</td>
+          <td>{{ row.captureCount }}</td>
+          <td>{{ row.totalDay }}</td>
+          <td>{{ row.captureRate }}</td>
         </tr>
       </table>
     </div>

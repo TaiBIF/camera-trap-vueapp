@@ -13,6 +13,7 @@
               { label: 'OI_1', value: 'oi1' },
               { label: 'OI_2', value: 'oi2' },
               { label: 'OI_3', value: 'oi3' },
+              { label: '捕獲回合比例', value: 'capture-rate' },
             ]"
           />
         </div>

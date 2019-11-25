@@ -43,6 +43,20 @@
           :data="calculateData.data"
         >
         </events>
+        <oi3
+          v-else-if="calculateType === 'oi3'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </oi3>
+        <capture-rate
+          v-else-if="calculateType === 'capture-rate'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </capture-rate>
       </div>
     </div>
   </div>
@@ -53,9 +67,11 @@ import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import annotationSheet from './AnnotationsSheet';
 import calculateFilters from './CalculateFilters';
+import captureRate from './CaptureRate';
 import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
+import oi3 from './Oi3';
 import queryString from 'query-string';
 import validPics from './ValidPics';
 import workHours from './WorkHours';
@@ -72,6 +88,8 @@ export default {
     workHours,
     validPics,
     events,
+    captureRate,
+    oi3,
   },
   data() {
     return {
