@@ -140,7 +140,6 @@ import moment from 'moment';
 import queryString from 'query-string';
 import vSelect from 'vue-select';
 import vueTimepicker from 'vue2-timepicker';
-import 'vue-select/dist/vue-select.css';
 
 const projects = createNamespacedHelpers('projects');
 
