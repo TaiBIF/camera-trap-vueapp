@@ -56,7 +56,7 @@ const categoryMap = {
   計畫管理: 'project-management',
   檔案上傳: 'file-upload',
   資料編輯: 'data-edit',
-  篩選及下載: 'search-and-download',
+  篩選及計算: 'search-and-download',
   其他問題: 'others',
 };
 export default {

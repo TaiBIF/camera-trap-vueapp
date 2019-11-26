@@ -35,7 +35,7 @@
                 :class="isDownloadPath ? 'active' : ''"
                 role="button"
                 to="/download/search"
-                >篩選及下載
+                >篩選及計算
                 <span class="sr-only" v-if="isDownloadPath">(current)</span>
               </router-link>
             </li>
