@@ -65,10 +65,10 @@
                   type="checkbox"
                   name=""
                   id="quest-type-6"
-                  value="篩選及下載"
+                  value="篩選及計算"
                   v-model="reportContentType"
                 />
-                <label for="quest-type-6">篩選及下載</label>
+                <label for="quest-type-6">篩選及計算</label>
               </div>
               <div class="checkbox checkbox-inline">
                 <input
