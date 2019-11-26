@@ -630,6 +630,8 @@ export default {
   data() {
     this.dataCountSettings = {
       showLine: ['照片累積張數(萬)'],
+      yAxisName: ['照片累積張數(萬)', '相機位置數'],
+      axisSite: { right: ['相機位置數'] },
     };
     this.funderRatioSettings = {
       radius: 65,

@@ -152,7 +152,7 @@ export default new Router({
       path: '/upload-history',
       component: () => import('@/pages/UploadHistory/index.vue'),
     },
-    // 篩選及下載
+    // 篩選及計算
     {
       path: '/download',
       component: () => import('@/pages/Download/index.vue'),

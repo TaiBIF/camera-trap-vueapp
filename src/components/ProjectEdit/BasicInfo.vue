@@ -82,6 +82,26 @@
             </div>
           </div>
           <div class="form-group row">
+            <label for="project-executive-unit" class="col-2">執行單位：</label>
+            <div class="col-4">
+              <input
+                type="text"
+                id="project-executive-unit"
+                name="project_executiveUnit"
+                v-model="project.executiveUnit"
+                placeholder="請輸入執行單位"
+                class="form-control"
+                :class="{ 'is-invalid': errors.has('project_executiveUnit') }"
+              />
+              <span
+                v-show="errors.has('project_executiveUnit')"
+                class="invalid-feedback"
+              >
+                執行單位不能留空
+              </span>
+            </div>
+          </div>
+          <div class="form-group row">
             <label for="project-code" class="col-2">計畫編號：</label>
             <div class="col-4">
               <input
@@ -407,6 +427,7 @@ export default {
         title: projectDetail.title,
         shortTitle: projectDetail.shortTitle,
         funder: projectDetail.funder,
+        executiveUnit: projectDetail.executiveUnit,
         code: projectDetail.code,
         principalInvestigator: projectDetail.principalInvestigator,
         startTime: projectDetail.startTime,
@@ -421,6 +442,7 @@ export default {
         title: projectInput.title,
         shortTitle: projectInput.shortTitle,
         funder: projectInput.funder,
+        executiveUnit: projectInput.executiveUnit,
         code: projectInput.code,
         principalInvestigator: projectInput.principalInvestigator,
         startTime: projectInput.startTime,

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="text-green">資料篩選與下載</h1>
+    <h1 class="text-green">資料篩選與計算</h1>
     <div :class="{ loading: isLoading, panel: true }">
       <div class="panel-body">
         <h3>篩選條件</h3>

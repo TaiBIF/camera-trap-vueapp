@@ -88,53 +88,56 @@ export default {
       deep: true,
       immediate: true,
       handler: function(value) {
-        const uniqueMonth = [
-          ...new Set(value.map(d => `${d.year}-${d.month}`)),
-        ];
-        const uniqueCameraLocations = [...new Set(value.map(d => d.title))];
-        const chartData = uniqueCameraLocations.map(cname => {
-          const data = [];
-          value
-            .filter(v => v.title == cname)
-            .forEach(v => {
-              data.push(v.count || 0);
-            });
-          return {
-            name: cname,
-            type: 'line',
-            data,
-          };
-        });
-        this.lineChartOptions = {
-          title: {
-            text: 'OI各相機位置折線圖',
-          },
-          tooltip: {
-            trigger: 'axis',
-          },
-          legend: {
-            show: true,
-            data: uniqueCameraLocations,
-          },
-          grid: {
-            width: '100%',
-          },
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: uniqueMonth,
-          },
-          yAxis: {
-            type: 'value',
-          },
-          series: chartData,
-        };
+        this.rebuildChart(value);
       },
     },
   },
   methods: {
     changeSpecies(sid) {
       this.currentSpecies = sid;
+      this.rebuildChart(this.data);
+    },
+    rebuildChart(value) {
+      const uniqueMonth = [...new Set(value.map(d => `${d.year}-${d.month}`))];
+      const uniqueCameraLocations = [...new Set(value.map(d => d.title))];
+      const chartData = uniqueCameraLocations.map(cname => {
+        const data = [];
+        value
+          .filter(v => v.title == cname)
+          .filter(d => d.species === this.currentSpecies)
+          .forEach(v => {
+            data.push(v.count || 0);
+          });
+        return {
+          name: cname,
+          type: 'line',
+          data,
+        };
+      });
+      this.lineChartOptions = {
+        title: {
+          text: 'OI各相機位置折線圖',
+        },
+        tooltip: {
+          trigger: 'axis',
+        },
+        legend: {
+          show: true,
+          data: uniqueCameraLocations,
+        },
+        grid: {
+          width: '100%',
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: uniqueMonth,
+        },
+        yAxis: {
+          type: 'value',
+        },
+        series: chartData,
+      };
     },
   },
 };
