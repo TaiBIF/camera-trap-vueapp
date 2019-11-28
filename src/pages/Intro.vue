@@ -794,12 +794,14 @@ export default {
     this.funderRatio.rows = [];
 
     await this.getSstatistics();
-    this.dataStatistics.year.forEach(data => {
-      this.dataount.rows.push({
+    let yearsTotalPicture = 0;
+    this.dataount.rows = this.dataStatistics.year.map(data => {
+      yearsTotalPicture += data.totalPicture / 10000;
+      return {
         year: data.year,
-        '照片累積張數(萬)': data.totalPicture / 10000,
+        '照片累積張數(萬)': yearsTotalPicture,
         相機位置數: data.totalCameraLocation,
-      });
+      };
     });
 
     this.dataStatistics.species.forEach(data => {
