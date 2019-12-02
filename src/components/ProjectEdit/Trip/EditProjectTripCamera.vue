@@ -70,6 +70,7 @@
                 multiple
                 :noDrop="projectCameraNoDrop"
                 @change="checkProjectCameraNoDrop"
+                @input="onCreateProjectCameras"
               ></v-select>
             </div>
           </div>
@@ -646,6 +647,43 @@ export default {
       this.projectCameraNoDrop =
         this.projectTrip.projectCameras &&
         this.projectTrip.projectCameras.length >= this.projectCameraLimit;
+    },
+
+    onCreateProjectCameras(newCamera) {
+      const camera = this.projectCameras.find(camera => {
+        return camera.sn === newCamera[0];
+      });
+
+      if (!camera) {
+        return;
+      }
+
+      const nextTripCameraDetail = {
+        cameraBatteryType: camera.batteryType,
+        cameraBrightness: camera.brightness,
+        cameraSensitivity: camera.sensitivity,
+        cameraVideoLength: camera.videoLength,
+        cameraContinuousShots: camera.continuousShots,
+        cameraSensingDistance: camera.sensingDistance,
+      };
+
+      // 從資料轉換成表單用格式 相機狀態
+      let cameraState = camera.state
+        ? {
+            cameraState: {
+              label: this.cameraStateString[camera.state],
+              value: camera.state,
+            },
+          }
+        : {};
+
+      this.tripCamerasDetail = [
+        {
+          ...nextTripCameraDetail,
+          ...cameraState,
+        },
+        {},
+      ];
     },
     setProjectTripActiveDate(date, type) {
       this[type] = date;

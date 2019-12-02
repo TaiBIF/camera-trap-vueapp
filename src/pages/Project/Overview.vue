@@ -571,13 +571,13 @@ export default {
         await this.getProjectRequest(
           parseInt(this.projects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.projects;
+        this.currentProjects = this.currentProjects.concat(this.projects);
       } else {
         // 公開計畫
         await this.getPublicProjectsRequest(
           parseInt(this.projects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.projects;
+        this.currentProjects = this.currentProjects.concat(this.projects);
       }
     },
     async selectByFilter() {
