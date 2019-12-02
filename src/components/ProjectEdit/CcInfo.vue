@@ -174,7 +174,7 @@
               <small class="text-gray">
                 計畫內的詮釋資料將會直接公開，鑑定資訊、影像資料的<span
                   :class="{ warning: isOverPublicLimit }"
-                  >公開日期之上限為計畫起始時間的5年後。</span
+                  >公開日期之上限為計畫結束時間的5年內。</span
                 >
               </small>
             </div>
@@ -237,7 +237,7 @@ export default {
     },
     isOverPublicLimit: function() {
       return (
-        moment(this.project.startTime).add(5, 'years') <
+        moment(this.project.endTime).add(5, 'years') <
         moment(this.project.publishTime)
       );
     },
