@@ -150,7 +150,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-4">光強度:</label>
+            <label class="col-4">LED 補光強度:</label>
             <div class="col-6">
               <span v-if="tripCameraDetailHalf && index == 0"
                 >{{ tripCamerasDetail[index].cameraBrightness }}
@@ -159,7 +159,7 @@
                 v-else
                 v-model="tripCamerasDetail[index].cameraBrightness"
                 :options="brightnessOptions"
-                placeholder="請選擇光強度"
+                placeholder="請選擇 LED 補光強度"
               ></v-select>
             </div>
           </div>
@@ -190,7 +190,7 @@
                 class="form-control"
               />
             </div>
-            <span>分鐘</span>
+            <span>秒</span>
           </div>
           <div class="form-group row">
             <label class="col-4">連拍張數:</label>
@@ -315,7 +315,7 @@ import vSelect from 'vue-select';
 
 const batteryTypeOptions = ['鹼性電池', '鋰電池', '鎳氫電池(充電電池)'];
 const brightnessOptions = ['關', '自動', '高', '中', '低'];
-const sensitivityOptions = ['高', '中', '低'];
+const sensitivityOptions = ['自動', '高', '中', '低', '無法判定'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
