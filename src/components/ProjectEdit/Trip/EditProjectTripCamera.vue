@@ -398,7 +398,14 @@ export default {
     this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
     await this.getProjectCameras({ projectId: this.projectId });
-    this.projectCameraOptions = this.projectCameras.map(({ sn }) => sn);
+    // this.projectCameraOptions = this.projectCameras.map(({ nickname }) => nickname || '無相機編號，請至相機管理設定'); // 如果能設 disabled 最好...
+    const projectCameraOptionsNickname = [];
+    this.projectCameras.forEach(opt => {
+      if (opt.nickname) {
+        projectCameraOptionsNickname.push(opt.nickname);
+      }
+    });
+    this.projectCameraOptions = projectCameraOptionsNickname;
     this.$parent.$on(
       'setEditProjectTripReduest',
       this.setEditProjectTripReduest,
@@ -557,9 +564,10 @@ export default {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
           // 從表單用格式轉換成資料 相機位置事件
-          let cameraLocationEvent = {};
-          if (this.projectTrip.cameraLocationEvent)
+          let cameraLocationEvent = '';
+          if (this.projectTrip.cameraLocationEvent) {
             cameraLocationEvent = this.projectTrip.cameraLocationEvent.value;
+          }
           // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
