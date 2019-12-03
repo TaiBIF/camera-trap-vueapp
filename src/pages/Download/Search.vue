@@ -43,6 +43,20 @@
           :data="calculateData.data"
         >
         </events>
+        <oi1
+          v-else-if="calculateType === 'oi1'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </oi1>
+        <oi2
+          v-else-if="calculateType === 'oi2'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </oi2>
         <oi3
           v-else-if="calculateType === 'oi3'"
           :rangeType="calculateRangeType"
@@ -71,6 +85,8 @@ import captureRate from './CaptureRate';
 import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
+import oi1 from './Oi1';
+import oi2 from './Oi2';
 import oi3 from './Oi3';
 import queryString from 'query-string';
 import validPics from './ValidPics';
@@ -89,6 +105,8 @@ export default {
     validPics,
     events,
     captureRate,
+    oi1,
+    oi2,
     oi3,
   },
   data() {

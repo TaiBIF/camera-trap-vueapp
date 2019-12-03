@@ -70,6 +70,7 @@
                 multiple
                 :noDrop="projectCameraNoDrop"
                 @change="checkProjectCameraNoDrop"
+                @input="onCreateProjectCameras"
               ></v-select>
             </div>
           </div>
@@ -149,7 +150,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-4">光強度:</label>
+            <label class="col-4">LED 補光強度:</label>
             <div class="col-6">
               <span v-if="tripCameraDetailHalf && index == 0"
                 >{{ tripCamerasDetail[index].cameraBrightness }}
@@ -158,7 +159,7 @@
                 v-else
                 v-model="tripCamerasDetail[index].cameraBrightness"
                 :options="brightnessOptions"
-                placeholder="請選擇光強度"
+                placeholder="請選擇 LED 補光強度"
               ></v-select>
             </div>
           </div>
@@ -189,7 +190,7 @@
                 class="form-control"
               />
             </div>
-            <span>分鐘</span>
+            <span>秒</span>
           </div>
           <div class="form-group row">
             <label class="col-4">連拍張數:</label>
@@ -314,7 +315,7 @@ import vSelect from 'vue-select';
 
 const batteryTypeOptions = ['鹼性電池', '鋰電池', '鎳氫電池(充電電池)'];
 const brightnessOptions = ['關', '自動', '高', '中', '低'];
-const sensitivityOptions = ['高', '中', '低'];
+const sensitivityOptions = ['自動', '高', '中', '低', '無法判定'];
 
 const getDateAndTime = (day, time, second = 0, millisecond = 0) => {
   return moment(day)
@@ -397,7 +398,14 @@ export default {
     this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
     await this.getProjectCameras({ projectId: this.projectId });
-    this.projectCameraOptions = this.projectCameras.map(({ sn }) => sn);
+    // this.projectCameraOptions = this.projectCameras.map(({ nickname }) => nickname || '無相機編號，請至相機管理設定'); // 如果能設 disabled 最好...
+    const projectCameraOptionsNickname = [];
+    this.projectCameras.forEach(opt => {
+      if (opt.nickname) {
+        projectCameraOptionsNickname.push(opt.nickname);
+      }
+    });
+    this.projectCameraOptions = projectCameraOptionsNickname;
     this.$parent.$on(
       'setEditProjectTripReduest',
       this.setEditProjectTripReduest,
@@ -556,9 +564,10 @@ export default {
         let currentProjectTrip = Object.assign({}, this.projectTrip);
         if (currentProjectTrip.projectCameras !== undefined) {
           // 從表單用格式轉換成資料 相機位置事件
-          let cameraLocationEvent = {};
-          if (this.projectTrip.cameraLocationEvent)
+          let cameraLocationEvent = '';
+          if (this.projectTrip.cameraLocationEvent) {
             cameraLocationEvent = this.projectTrip.cameraLocationEvent.value;
+          }
           // 從表單用格式轉換成資料 相機編號
           const projectCameras = currentProjectTrip.projectCameras.map(
             (value, index) => {
@@ -646,6 +655,43 @@ export default {
       this.projectCameraNoDrop =
         this.projectTrip.projectCameras &&
         this.projectTrip.projectCameras.length >= this.projectCameraLimit;
+    },
+
+    onCreateProjectCameras(newCamera) {
+      const camera = this.projectCameras.find(camera => {
+        return camera.sn === newCamera[0];
+      });
+
+      if (!camera) {
+        return;
+      }
+
+      const nextTripCameraDetail = {
+        cameraBatteryType: camera.batteryType,
+        cameraBrightness: camera.brightness,
+        cameraSensitivity: camera.sensitivity,
+        cameraVideoLength: camera.videoLength,
+        cameraContinuousShots: camera.continuousShots,
+        cameraSensingDistance: camera.sensingDistance,
+      };
+
+      // 從資料轉換成表單用格式 相機狀態
+      let cameraState = camera.state
+        ? {
+            cameraState: {
+              label: this.cameraStateString[camera.state],
+              value: camera.state,
+            },
+          }
+        : {};
+
+      this.tripCamerasDetail = [
+        {
+          ...nextTripCameraDetail,
+          ...cameraState,
+        },
+        {},
+      ];
     },
     setProjectTripActiveDate(date, type) {
       this[type] = date;
