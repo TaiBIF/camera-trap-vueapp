@@ -86,7 +86,7 @@
                     style="color: #AAAAAA"
                   >
                     <i class="icon far fa-circle" style="color: #AAAAAA" />
-                    /> 等待上傳
+                    等待上傳
                   </div>
                   <div v-if="file.uploadStatus === uploadStatus.uploading">
                     <i

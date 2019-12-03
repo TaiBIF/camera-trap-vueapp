@@ -183,6 +183,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
           <hr />
           <ve-histogram
             :data="dataount"
+            :colors="histogramColors"
             :settings="dataCountSettings"
           ></ve-histogram>
         </div>
@@ -192,10 +193,12 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
           <div class="row">
             <ve-bar
               class="col-xs-12 col-sm-12 col-md-6"
+              :colors="barColors"
               :data="speciesLocationCount"
             ></ve-bar>
             <ve-bar
               class="col-xs-12 col-sm-12 col-md-6"
+              :colors="barColors"
               :data="speciesPictureCount"
             ></ve-bar>
           </div>
@@ -205,6 +208,7 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
           <hr />
           <ve-pipe
             :data="funderRatio"
+            :colors="pipeColors"
             :settings="funderRatioSettings"
             :legend-visible="false"
           ></ve-pipe>
@@ -644,6 +648,16 @@ export default {
       },
     };
     return {
+      histogramColors: ['#AECC82'],
+      barColors: ['#BFE08E'],
+      pipeColors: [
+        '#81BD5A',
+        '#A9D18E',
+        '#A1D287',
+        '#D2ECC7',
+        '#D2ECC7',
+        '#AECC82',
+      ],
       mapType: 'studyArea',
       selectedCameraLocation: '',
       markerColor: {
