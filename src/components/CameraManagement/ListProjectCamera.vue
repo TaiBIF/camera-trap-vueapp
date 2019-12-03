@@ -15,14 +15,14 @@
                     <el-col :span="5">{{
                       props.row.batteryType || '&nbsp;'
                     }}</el-col>
-                    <el-col :span="3">光強度</el-col>
+                    <el-col :span="3">LED 補光強度</el-col>
                     <el-col :span="5">{{
                       props.row.brightness || '&nbsp;'
                     }}</el-col>
                     <el-col :span="3">影片長度</el-col>
                     <el-col :span="5">{{
                       props.row.videoLength
-                        ? props.row.videoLength + '分鐘'
+                        ? props.row.videoLength + '秒'
                         : '&nbsp;'
                     }}</el-col>
                   </el-row>

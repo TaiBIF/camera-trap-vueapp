@@ -280,7 +280,7 @@ const cameraSettingKeys = [
 ];
 const shotSettingKeys = [
   {
-    keyName: '光強度',
+    keyName: 'LED 補光強度',
     key: 'cameraBrightness',
   },
   {
