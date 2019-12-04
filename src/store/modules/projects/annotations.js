@@ -117,7 +117,8 @@ const actions = {
       file: idx(annotation, _ => _.file.id),
       time: annotation.time,
       speciesTitle: annotation.species.title,
-      fields: annotation.fields.filter(v => !!v.value),
+      //fields: annotation.fields.filter(v => !!v.value),
+      fields: [],
     };
     await createAnnotations(payload);
     dispatch('getAnnotations', state.query);
