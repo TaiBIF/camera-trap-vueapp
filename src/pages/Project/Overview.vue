@@ -419,6 +419,17 @@ export default {
                   },
                 ];
             } else if (
+              key === 'county' &&
+              Array.isArray(this.selectedFilters['county'])
+            ) {
+              return [
+                ...pre,
+                {
+                  type: key,
+                  value: this.selectedArea,
+                },
+              ];
+            } else if (
               key !== 'projectType' &&
               this.selectedFilters[key].name !== ''
             ) {
