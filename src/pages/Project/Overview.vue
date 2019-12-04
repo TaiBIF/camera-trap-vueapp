@@ -540,6 +540,10 @@ export default {
     async getProjectAreasRequest() {
       await this.getProjectAreas();
       await this.getProjectAreasOrientationTotal();
+      areaOption[0].county = [];
+      areaOption[1].county = [];
+      areaOption[2].county = [];
+      areaOption[3].county = [];
       areaOption[0].count = this.projectAreasOrientationTotal.north;
       areaOption[1].count = this.projectAreasOrientationTotal.west;
       areaOption[2].count = this.projectAreasOrientationTotal.south;
