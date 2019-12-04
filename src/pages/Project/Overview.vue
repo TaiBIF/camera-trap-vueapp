@@ -83,17 +83,14 @@
               <span
                 :id="area.name"
                 class="filter-option"
-                @click="selectedArea = area.name"
+                @click="selectAreaFilter('county', area.county, area.name)"
               >
                 {{ area.name }}
               </span>
               <!-- TODO: FIX ME UNTIL COUNT CORRECT -->
               <!-- <span class="float-right"> ({{ area.count }}) </span> -->
               <!-- 縣市 -->
-              <div
-                v-show="area.count !== 0 && selectedArea === area.name"
-                class="ml-3"
-              >
+              <div v-show="selectedArea === area.name" class="ml-3">
                 <div>
                   <i
                     class="el-icon-check"
@@ -103,7 +100,7 @@
                     :id="area.id"
                     :name="area.name"
                     class="filter-option"
-                    @click="selectSingleFilter('county', area.id, area.name)"
+                    @click="selectAreaFilter('county', area.county, area.name)"
                   >
                     全部
                   </span>
@@ -468,13 +465,12 @@ export default {
     },
     async getProjectRequest(index = 0) {
       this.busy = true;
-      await this.getProjects({
+      const filter = {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
         projectType: this.selectedFilters.projectType.id,
         species: this.selectedFilters.species.id || undefined,
-        county: this.selectedFilters.county.id || undefined,
         startDate: this.formatDatetime(
           this.selectedFilters.datetime[0],
         ).replace('/', '-'),
@@ -482,14 +478,26 @@ export default {
           '/',
           '-',
         ),
-      });
+      };
+
+      if (Array.isArray(this.selectedFilters.county)) {
+        const countys = this.selectedFilters.county.map(c => {
+          return c.id;
+        });
+        Object.assign(filter, { county: countys });
+      } else {
+        Object.assign(filter, {
+          county: this.selectedFilters.county.id || undefined,
+        });
+      }
+      await this.getProjects(filter);
       setTimeout(() => {
         this.busy = false;
       }, 1000);
     },
     async getPublicProjectsRequest(index = 0) {
       this.busy = true;
-      await this.getPublicProjects({
+      const filter = {
         index,
         size: PROJECT_PAGE,
         sort: this.sortedBy,
@@ -503,7 +511,18 @@ export default {
           '/',
           '-',
         ),
-      });
+      };
+      if (Array.isArray(this.selectedFilters.county)) {
+        const countys = this.selectedFilters.county.map(c => {
+          return c.id;
+        });
+        Object.assign(filter, { county: countys });
+      } else {
+        Object.assign(filter, {
+          county: this.selectedFilters.county.id || undefined,
+        });
+      }
+      await this.getPublicProjects(filter);
       setTimeout(() => {
         this.busy = false;
       }, 1000);
@@ -591,6 +610,14 @@ export default {
     },
     async selectSingleFilter(key, id, name) {
       this.selectedFilters[key] = { id, name };
+      this.selectByFilter();
+    },
+    async selectAreaFilter(key, countys, name) {
+      this.selectedArea = name;
+      countys = countys.map(county => {
+        return { id: county.id, name: county.name };
+      });
+      this.selectedFilters[key] = countys;
       this.selectByFilter();
     },
     clearFilter(type) {
