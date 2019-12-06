@@ -252,6 +252,62 @@
             </div>
             <span>公尺</span>
           </div>
+          <div class="form-group row">
+            <label class="col-4">照片畫素:</label>
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraResolution1 }} x
+              {{ tripCamerasDetail[index].cameraResolution2 }}
+            </span>
+            <div v-else class="col-6">
+              <div class="row">
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolution1"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-2">X</div>
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolution2"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-4">影片解析度:</label>
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraResolutionVideo1 }} x
+              {{ tripCamerasDetail[index].cameraResolutionVideo2 }}
+            </span>
+            <div v-else class="col-6">
+              <div class="row">
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolutionVideo1"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-2">X</div>
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolutionVideo2"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
           <div
             v-show="
               projectTrip.projectCameras &&
