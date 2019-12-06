@@ -86,6 +86,54 @@
           v-for="(tripcamera, index) in projectTrip.projectCameras"
           :key="index"
         >
+          <div
+            v-show="
+              projectTrip.projectCameras &&
+                projectTrip.projectCameras.length === 1
+            "
+            class="trip-camera-detail-active-date"
+          >
+            <div class="form-group row">
+              <label class="col-4">有效開始工作時間:</label>
+              <div class="col-4">
+                <date-picker
+                  v-model="tripCamerasDetail[index].startActiveDate"
+                  :format="'YYYY-MM-DD'"
+                  :first-day-of-week="1"
+                  placeholder="有效開始工作時間"
+                />
+              </div>
+              <div class="col-2">
+                <div class="input-group">
+                  <vue-timepicker
+                    v-model="startActiveTime"
+                    format="HH:mm"
+                    hide-clear-button
+                  ></vue-timepicker>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-4">有效結束工作時間:</label>
+              <div class="col-4">
+                <date-picker
+                  v-model="tripCamerasDetail[index].endActiveDate"
+                  :format="'YYYY-MM-DD'"
+                  :first-day-of-week="1"
+                  placeholder="有效結束工作時間"
+                />
+              </div>
+              <div class="col-2">
+                <div class="input-group">
+                  <vue-timepicker
+                    v-model="endActiveTime"
+                    format="HH:mm"
+                    hide-clear-button
+                  ></vue-timepicker>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="trip-camera-detail-title">
             {{ projectTrip.projectCameras ? tripcamera : '' }}
             <hr />
@@ -252,50 +300,58 @@
             </div>
             <span>公尺</span>
           </div>
-          <div
-            v-show="
-              projectTrip.projectCameras &&
-                projectTrip.projectCameras.length === 1
-            "
-            class="trip-camera-detail-active-date"
-          >
-            <div class="form-group row">
-              <label class="col-4">有效開始工作時間:</label>
-              <div class="col-4">
-                <date-picker
-                  v-model="tripCamerasDetail[index].startActiveDate"
-                  :format="'YYYY-MM-DD'"
-                  :first-day-of-week="1"
-                  placeholder="有效開始工作時間"
-                />
-              </div>
-              <div class="col-2">
-                <div class="input-group">
-                  <vue-timepicker
-                    v-model="startActiveTime"
-                    format="HH:mm"
-                    hide-clear-button
-                  ></vue-timepicker>
+          <div class="form-group row">
+            <label class="col-4">照片畫素:</label>
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraResolution1 }} x
+              {{ tripCamerasDetail[index].cameraResolution2 }}
+            </span>
+            <div v-else class="col-6">
+              <div class="row">
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolution1"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-2">X</div>
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolution2"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
                 </div>
               </div>
             </div>
-            <div class="form-group row">
-              <label class="col-4">有效結束工作時間:</label>
-              <div class="col-4">
-                <date-picker
-                  v-model="tripCamerasDetail[index].endActiveDate"
-                  :format="'YYYY-MM-DD'"
-                  :first-day-of-week="1"
-                  placeholder="有效結束工作時間"
-                />
-              </div>
-              <div class="col-2">
-                <div class="input-group">
-                  <vue-timepicker
-                    v-model="endActiveTime"
-                    format="HH:mm"
-                    hide-clear-button
-                  ></vue-timepicker>
+          </div>
+          <div class="form-group row">
+            <label class="col-4">影片解析度:</label>
+            <span v-if="tripCameraDetailHalf && index == 0"
+              >{{ tripCamerasDetail[index].cameraResolutionVideo1 }} x
+              {{ tripCamerasDetail[index].cameraResolutionVideo2 }}
+            </span>
+            <div v-else class="col-6">
+              <div class="row">
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolutionVideo1"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-2">X</div>
+                <div class="col-5">
+                  <input
+                    v-model="tripCamerasDetail[index].cameraResolutionVideo2"
+                    type="text"
+                    placeholder="請輸入"
+                    class="form-control"
+                  />
                 </div>
               </div>
             </div>
