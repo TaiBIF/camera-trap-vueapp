@@ -449,10 +449,6 @@ export default {
       value => ({ label: this.cameraStateString[value], value }),
     );
 
-    // 預設選項只有 事件: 設置 狀態: 使用中
-    this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
-    this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
-
     await this.getProjectCameras({ projectId: this.projectId });
     // this.projectCameraOptions = this.projectCameras.map(({ nickname }) => nickname || '無相機編號，請至相機管理設定'); // 如果能設 disabled 最好...
     const projectCameraOptionsNickname = [];
@@ -601,17 +597,13 @@ export default {
         if (this.tripCamerasDetail.length === 1) {
           this.tripCamerasDetail[1] = {};
         }
-
-        this.cmaeraLocationEvenOptions = [...this.cmaeraLocationEvenOptionsAll];
-        this.cameraStateOptions = [...this.cameraStateOptionsAll];
       } else {
         this.tripCamerasDetail = [{}, {}];
         this.startActiveTime = { HH: '00', mm: '00' };
         this.endActiveTime = { HH: '00', mm: '00' };
-
-        this.cmaeraLocationEvenOptions = [this.cmaeraLocationEvenOptionsAll[0]];
-        this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
       }
+      this.cmaeraLocationEvenOptions = [...this.cmaeraLocationEvenOptionsAll];
+      this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
 
       this.changeLimit();
     },
