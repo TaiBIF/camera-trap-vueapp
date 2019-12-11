@@ -14,6 +14,7 @@
           :annotations.sync="annotations"
           :annotationsTotal.sync="annotationsTotal"
           :currentAnnotationIdx="0"
+          :downloadLink="downloadLink"
           @changePage="changeFilterResultPage"
         ></annotation-sheet>
       </div>
@@ -133,6 +134,34 @@ export default {
         label: project.title,
         value: project.id,
       }));
+    },
+    downloadLink: function() {
+      let params = this.searchParams;
+      let studyAreaIds = [];
+      params.projects.forEach(project => {
+        studyAreaIds = studyAreaIds.concat(
+          project.studyAreas.map(s => s.value),
+        );
+      });
+      let cameraLocations = [];
+      params.projects.forEach(project => {
+        cameraLocations = cameraLocations.concat(
+          project.cameraLocations.map(c => c.value),
+        );
+      });
+
+      const query = {
+        index: this.query.index,
+        'cameraLocationIds[]': cameraLocations,
+        'speciesIds[]': params.species.map(x => x.value),
+        'projectIds[]': params.projects.map(p => p.project.value),
+        ...params.others,
+        startDateTime: params.startDateTime,
+        endDateTime: params.endDateTime,
+      };
+      return `${
+        process.env.VUE_APP_API_URL
+      }/api/v1/simple-annotations.csv?${queryString.stringify(query)}`;
     },
   },
   methods: {
