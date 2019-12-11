@@ -53,6 +53,16 @@
         </div>
       </div>
     </div>
+    <div class="col-12 text-right action">
+      <a
+        class="btn btn-orange"
+        v-tooltip.bottom="'將目前頁面篩選範圍之資料輸出為 xlsx 檔並下載'"
+        :href="downloadLink"
+        target="_blank"
+      >
+        下載xlsx
+      </a>
+    </div>
   </div>
 </template>
 
@@ -84,6 +94,9 @@ export default {
     currentAnnotationIdx: {
       type: Number,
       required: true,
+    },
+    downloadLink: {
+      type: String,
     },
   },
 
