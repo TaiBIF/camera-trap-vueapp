@@ -64,7 +64,7 @@ export default {
   watch: {
     species: {
       handler: function(value) {
-        console.log(value);
+        //console.log(value);
         if (!value.length) {
           return;
         }

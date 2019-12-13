@@ -72,6 +72,13 @@
           :data="calculateData.data"
         >
         </capture-rate>
+        <detection
+          v-else-if="calculateType === 'detection'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </detection>
       </div>
     </div>
   </div>
@@ -83,6 +90,7 @@ import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import annotationSheet from './AnnotationsSheet';
 import calculateFilters from './CalculateFilters';
 import captureRate from './CaptureRate';
+import detection from './Detection';
 import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
@@ -106,6 +114,7 @@ export default {
     validPics,
     events,
     captureRate,
+    detection,
     oi1,
     oi2,
     oi3,
