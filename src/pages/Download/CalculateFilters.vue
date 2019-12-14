@@ -85,6 +85,8 @@ export default {
           { label: '日', value: 'day' },
           { label: '時', value: 'hour' },
         ];
+      } else if (this.type.value === 'apoa') {
+        this.rangeTypeOptions = [{ label: '選取之時間範圍全部', value: 'all' }];
       } else {
         this.rangeTypeOptions = [
           { label: '選取之時間範圍全部', value: 'all' },
