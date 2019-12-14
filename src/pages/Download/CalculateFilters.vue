@@ -6,6 +6,7 @@
           <label>計算項目</label>
           <v-select
             v-model="type"
+            v-on:input="changeType"
             :options="[
               { label: '相機工作時數', value: 'work-hours' },
               { label: '有效照片數', value: 'valid-pics' },
@@ -14,18 +15,14 @@
               { label: 'OI_2', value: 'oi2' },
               { label: 'OI_3', value: 'oi3' },
               { label: '捕獲回合比例', value: 'capture-rate' },
+              { label: '存缺', value: 'detection' },
+              { label: '活動機率', value: 'apoa' },
             ]"
           />
         </div>
         <div class="form-group col-4">
           <label>回合長度</label>
-          <v-select
-            v-model="rangeType"
-            :options="[
-              { label: '選取之時間範圍全部', value: 'all' },
-              { label: '月', value: 'month' },
-            ]"
-          />
+          <v-select v-model="rangeType" :options="rangeTypeOptions" />
         </div>
       </div>
       <div class="row">
@@ -69,6 +66,10 @@ export default {
     return {
       type: { label: '相機工作時數', value: 'work-hours' },
       rangeType: { label: '選取之時間範圍全部', value: 'all' },
+      rangeTypeOptions: [
+        { label: '選取之時間範圍全部', value: 'all' },
+        { label: '月', value: 'month' },
+      ],
       params: {
         calculateTimeIntervel: { label: '2 分鐘', value: 2 * 60 * 1000 },
       },
@@ -76,6 +77,23 @@ export default {
   },
   components: { vSelect },
   mounted() {},
-  methods: {},
+  methods: {
+    changeType() {
+      if (this.type.value === 'detection') {
+        this.rangeTypeOptions = [
+          { label: '選取之時間範圍全部', value: 'all' },
+          { label: '日', value: 'day' },
+          { label: '時', value: 'hour' },
+        ];
+      } else if (this.type.value === 'apoa') {
+        this.rangeTypeOptions = [{ label: '選取之時間範圍全部', value: 'all' }];
+      } else {
+        this.rangeTypeOptions = [
+          { label: '選取之時間範圍全部', value: 'all' },
+          { label: '月', value: 'month' },
+        ];
+      }
+    },
+  },
 };
 </script>
