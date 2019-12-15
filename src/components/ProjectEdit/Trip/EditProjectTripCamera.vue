@@ -640,7 +640,7 @@ export default {
                 );
                 startActiveDate = {
                   startActiveDate: dateFormatYYYYMMDDHHmmss(
-                    startActiveDateAndTime,
+                    startActiveDateAndTime.toISOString(),
                   ),
                 };
               } else delete this.tripCamerasDetail[index].startActiveDate;
@@ -654,7 +654,9 @@ export default {
                   this.endActiveTime,
                 );
                 endActiveDate = {
-                  endActiveDate: dateFormatYYYYMMDDHHmmss(endActiveDateAndTime),
+                  endActiveDate: dateFormatYYYYMMDDHHmmss(
+                    endActiveDateAndTime.toISOString(),
+                  ),
                 };
               } else delete this.tripCamerasDetail[index].endActiveDate;
 
