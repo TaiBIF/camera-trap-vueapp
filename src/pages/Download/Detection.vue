@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="container">
     <hr />
-    <h4>存缺</h4>
+    <h4>偵測到/未偵測到</h4>
     <div class="tab">
       <ul class="nav-tab" v-for="(s, index) in species" :key="index">
         <li class="tab-item" :class="{ active: currentSpecies === s._id }">

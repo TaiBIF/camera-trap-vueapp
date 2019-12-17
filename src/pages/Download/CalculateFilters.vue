@@ -15,7 +15,7 @@
               { label: 'OI_2', value: 'oi2' },
               { label: 'OI_3', value: 'oi3' },
               { label: '捕獲回合比例', value: 'capture-rate' },
-              { label: '存缺', value: 'detection' },
+              { label: '偵測到/未偵測到', value: 'detection' },
               { label: '活動機率', value: 'apoa' },
             ]"
           />
