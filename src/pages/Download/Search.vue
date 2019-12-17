@@ -72,6 +72,20 @@
           :data="calculateData.data"
         >
         </capture-rate>
+        <detection
+          v-else-if="calculateType === 'detection'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </detection>
+        <apoa
+          v-else-if="calculateType === 'apoa'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </apoa>
       </div>
     </div>
   </div>
@@ -81,8 +95,10 @@
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import annotationSheet from './AnnotationsSheet';
+import apoa from './Apoa';
 import calculateFilters from './CalculateFilters';
 import captureRate from './CaptureRate';
+import detection from './Detection';
 import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
@@ -106,9 +122,11 @@ export default {
     validPics,
     events,
     captureRate,
+    detection,
     oi1,
     oi2,
     oi3,
+    apoa,
   },
   data() {
     return {
