@@ -183,7 +183,7 @@ export default {
     },
   },
   methods: {
-    ...projects.mapActions(['getAllProjects']),
+    ...projects.mapActions(['getPublicProjects']),
     changeFilterResultPage(val) {
       this.query.index = val;
       this.filter(this.searchParams);
@@ -276,7 +276,8 @@ export default {
   },
   async mounted() {
     try {
-      await this.getAllProjects({ size: 100, sort: 'title' });
+      //await this.getAllProjects({ size: 100, sort: 'title' });
+      await this.getPublicProjects({ size: 100, sort: 'title' });
 
       // dataFields
       const { items: dataFields } = await fetchWrap({
