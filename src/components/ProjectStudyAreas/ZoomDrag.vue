@@ -78,7 +78,7 @@
           <div v-if="isTagCanvas" class="tag-form">
             <div class="tag-form__label">進階標註：</div>
             <textarea
-              v-model="taxText"
+              v-model="tagText"
               class="tag-form__textarea form-control"
               placeholder="您可以輸入任何標註資料"
             ></textarea>
