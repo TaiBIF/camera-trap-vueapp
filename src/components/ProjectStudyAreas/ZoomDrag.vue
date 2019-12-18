@@ -58,7 +58,7 @@
             id="tag-canvas"
             width="800"
             height="500"
-            style="background-image: url(row.url)"
+            :style="'background-image: url(' + row.url + ')'"
           >
           </canvas>
           <img v-if="!isTagCanvas" :src="row.url" />
