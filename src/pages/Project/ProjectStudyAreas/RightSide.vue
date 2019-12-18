@@ -42,6 +42,7 @@
           :index="currentAnnotationIdx"
           :total="annotationsTotal"
           :imageInfo="mediaInfo"
+          :annotation="currentData"
         />
         <video-player
           v-else-if="currentMedia.type === 'annotation-video'"

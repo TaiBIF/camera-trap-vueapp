@@ -787,7 +787,6 @@ export default {
       });
       // fields 內的資料如果 value 不存在要過濾，不然後端會錯誤
       annotation.fields = annotation.fields.filter(v => !!v.value);
-
       this.setAnnotations({
         annotationId: this.annotations[row].id,
         body: annotation,
