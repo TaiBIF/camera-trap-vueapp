@@ -51,7 +51,6 @@
             <i class="icon-remove-white"></i>
           </a>
           <canvas
-            v-if="isTagCanvas"
             @mousemove="mouseMove"
             @mousedown="mouseDown"
             @mouseup="mouseUp"
@@ -61,7 +60,6 @@
             :style="'background-image: url(' + row.url + ')'"
           >
           </canvas>
-          <img v-if="!isTagCanvas" :src="row.url" />
           <div class="caption">
             <small class="float-right">
               ( {{ total }} 筆資料中的第 {{ index + 1 }} 筆 )
@@ -149,6 +147,9 @@ export default {
   methods: {
     ...annotations.mapActions(['setAnnotations']),
     mouseMove: function(e) {
+      if (!this.isTagCanvas) {
+        return;
+      }
       let mousex = parseInt(e.clientX - this.tagData.canvasX);
       let mousey = parseInt(e.clientY - this.tagData.canvasY);
       if (!this.tagData.isTagCanvasInit) {
@@ -179,23 +180,29 @@ export default {
       }
     },
     mouseDown: function(e) {
+      if (!this.isTagCanvas) {
+        return;
+      }
       this.tagData.lastMouseX = parseInt(e.clientX - this.tagData.canvasX);
       this.tagData.lastMouseY = parseInt(e.clientY - this.tagData.canvasY);
       this.tagData.isStartTag = true;
     },
     mouseUp: function() {
+      if (!this.isTagCanvas) {
+        return;
+      }
       this.tagData.isStartTag = false;
     },
     openLightBox() {
       // 打開 Lightbox
       this.lightBoxOpen = true;
+      this.$nextTick(function() {
+        this.initTagCanvas();
+      });
     },
     openTagCanvas() {
       // 打開 Lightbox
       this.isTagCanvas = true;
-      this.$nextTick(function() {
-        this.initTagCanvas();
-      });
     },
     onDragStart(e) {
       // 紀錄圖片起始拖拉位置
