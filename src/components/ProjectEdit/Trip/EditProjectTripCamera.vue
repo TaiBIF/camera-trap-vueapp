@@ -363,7 +363,6 @@
 </template>
 
 <script>
-import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
@@ -639,9 +638,7 @@ export default {
                   this.startActiveTime,
                 );
                 startActiveDate = {
-                  startActiveDate: dateFormatYYYYMMDDHHmmss(
-                    startActiveDateAndTime.toISOString(),
-                  ),
+                  startActiveDate: startActiveDateAndTime.toISOString(),
                 };
               } else delete this.tripCamerasDetail[index].startActiveDate;
 
@@ -654,9 +651,7 @@ export default {
                   this.endActiveTime,
                 );
                 endActiveDate = {
-                  endActiveDate: dateFormatYYYYMMDDHHmmss(
-                    endActiveDateAndTime.toISOString(),
-                  ),
+                  endActiveDate: endActiveDateAndTime.toISOString(),
                 };
               } else delete this.tripCamerasDetail[index].endActiveDate;
 
