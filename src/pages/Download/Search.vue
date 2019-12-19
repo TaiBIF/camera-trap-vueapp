@@ -363,9 +363,6 @@ export default {
 </script>
 
 <style lang="scss">
-.v-tooltip-open {
-  width: 600px;
-}
 .search-columns {
   input.filter-input {
     height: 32px !important;
