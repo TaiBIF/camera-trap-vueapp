@@ -121,7 +121,7 @@
                   >
                     {{ county.name }}
                   </span>
-                  <span class="float-right"> ({{ county.count }}) </span>
+                  <!--<span class="float-right"> ({{ county.count }}) </span>-->
                 </div>
               </div>
             </div>
