@@ -205,7 +205,6 @@ export default {
     },
     selectMultipleFilter() {
       const filters = this.preProcessFilters();
-
       this.getCamerasByFilter(filters);
       this.clearAddProjectCameraList();
     },
@@ -237,7 +236,6 @@ export default {
     },
     preProcessFilters() {
       let filters = Object.assign({}, this.selectedFilters);
-
       Object.keys(filters).map(key => {
         if (
           typeof this.selectedFilters[key] === 'string' &&
@@ -245,9 +243,9 @@ export default {
         )
           delete filters[key];
         else if (typeof this.selectedFilters[key] === 'object') {
-          this.selectedFilters[key].length > 0
-            ? (filters[key] = filters[key][0])
-            : delete filters[key];
+          if (this.selectedFilters[key].length <= 0) {
+            delete filters[key];
+          }
         }
       });
 

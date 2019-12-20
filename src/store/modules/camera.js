@@ -26,8 +26,17 @@ const actions = {
   async getCamerasByFilter({ commit }, payload) {
     let filters = '';
     Object.keys(payload).map(key => {
-      if (filters === '') filters = `?${key}=${payload[key]}`;
-      else filters = filters + `&${key}=${payload[key]}`;
+      let keyMod = key;
+      if (key.indexOf(['sn', 'vn'] >= 0)) {
+        keyMod = `${key}s`;
+        payload[key].forEach(x => {
+          if (filters === '') filters = `?${keyMod}=${x}`;
+          else filters = filters + `&${keyMod}=${x}`;
+        });
+      } else {
+        if (filters === '') filters = `?${keyMod}=${payload[key]}`;
+        else filters = filters + `&${keyMod}=${payload[key]}`;
+      }
     });
 
     const data = await getCameras(filters);
