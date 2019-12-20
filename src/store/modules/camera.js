@@ -27,7 +27,7 @@ const actions = {
     let filters = '';
     Object.keys(payload).map(key => {
       let keyMod = key;
-      if (key.indexOf(['sn', 'vn'] >= 0)) {
+      if (typeof payload[key] === 'object' && key.indexOf(['sn', 'vn'] >= 0)) {
         keyMod = `${key}s`;
         payload[key].forEach(x => {
           if (filters === '') filters = `?${keyMod}=${x}`;
