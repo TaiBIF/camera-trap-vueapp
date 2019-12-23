@@ -704,7 +704,7 @@ export default {
 
     onCreateProjectCameras(newCamera) {
       const camera = this.projectCameras.find(camera => {
-        return camera.sn === newCamera[0];
+        return camera.nickname === newCamera[0];
       });
 
       if (!camera) {
