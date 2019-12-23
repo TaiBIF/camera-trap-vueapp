@@ -44,7 +44,11 @@
         </div>
       </div>
       <div class="col-12 text-right action">
-        <button type="reset" class="btn btn-green-border">
+        <button
+          type="reset"
+          class="btn btn-green-border"
+          v-on:click="clearCalculateForm"
+        >
           清空選項
         </button>
         <button
@@ -78,6 +82,10 @@ export default {
   components: { vSelect },
   mounted() {},
   methods: {
+    clearCalculateForm() {
+      this.type = { label: '相機工作時數', value: 'work-hours' };
+      this.rangeType = { label: '選取之時間範圍全部', value: 'all' };
+    },
     changeType() {
       if (this.type.value === 'detection') {
         this.rangeTypeOptions = [
@@ -85,8 +93,10 @@ export default {
           { label: '日', value: 'day' },
           { label: '時', value: 'hour' },
         ];
+        this.rangeType = { label: '日', value: 'day' };
       } else if (this.type.value === 'apoa') {
         this.rangeTypeOptions = [{ label: '選取之時間範圍全部', value: 'all' }];
+        this.rangeType = { label: '選取之時間範圍全部', value: 'all' };
       } else {
         this.rangeTypeOptions = [
           { label: '選取之時間範圍全部', value: 'all' },
