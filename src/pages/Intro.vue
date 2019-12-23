@@ -472,6 +472,14 @@ eslint-disable prettier/prettier */ /* eslint-disable prettier/prettier */
                       台灣生物多樣性資訊入口網
                     </a>
                   </li>
+                  <li>
+                    <a
+                      href="http://mportal.npust.edu.tw/bin/home.php"
+                      target="_blank"
+                    >
+                      國立屏東科技大學
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div class="item">
