@@ -294,6 +294,12 @@ export default {
         projects: [this.defaultSeleted()],
         others: {},
       };
+      this.form = {
+        selectedValidTimeInterval: { label: '2 分鐘', value: 2 * 60 * 1000 },
+        selectedEventTimeInterval: { label: '2 分鐘', value: 2 * 60 * 1000 },
+        items: [{ ...this.defaultEmptyProjectGroup() }],
+        fieldValues: [],
+      };
     },
     defaultSeleted() {
       return {
