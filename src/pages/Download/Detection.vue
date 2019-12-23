@@ -12,35 +12,11 @@
       </ul>
     </div>
     <div class="tab-content">
-      <table class="table table-striped">
+      <table class="table table-striped" v-if="rangeType === 'day'">
         <thead>
           <tr>
             <td>相機位置</td>
             <td>日期</td>
-            <td v-if="rangeType === 'hour'">00</td>
-            <td v-if="rangeType === 'hour'">01</td>
-            <td v-if="rangeType === 'hour'">02</td>
-            <td v-if="rangeType === 'hour'">03</td>
-            <td v-if="rangeType === 'hour'">04</td>
-            <td v-if="rangeType === 'hour'">05</td>
-            <td v-if="rangeType === 'hour'">06</td>
-            <td v-if="rangeType === 'hour'">07</td>
-            <td v-if="rangeType === 'hour'">08</td>
-            <td v-if="rangeType === 'hour'">09</td>
-            <td v-if="rangeType === 'hour'">10</td>
-            <td v-if="rangeType === 'hour'">11</td>
-            <td v-if="rangeType === 'hour'">12</td>
-            <td v-if="rangeType === 'hour'">13</td>
-            <td v-if="rangeType === 'hour'">14</td>
-            <td v-if="rangeType === 'hour'">15</td>
-            <td v-if="rangeType === 'hour'">16</td>
-            <td v-if="rangeType === 'hour'">17</td>
-            <td v-if="rangeType === 'hour'">18</td>
-            <td v-if="rangeType === 'hour'">19</td>
-            <td v-if="rangeType === 'hour'">20</td>
-            <td v-if="rangeType === 'hour'">21</td>
-            <td v-if="rangeType === 'hour'">22</td>
-            <td v-if="rangeType === 'hour'">23</td>
             <td>detection</td>
           </tr>
         </thead>
@@ -50,30 +26,51 @@
         >
           <td>{{ row.title }}</td>
           <td>{{ row.date }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[0] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[1] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[2] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[3] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[4] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[5] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[6] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[7] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[8] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[9] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[10] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[11] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[12] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[13] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[14] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[15] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[16] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[17] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[18] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[19] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[20] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[21] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[22] }}</td>
-          <td v-if="rangeType === 'hour'">{{ row.hours[23] }}</td>
+          <td>{{ row.detection }}</td>
+        </tr>
+      </table>
+
+      <table class="table table-striped" v-else-if="rangeType === 'hour'">
+        <thead>
+          <tr>
+            <td>相機位置</td>
+            <td>日期</td>
+            <td>00</td>
+            <td>01</td>
+            <td>02</td>
+            <td>03</td>
+            <td>04</td>
+            <td>05</td>
+            <td>06</td>
+            <td>07</td>
+            <td>08</td>
+            <td>09</td>
+            <td>10</td>
+            <td>11</td>
+            <td>12</td>
+            <td>13</td>
+            <td>14</td>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td>18</td>
+            <td>19</td>
+            <td>20</td>
+            <td>21</td>
+            <td>22</td>
+            <td>23</td>
+            <td>detection</td>
+          </tr>
+        </thead>
+        <tr
+          v-for="(row, index) in data.filter(d => d.species === currentSpecies)"
+          :key="index"
+        >
+          <td>{{ row.title }}</td>
+          <td>{{ row.date }}</td>
+          <td v-for="(h, hIndex) in row.hours" :key="hIndex">
+            {{ h }}
+          </td>
           <td>{{ row.detection }}</td>
         </tr>
       </table>
