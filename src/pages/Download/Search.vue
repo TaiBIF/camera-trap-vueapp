@@ -62,6 +62,11 @@
               依每月計算）中的拍攝視為一個試驗（trial），每次的試驗區分為成功（拍攝到動物，不計個體數或頻率）或不成功（未拍攝到動物）兩種結果，並計算每回合每台相機的成功機率（成功次數/試驗次數，亦即相機捕獲動物之回合數/當期回合數），再計算所有相機的平均成功機率。
             </li>
             <li>
+              <div><strong>捕獲回合比例：</strong></div>
+              此項指標將每台相機於每回合（可選擇資料之時間範圍全部 或
+              依每月計算）中的拍攝視為一個試驗（trial），每次的試驗區分為成功（拍攝到動物，不計個體數或頻率）或不成功（未拍攝到動物）兩種結果，並計算每回合每台相機的成功機率（成功次數/試驗次數，亦即相機捕獲動物之回合數/當期回合數），再計算所有相機的平均成功機率。
+            </li>
+            <li>
               <div><strong>偵測到/未偵測到：</strong></div>
               在使用者定義的捕獲回合的時間單位（選取資料之全部時間範圍/月）內，動物被偵測與否的指標（detection,
               d）；若動物存在（被相機拍攝到，且不計頻率）則d為1，不存在則d為0。
@@ -251,7 +256,7 @@ export default {
     },
   },
   methods: {
-    ...projects.mapActions(['getPublicProjects']),
+    ...projects.mapActions(['getAllProjects']),
     changeFilterResultPage(val) {
       this.query.index = val;
       this.filter(this.searchParams);
@@ -344,8 +349,12 @@ export default {
   },
   async mounted() {
     try {
-      //await this.getAllProjects({ size: 100, sort: 'title' });
-      await this.getPublicProjects({ size: 100, sort: 'title' });
+      await this.getAllProjects({
+        size: 100,
+        sort: 'title',
+        include: 'public',
+      });
+      //await this.getPublicProjects({ size: 100, sort: 'title' });
 
       // dataFields
       const { items: dataFields } = await fetchWrap({
