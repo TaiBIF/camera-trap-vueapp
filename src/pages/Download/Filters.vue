@@ -116,7 +116,11 @@
         </a>
       </div>
       <div class="col-12 text-right action">
-        <button type="reset" class="btn btn-green-border">
+        <button
+          type="reset"
+          class="btn btn-green-border"
+          v-on:click="clearForm"
+        >
           清空選項
         </button>
         <button
@@ -281,6 +285,15 @@ export default {
     addFormItem() {
       this.params.projects.push({ ...this.defaultSeleted() });
       this.form.items.push({ ...this.defaultEmptyProjectGroup() });
+    },
+    clearForm() {
+      this.params = {
+        startDateTime: '2001-01-01',
+        endDateTime: '2025-01-01',
+        species: [],
+        projects: [this.defaultSeleted()],
+        others: {},
+      };
     },
     defaultSeleted() {
       return {
