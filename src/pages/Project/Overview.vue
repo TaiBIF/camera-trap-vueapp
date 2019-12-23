@@ -104,7 +104,7 @@
                   >
                     全部
                   </span>
-                  <span class="float-right"> ({{ area.count }}) </span>
+                  <!--span class="float-right"> ({{ area.count }}) </span-->
                 </div>
                 <div v-for="(county, index) in area.county" :key="index">
                   <i
