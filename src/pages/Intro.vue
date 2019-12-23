@@ -640,7 +640,7 @@ export default {
     this.funderRatioSettings = {
       radius: 65,
       label: {
-        formatter: '{b}\n{c}',
+        formatter: '{b}',
       },
       labelLine: {
         length: 5,
