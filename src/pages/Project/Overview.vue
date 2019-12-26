@@ -305,6 +305,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import infiniteScroll from 'vue-infinite-scroll';
+import * as R from 'ramda';
 
 const projects = createNamespacedHelpers('projects');
 const account = createNamespacedHelpers('account');
@@ -602,15 +603,21 @@ export default {
     async loadMoreProjects() {
       if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest(
-          parseInt(this.projects.length / PROJECT_PAGE),
+          Math.ceil(this.currentProjects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.currentProjects.concat(this.projects);
+        this.currentProjects = R.uniqBy(
+          R.prop('id'),
+          this.currentProjects.concat(this.projects),
+        );
       } else {
         // 公開計畫
         await this.getPublicProjectsRequest(
-          parseInt(this.projects.length / PROJECT_PAGE),
+          Math.ceil(this.currentProjects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.currentProjects.concat(this.projects);
+        this.currentProjects = R.uniqBy(
+          R.prop('id'),
+          this.currentProjects.concat(this.projects),
+        );
       }
     },
     async selectByFilter() {
