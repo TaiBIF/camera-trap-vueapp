@@ -36,6 +36,7 @@ const state = {
     lastUpdate: '',
     loadingStatus: 'init', // init -> loading -> loaded
   }, // 計畫資料辨識紀錄
+  monthRetrievedSelectedTripId: 'all',
 };
 
 const getters = {
@@ -209,10 +210,12 @@ const mutations = {
           [id]: data,
         };
       },
-      state.retrievalData[year] || {},
+      {},
     );
-
     Vue.set(state.retrievalData, year, selectedYearData);
+  },
+  setMonthRetrievedSelectedTripId(state, data) {
+    state.monthRetrievedSelectedTripId = data;
   },
 };
 
@@ -295,18 +298,22 @@ const actions = {
     const data = await putProjectSpecies(id, body);
     commit('setProjectSpecies', idx(data, _ => _.items) || []);
   },
-  async loadIdentifiedSpecies({ commit }, { projectId, studyAreaId }) {
+  async loadIdentifiedSpecies({ commit }, { projectId, studyAreaId, tripId }) {
     if (studyAreaId && studyAreaId !== 'all') {
-      const data = await getIdentifiedStudyAreaSpecies(projectId, studyAreaId);
+      const data = await getIdentifiedStudyAreaSpecies(
+        projectId,
+        studyAreaId,
+        tripId,
+      );
       commit('setIdentifiedStudyAreaSpecies', data || {});
     } else {
-      const data = await getIdentifiedSpecies(projectId);
+      const data = await getIdentifiedSpecies(projectId, tripId);
       commit('setIdentifiedSpecies', data || {});
     }
   },
   async loadRetrievalData(
     { commit },
-    { year, projectId, studyAreaId, cameraLocationId },
+    { year, projectId, studyAreaId, cameraLocationId, tripId },
   ) {
     commit('setRetrievalStatus', 'loading');
     commit('setRetrievalLastUpdate', '');
@@ -316,15 +323,17 @@ const actions = {
         year,
         projectId,
         cameraLocationId,
+        tripId,
       });
     } else if (studyAreaId) {
       res = await getRetrievalDataByStudyArea({
         year,
         projectId,
         studyAreaId,
+        tripId,
       });
     } else {
-      res = await getRetrievalDataByProject({ year, projectId });
+      res = await getRetrievalDataByProject({ year, projectId, tripId });
     }
     const { items, timeUpdated } = res || {};
     commit('setRetrievalStatus', 'loaded');

@@ -387,7 +387,10 @@ export default {
     },
   },
   mounted() {
-    this.loadIdentifiedSpecies({ projectId: this.projectId });
+    this.loadIdentifiedSpecies({
+      projectId: this.projectId,
+      tripId: this.selectedTripId,
+    });
     this.updateSelectArea();
     this.getProjectTrips(this.projectId);
   },
@@ -395,6 +398,7 @@ export default {
     identifiedSpecies: 'loadPieChart',
     allAreas: 'updateSelectArea',
     selectedStudyAreaId: 'updateSelectArea',
+    selectedTripId: 'updateSelectedTripId',
   },
   methods: {
     ...trip.mapActions(['getProjectTrips']),
@@ -460,17 +464,11 @@ export default {
         ({ key }) => key === event.target.value,
       );
       setTimeout(() => {
-        const pieCharts = this.$refs.pieCharts;
-        const PieChartOpt = {
-          type: 'pie',
-          name: 'speices',
-          size: '80%',
-          innerSize: '50%',
-        };
-        pieCharts.removeSeries(PieChartOpt);
+        this.clearPieChart();
         this.loadIdentifiedSpecies({
           projectId: this.projectId,
           studyAreaId: this.selectedStudyAreaId,
+          tripId: this.selectedTripId,
         });
       }, 0);
       if (studyArea) {
@@ -482,6 +480,24 @@ export default {
           },
         });
       }
+    },
+    clearPieChart() {
+      const pieCharts = this.$refs.pieCharts;
+      const PieChartOpt = {
+        type: 'pie',
+        name: 'speices',
+        size: '80%',
+        innerSize: '50%',
+      };
+      pieCharts.removeSeries(PieChartOpt);
+    },
+    updateSelectedTripId() {
+      this.clearPieChart();
+      this.loadIdentifiedSpecies({
+        projectId: this.projectId,
+        studyAreaId: this.selectedStudyAreaId,
+        tripId: this.selectedTripId,
+      });
     },
   },
 };
