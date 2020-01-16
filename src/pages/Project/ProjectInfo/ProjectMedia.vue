@@ -172,10 +172,12 @@ export default {
   async mounted() {
     this.updateSelectArea();
     await this.getProjectTrips(this.projectId);
+    this.setMonthRetrievedSelectedTripId(this.selectedTripId);
   },
   watch: {
     allAreas: 'updateSelectArea',
     selectedStudyAreaId: 'updateSelectArea',
+    selectedTripId: 'updateMonthRetrievedSelectedTripId',
   },
   computed: {
     ...studyAreas.mapGetters(['studyAreas', 'cameraLocations']),
@@ -284,6 +286,7 @@ export default {
   },
   methods: {
     ...trip.mapActions(['getProjectTrips']),
+    ...projects.mapMutations(['setMonthRetrievedSelectedTripId']),
     dateFormatYYYYMMDD(dateString) {
       return dateFormatYYYYMMDD(dateString);
     },
@@ -331,6 +334,9 @@ export default {
       return `/project/${this.projectId}/info/media/${
         this.selectedStudyAreaId
       }/${type}`;
+    },
+    updateMonthRetrievedSelectedTripId() {
+      this.setMonthRetrievedSelectedTripId(this.selectedTripId);
     },
   },
 };
