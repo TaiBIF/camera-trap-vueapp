@@ -517,11 +517,7 @@ export default {
         // 從資料轉換成表單用格式 相機編號
         projectCameras = [nextTripCamerasDetail[0].cameraSn];
 
-        if (
-          !nextProjectTrip.projectCameras[
-            nextProjectTrip.projectCameras.length - 1
-          ]._id
-        ) {
+        if (nextProjectTrip.projectCameras.length === 2) {
           nextTripCameraDetail =
             nextProjectTrip.projectCameras[
               nextProjectTrip.projectCameras.length - 2
@@ -602,7 +598,7 @@ export default {
         this.endActiveTime = { HH: '00', mm: '00' };
       }
       this.cmaeraLocationEvenOptions = [...this.cmaeraLocationEvenOptionsAll];
-      this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
+      this.cameraStateOptions = [...this.cameraStateOptionsAll];
 
       this.changeLimit();
     },
