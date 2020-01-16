@@ -363,7 +363,6 @@
 </template>
 
 <script>
-import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
 import DatePicker from 'vue2-datepicker';
 import VueTimepicker from 'vue2-timepicker';
 import moment from 'moment';
@@ -518,11 +517,7 @@ export default {
         // 從資料轉換成表單用格式 相機編號
         projectCameras = [nextTripCamerasDetail[0].cameraSn];
 
-        if (
-          !nextProjectTrip.projectCameras[
-            nextProjectTrip.projectCameras.length - 1
-          ]._id
-        ) {
+        if (nextProjectTrip.projectCameras.length === 2) {
           nextTripCameraDetail =
             nextProjectTrip.projectCameras[
               nextProjectTrip.projectCameras.length - 2
@@ -603,7 +598,7 @@ export default {
         this.endActiveTime = { HH: '00', mm: '00' };
       }
       this.cmaeraLocationEvenOptions = [...this.cmaeraLocationEvenOptionsAll];
-      this.cameraStateOptions = [this.cameraStateOptionsAll[0]];
+      this.cameraStateOptions = [...this.cameraStateOptionsAll];
 
       this.changeLimit();
     },
@@ -639,9 +634,7 @@ export default {
                   this.startActiveTime,
                 );
                 startActiveDate = {
-                  startActiveDate: dateFormatYYYYMMDDHHmmss(
-                    startActiveDateAndTime,
-                  ),
+                  startActiveDate: startActiveDateAndTime.toISOString(),
                 };
               } else delete this.tripCamerasDetail[index].startActiveDate;
 
@@ -654,7 +647,7 @@ export default {
                   this.endActiveTime,
                 );
                 endActiveDate = {
-                  endActiveDate: dateFormatYYYYMMDDHHmmss(endActiveDateAndTime),
+                  endActiveDate: endActiveDateAndTime.toISOString(),
                 };
               } else delete this.tripCamerasDetail[index].endActiveDate;
 
@@ -707,7 +700,7 @@ export default {
 
     onCreateProjectCameras(newCamera) {
       const camera = this.projectCameras.find(camera => {
-        return camera.sn === newCamera[0];
+        return camera.nickname === newCamera[0];
       });
 
       if (!camera) {

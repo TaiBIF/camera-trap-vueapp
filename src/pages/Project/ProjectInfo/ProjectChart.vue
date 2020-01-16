@@ -74,12 +74,14 @@ export default {
     selectedStudyAreaId: 'loadRetrievealDataByCurrentSelected',
     selectedCameraId: 'loadRetrievealDataByCurrentSelected',
     getLatestAnnotationYear: 'setSelectedYear',
+    monthRetrievedSelectedTripId: 'updateMonthRetrievedSelectedTripId',
   },
   computed: {
     ...projects.mapGetters([
       'retrievalLoadingStatus',
       'getLatestAnnotationYear',
     ]),
+    ...projects.mapState(['monthRetrievedSelectedTripId']),
     projectId: function() {
       return this.$route.params.projectId;
     },
@@ -108,16 +110,20 @@ export default {
     },
     loadRetrievealDataByCurrentSelected() {
       if (this.selectedYear) {
-        this.loadRetrievalData({
-          year: this.selectedYear,
-          projectId: this.projectId,
-          studyAreaId:
-            this.selectedStudyAreaId !== 'all'
-              ? this.selectedStudyAreaId
-              : undefined,
-          cameraLocationId: this.selectedCameraId,
-        });
+        this.handleLoadRetrievalData();
       }
+    },
+    async handleLoadRetrievalData() {
+      this.loadRetrievalData({
+        year: this.selectedYear,
+        projectId: this.projectId,
+        studyAreaId:
+          this.selectedStudyAreaId !== 'all'
+            ? this.selectedStudyAreaId
+            : undefined,
+        cameraLocationId: this.selectedCameraId,
+        tripId: this.monthRetrievedSelectedTripId,
+      });
     },
     changeSelectedYear(year) {
       if (year > new Date().getFullYear()) {
@@ -139,6 +145,9 @@ export default {
           '資料未送出，請再試一次。如持續發生請聯繫系統管理員。';
       });
       if (res) this.showErrorReportModal = false;
+    },
+    updateMonthRetrievedSelectedTripId() {
+      this.handleLoadRetrievalData();
     },
   },
 };

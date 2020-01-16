@@ -19,8 +19,78 @@
         ></annotation-sheet>
       </div>
       <hr />
+      <info-modal
+        v-if="!!showInfoModal"
+        :open="!!showInfoModal"
+        @close="showInfoModal = false"
+      >
+        <h1 class="text-green">
+          計算項目的說明
+        </h1>
+        <div style="text-align: left;">
+          <ul>
+            <li>
+              <div><strong>相機工作時數：</strong></div>
+              為每台相機實際工作的時數。由使用者於行程管理中所設定的相機有效開始工作時間及結束時間的範圍相減，計算至小時。
+            </li>
+            <li>
+              <div><strong>有效照片數：</strong></div>
+              在自訂的「時間判定間隔」內，無法辨識個體的同物種照片，視為一有效照片，也就是
+              (總照片數)–(連拍同一隻動物的照片數) = 有效照片數。
+            </li>
+            <li>
+              <div><strong>目擊事件：</strong></div>
+              此指標計算每台相機捕獲到動物的總事件數（e），並除以該相機之總工作時數（L）做標準化，亦即e
+              / L。事件數定義為：前後相鄰兩張同種之動物照片若間隔 m
+              分鐘內視為同一事件，不考慮同一張照片內之個體數，亦不辨識個體。其中
+              m 可從「時間判定間隔」選擇。
+            </li>
+            <li>
+              <div><strong>OI_1：</strong></div>
+              原始OI值定義，考慮每張照片所拍攝之個體數，並辨識不同照片之間的個體是否相同，須有「個體
+              ID」欄位的資料才能計算。
+            </li>
+            <li>
+              <div><strong>OI_2：</strong></div>
+              考慮每張照片所拍攝之個體數，但不辨識不同照片之間的個體是否相同，以本系統提供的「隻數」資料欄位運算。
+            </li>
+            <li>
+              <div><strong>OI_3：</strong></div>
+              為一般使用的 OI 值定義，計算方式為
+              (有效照片數)/(相機工作時數)＊１０００捕獲回合比例：此項指標將每台相機於每回合（可選擇資料之時間範圍全部
+              或
+              依每月計算）中的拍攝視為一個試驗（trial），每次的試驗區分為成功（拍攝到動物，不計個體數或頻率）或不成功（未拍攝到動物）兩種結果，並計算每回合每台相機的成功機率（成功次數/試驗次數，亦即相機捕獲動物之回合數/當期回合數），再計算所有相機的平均成功機率。
+            </li>
+            <li>
+              <div><strong>捕獲回合比例：</strong></div>
+              此項指標將每台相機於每回合（可選擇資料之時間範圍全部 或
+              依每月計算）中的拍攝視為一個試驗（trial），每次的試驗區分為成功（拍攝到動物，不計個體數或頻率）或不成功（未拍攝到動物）兩種結果，並計算每回合每台相機的成功機率（成功次數/試驗次數，亦即相機捕獲動物之回合數/當期回合數），再計算所有相機的平均成功機率。
+            </li>
+            <li>
+              <div><strong>偵測到/未偵測到：</strong></div>
+              在使用者定義的捕獲回合的時間單位（選取資料之全部時間範圍/月）內，動物被偵測與否的指標（detection,
+              d）；若動物存在（被相機拍攝到，且不計頻率）則d為1，不存在則d為0。
+            </li>
+            <li>
+              <div>
+                <strong
+                  >活動機率（apparent probability of activity, APOA）：</strong
+                >
+              </div>
+              動物在每小時當中被拍攝到的機率。此指標定義為「累計所有相機在每個小時的d
+              值（detection,
+              同上），並除以每個小時的取樣次數」。依此定義，每個小時的APOA最小值為0，最大值為1。
+            </li>
+          </ul>
+        </div></info-modal
+      >
       <div class="panel-body">
-        <h3>計算分析</h3>
+        <h3>
+          計算分析
+          <button class="btn btn-default" @click="showInfoModal = true">
+            說明
+          </button>
+        </h3>
         <calculate-filters v-on:calculate="calculate"></calculate-filters>
       </div>
       <hr />
@@ -72,6 +142,20 @@
           :data="calculateData.data"
         >
         </capture-rate>
+        <detection
+          v-else-if="calculateType === 'detection'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </detection>
+        <apoa
+          v-else-if="calculateType === 'apoa'"
+          :rangeType="calculateRangeType"
+          :species="calculateData.species"
+          :data="calculateData.data"
+        >
+        </apoa>
       </div>
     </div>
   </div>
@@ -80,9 +164,12 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import { dateFormatYYYYMMDDHHmmss } from '@/utils/dateHelper.js';
+import InfoModal from '@/components/Modal/InfoModal.vue';
 import annotationSheet from './AnnotationsSheet';
+import apoa from './Apoa';
 import calculateFilters from './CalculateFilters';
 import captureRate from './CaptureRate';
+import detection from './Detection';
 import events from './Events';
 import fetchWrap from '@/utils/fetch';
 import filters from './Filters';
@@ -106,9 +193,12 @@ export default {
     validPics,
     events,
     captureRate,
+    detection,
     oi1,
     oi2,
     oi3,
+    apoa,
+    InfoModal,
   },
   data() {
     return {
@@ -125,6 +215,7 @@ export default {
       query: {
         index: 1,
       },
+      showInfoModal: false,
     };
   },
   computed: {
@@ -258,7 +349,12 @@ export default {
   },
   async mounted() {
     try {
-      await this.getAllProjects({ size: 100, sort: 'title' });
+      await this.getAllProjects({
+        size: 100,
+        sort: 'title',
+        include: 'public',
+      });
+      //await this.getPublicProjects({ size: 100, sort: 'title' });
 
       // dataFields
       const { items: dataFields } = await fetchWrap({

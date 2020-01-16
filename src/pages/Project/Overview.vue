@@ -104,7 +104,7 @@
                   >
                     全部
                   </span>
-                  <span class="float-right"> ({{ area.count }}) </span>
+                  <!--span class="float-right"> ({{ area.count }}) </span-->
                 </div>
                 <div v-for="(county, index) in area.county" :key="index">
                   <i
@@ -121,7 +121,7 @@
                   >
                     {{ county.name }}
                   </span>
-                  <span class="float-right"> ({{ county.count }}) </span>
+                  <!--<span class="float-right"> ({{ county.count }}) </span>-->
                 </div>
               </div>
             </div>
@@ -305,6 +305,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 import infiniteScroll from 'vue-infinite-scroll';
+import * as R from 'ramda';
 
 const projects = createNamespacedHelpers('projects');
 const account = createNamespacedHelpers('account');
@@ -351,8 +352,7 @@ const areaOption = [
 
 const currentDate = new Date();
 const MaxDateTime =
-  (currentDate.getFullYear() - 2000) * 12 + currentDate.getMonth() + 1;
-
+  (currentDate.getFullYear() - 2000) * 16 + currentDate.getMonth() + 1;
 export default {
   directives: { infiniteScroll },
   data() {
@@ -603,15 +603,21 @@ export default {
     async loadMoreProjects() {
       if (this.selectedFilters.projectType.id === '我的計畫') {
         await this.getProjectRequest(
-          parseInt(this.projects.length / PROJECT_PAGE),
+          Math.ceil(this.currentProjects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.currentProjects.concat(this.projects);
+        this.currentProjects = R.uniqBy(
+          R.prop('id'),
+          this.currentProjects.concat(this.projects),
+        );
       } else {
         // 公開計畫
         await this.getPublicProjectsRequest(
-          parseInt(this.projects.length / PROJECT_PAGE),
+          Math.ceil(this.currentProjects.length / PROJECT_PAGE),
         );
-        this.currentProjects = this.currentProjects.concat(this.projects);
+        this.currentProjects = R.uniqBy(
+          R.prop('id'),
+          this.currentProjects.concat(this.projects),
+        );
       }
     },
     async selectByFilter() {
