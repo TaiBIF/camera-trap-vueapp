@@ -49,6 +49,14 @@ const getProjectDetail = async id => {
   return res;
 };
 
+const getProjectOversight = async (id, year) => {
+  const res = await fetchWrap({
+    url: `/api/v1/projects/${id}/oversight?year=${year}`,
+    method: 'GET',
+  });
+  return res;
+};
+
 // https://github.com/TaiBIF/camera-trap-api/wiki/API-v1-Document#post-projects
 const postProject = async body => {
   const res = await fetchWrap({
@@ -199,6 +207,7 @@ export {
   getPublicProjects,
   getAllProjects,
   getProjectDetail,
+  getProjectOversight,
   postProject,
   putProjectMember,
   putProject,
