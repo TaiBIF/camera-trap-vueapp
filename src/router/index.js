@@ -144,6 +144,13 @@ export default new Router({
               component: () =>
                 import('@/pages/Project/ProjectUpload/index.vue'),
             },
+            {
+              path: 'oversight',
+              name: 'projectOversight',
+              meta: { projectAside: false },
+              component: () =>
+                import('@/pages/Project/ProjectOversight/index.vue'),
+            },
           ],
         },
       ],
