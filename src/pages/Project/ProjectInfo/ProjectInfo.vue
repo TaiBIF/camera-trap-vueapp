@@ -89,6 +89,26 @@
                   產生完畢後將另發通知
                 </div>
               </div>
+              <div class="row">
+                <div class="col-sm-4 col-md-3 text-gray">
+                  相機樣點運作集缺失比例
+                </div>
+                <div class="col-sm-8 col-md-9">
+                  <router-link
+                    :to="{
+                      name: 'projectOversight',
+                      params: {
+                        projectId,
+                      },
+                    }"
+                    class=""
+                  >
+                    <span class="text" style="white-space: nowrap;"
+                      >查看</span
+                    ></router-link
+                  >
+                </div>
+              </div>
             </div>
             <div class="col-4 text-center pt-5 divider">
               <router-link

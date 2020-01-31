@@ -8,6 +8,7 @@ import {
   getIdentifiedSpecies,
   getIdentifiedStudyAreaSpecies,
   getProjectDetail,
+  getProjectOversight,
   getProjectSpecies,
   getProjects,
   getPublicProjects,
@@ -30,6 +31,7 @@ const state = {
   projectsPublicTotal: 0,
   projectTrip: null, //這是用來判斷是否有projectTrip的依據
   projectDetail: {}, // 計畫詳細資料，只記錄最後一筆
+  projectOversight: {},
   projectSpecies: [], // 計畫物種列表
   identifiedSpecies: {}, // 已辨識物種
   retrievalData: {
@@ -166,6 +168,9 @@ const mutations = {
   setProjectDetail(state, data) {
     state.projectDetail = data;
   },
+  setProjectOversight(state, data) {
+    state.projectOversight = data;
+  },
   updateProjectMember(state, members) {
     state.projectDetail.members = members;
   },
@@ -243,6 +248,10 @@ const actions = {
   async getProjectDetail({ commit }, id) {
     const data = await getProjectDetail(id);
     commit('setProjectDetail', data);
+  },
+  async getProjectOversight({ commit }, { id, year }) {
+    const data = await getProjectOversight(id, year);
+    commit('setProjectOversight', data);
   },
   async postProject({ commit }, body) {
     const data = await postProject({
