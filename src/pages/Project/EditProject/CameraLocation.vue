@@ -399,6 +399,7 @@ export default {
       } catch (e) {
         this.error = e;
       }
+      console.log(this.status);
     },
     updateSheetSize() {
       this.$refs.sheet &&

@@ -26,6 +26,14 @@
                   <span class="icon" v-if="file.type === 'text/csv'"
                     ><i class="icon-csv"></i
                   ></span>
+                  <span
+                    class="icon"
+                    v-if="
+                      file.type ===
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    "
+                    ><i class="icon-csv"></i
+                  ></span>
                   <span class="icon" v-if="file.type === 'application/zip'"
                     ><i class="icon-zip"></i
                   ></span>
@@ -275,7 +283,7 @@ export default {
               }
               this.showInfoModal = true;
               this.uploadErrorType = 'other-error';
-              this.uploadErrorOtherText = error;
+              this.uploadErrorOtherText = error.message;
             }
           }
         }

@@ -23,6 +23,9 @@
             <span class="icon" v-if="row.file.type === 'annotation-csv'">
               <i class="icon-csv"></i>
             </span>
+            <span class="icon" v-if="row.file.type === 'annotation-excel'">
+              <i class="icon-excel"></i>
+            </span>
             <span class="icon" v-if="row.file.type === 'annotation-zip'">
               <i class="icon-zip"></i>
             </span>
@@ -31,6 +34,7 @@
               v-if="
                 [
                   'annotation-csv',
+                  'annotation-excel',
                   'annotation-zip',
                   'annotation-image',
                 ].indexOf(row.file.type) < 0

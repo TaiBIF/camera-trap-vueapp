@@ -71,6 +71,7 @@ export default {
       fileList: [],
       dropzoneOptions: {
         url: 'localhost',
+        //directly set the acceptedFiles instead of using uploadAccept can solve the problem of not showing xls files
         acceptedFiles: uploadAccept,
         autoProcessQueue: false,
         previewsContainer: false,
