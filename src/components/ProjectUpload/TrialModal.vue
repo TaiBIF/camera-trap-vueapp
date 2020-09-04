@@ -21,7 +21,12 @@
                 </p>
                 <small class="text-gray">
                   各計畫欄位規範請參考
-                  <a class="link" @click="downloadCsvSrc">資料範本</a>
+                  <a
+                    class="link text-underline text-green"
+                    :href="downloadCsvSrc"
+                    target="_blank"
+                    >資料範本</a
+                  >
                 </small>
               </div>
             </slide>
@@ -81,6 +86,9 @@
 
 <script>
 import { Carousel, Slide } from 'vue-carousel';
+import { createNamespacedHelpers } from 'vuex';
+
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'TrialModal',
@@ -93,6 +101,17 @@ export default {
   components: {
     Carousel,
     Slide,
+  },
+  computed: {
+    ...projects.mapGetters(['projectDetail', 'isProjectManager']),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
+    downloadCsvSrc() {
+      return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
+        this.projectId
+      }/example.csv`;
+    },
   },
   watch: {
     open: 'watchToggle',
@@ -113,10 +132,6 @@ export default {
         this.$emit('close', 'trialModalOpen');
         this.currentPage = 2;
       }
-    },
-    downloadCsvSrc() {
-      console.log(this.$router);
-      //todo
     },
   },
 };

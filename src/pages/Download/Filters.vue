@@ -6,7 +6,6 @@
           <label>物種</label>
           <v-select
             :options="speciesOptions"
-            :disabled="!speciesOptions.length"
             v-model="params.species"
             multiple
           />
@@ -76,7 +75,7 @@
             />
           </div>
           <div class="form-group col-4">
-            <label class="required">行程</label>
+            <label class="required">行程 </label>
             <v-select
               :disabled="!item.options.trips.length"
               :options="item.options.trips"
@@ -186,8 +185,20 @@ export default {
   data: function() {
     return {
       lang: getLanguage(),
-      speciesOptions: [],
-      projectSpeciesOptions: [],
+      speciesOptions: [
+        {
+          label: '野豬',
+          value: '5f2a72f5d3b2180063a64e4b',
+        },
+        {
+          label: '山羌',
+          value: '5f2a72f5d3b2180063a64e46',
+        },
+        {
+          label: '測試',
+          value: '5f2a72f5d3b2180063a64e42',
+        },
+      ],
       startDate: '2001-01-01',
       endDate: '2025-01-01',
       startTime: { HH: '00', mm: '00' },
@@ -195,7 +206,6 @@ export default {
       params: {
         startDateTime: '2001-01-01',
         endDateTime: '2025-01-01',
-        species: [],
         projects: [this.defaultSeleted()],
         others: {},
       },
@@ -220,6 +230,7 @@ export default {
   beforeMount: async function() {
     // species options
     const species = await fetchSpecies();
+    //console.log(species);
     species.items.forEach(x => {
       this.speciesOptions.push({
         label: x.title[getLanguage()],
@@ -314,7 +325,7 @@ export default {
         options: {
           studyAreas: [],
           cameraLocations: [],
-          trips: [],
+          trips: ['test', 'oops'],
         },
       };
     },
