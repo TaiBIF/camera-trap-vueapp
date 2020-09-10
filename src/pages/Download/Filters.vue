@@ -198,6 +198,14 @@ export default {
           label: '測試',
           value: '5f2a72f5d3b2180063a64e42',
         },
+        {
+          label: '獼猴',
+          value: '5f2a72f5d3b2180063a64e48',
+        },
+        {
+          label: '白鼻心',
+          value: '5f2a72f5d3b2180063a64e4d',
+        },
       ],
       startDate: '2001-01-01',
       endDate: '2025-01-01',

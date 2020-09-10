@@ -4,7 +4,7 @@
       <span>{{ responseMessage }}</span>
     </div>
     <div v-if="status === 200" class="success">
-      <span>設定儲存成功</span>
+      <span></span>
     </div>
     <div>
       <div class="btn btn-default" @click="$emit('cancel')">
