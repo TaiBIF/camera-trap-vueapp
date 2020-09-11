@@ -4,16 +4,17 @@
       <span>{{ responseMessage }}</span>
     </div>
     <div v-if="status === 200" class="success">
-      <span>設定儲存成功</span>
+      <span></span>
     </div>
     <div>
       <div class="btn btn-default" @click="$emit('cancel')">
         {{ cancelBtnContext }}
       </div>
+
       <button
         type="submit"
         class="btn btn-orange"
-        @click.stop.prevent="$emit('submit')"
+        @click.stop.prevent="handler"
         :disabled="!!disabledSubmit"
       >
         {{ submitBtnContext }}
@@ -23,7 +24,7 @@
 </template>
 
 <script>
-import getResponseMessage from '@/utils/responseMessage';
+/* import getResponseMessage from '@/utils/responseMessage'; */
 
 export default {
   name: 'ActionBtns',
@@ -46,15 +47,22 @@ export default {
     },
     status: {
       type: Number,
-      default: undefined,
+      default: 200,
     },
   },
-  computed: {
-    responseMessage: function() {
-      if (this.response && this.response.status) {
-        return getResponseMessage(this.response.status);
+
+  methods: {
+    handleClick: function() {
+      this.$emit('submit');
+    },
+    responsing: function() {
+      if (this.status == 200) {
+        alert('設定已儲存');
       }
-      return '';
+    },
+    handler: function() {
+      this.handleClick();
+      this.responsing();
     },
   },
 };

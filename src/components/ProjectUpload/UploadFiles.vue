@@ -35,14 +35,26 @@
     </vue-dropzone>
 
     <div class="text-center mt-2">
-      <small class="text-center">
-        單一檔案上傳大小限制於 <b>2G</b> 以內，一次上傳中，檔案大小總合須小於
-        <b>2G</b>
-        <br />您可以上傳的檔案形式：內含資料檔（.csv）及其對應影像之壓縮檔
-        (.zip)、影像資料壓縮檔 (.zip)、單一影像檔 及 單一資料檔（.csv） <br />
-        <br />
-        ZIP 檔案限制：只能一個 csv、不能有資料夾、csv
-        資料數量跟影片/照片數量要一樣
+      <small align="left">
+        <p align="left">可上傳的檔案形式包含：</p>
+        <ol>
+          <li>壓縮檔 (限zip格式）</li>
+          <ul>
+            <li>
+              csv及其對應影像壓縮檔:
+              zip檔內限一個csv及影像檔，不能含子資料夾，且該csv文件內筆數要與影像檔數量相同
+            </li>
+            <li>影像壓縮檔</li>
+          </ul>
+          <li>
+            單一檔案: 上傳大小限制於
+            <b>2G</b> 以內，一次上傳中，檔案大小總合須小於<b>2G</b>
+          </li>
+          <ul>
+            <li>單一資料檔：限csv及excel格式</li>
+            <li>單一影像檔：限JPG、MP4、AVI格式</li>
+          </ul>
+        </ol>
       </small>
     </div>
   </div>
@@ -71,6 +83,7 @@ export default {
       fileList: [],
       dropzoneOptions: {
         url: 'localhost',
+        //directly set the acceptedFiles instead of using uploadAccept can solve the problem of not showing xls files
         acceptedFiles: uploadAccept,
         autoProcessQueue: false,
         previewsContainer: false,
