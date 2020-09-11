@@ -42,7 +42,9 @@
               <div class="row">
                 <div class="col-12 text-right">
                   <div class="form-group-inline">
-                    <label id="geodetic-label">座標大地基準：</label>
+                    <label id="geodetic-label"
+                      ><span style="color: red;">*</span>座標大地基準：</label
+                    >
                     <v-select
                       id="geodetic-select"
                       v-model="geodeticDatum"

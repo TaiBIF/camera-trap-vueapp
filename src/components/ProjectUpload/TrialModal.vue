@@ -21,7 +21,12 @@
                 </p>
                 <small class="text-gray">
                   各計畫欄位規範請參考
-                  <a class="link" @click="downloadCsvSrc">資料範本</a>
+                  <a
+                    class="link text-underline text-green"
+                    :href="downloadCsvSrc"
+                    target="_blank"
+                    >資料範本</a
+                  >
                 </small>
               </div>
             </slide>
@@ -32,19 +37,18 @@
                 srcset="/assets/upinfo/carousel-2@2x.png"
               />
               <div class="caption">
-                <p>
-                  可上傳的檔案形式包含：(1) 內含資料檔及其對應影像之壓縮檔、(2)
-                  影像壓縮檔、(3) 單一影像檔、(4) 單一資料檔。
+                <p align="left">
+                  可上傳的檔案形式包含：
+                  <ol>
+                    <li>壓縮檔 (限zip格式）</li>
+                      <ul><li>csv及其對應影像壓縮檔: zip檔內限一個csv及影像檔，不能含子資料夾，且該csv文件內筆數要與影像檔數量相同</li>
+                          <li>影像壓縮檔</li></ul>
+                    <li>單一檔案</li>
+                      <ul><li>單一資料檔：限csv及excel格式</li>
+                          <li>單一影像檔：限JPG、MP4、AVI格式</li></ul>
+                  </ol>
                 </p>
-                <p>
-                  ZIP 檔案限制：只能一個 csv、不能有資料夾、csv
-                  資料數量跟影片/照片數量要一樣
-                </p>
-                <small class="text-gray">
-                  支援格式包括壓縮檔 (ZIP)、影像檔 (JPG、MP4、AVI) 與資料檔
-                  (CSV)
-                  <!--a class="link">上傳格式說明</a-->
-                </small>
+
               </div>
             </slide>
             <slide>
@@ -81,6 +85,9 @@
 
 <script>
 import { Carousel, Slide } from 'vue-carousel';
+import { createNamespacedHelpers } from 'vuex';
+
+const projects = createNamespacedHelpers('projects');
 
 export default {
   name: 'TrialModal',
@@ -93,6 +100,17 @@ export default {
   components: {
     Carousel,
     Slide,
+  },
+  computed: {
+    ...projects.mapGetters(['projectDetail', 'isProjectManager']),
+    projectId: function() {
+      return this.$route.params.projectId;
+    },
+    downloadCsvSrc() {
+      return `${process.env.VUE_APP_API_URL}/api/v1/projects/${
+        this.projectId
+      }/example.csv`;
+    },
   },
   watch: {
     open: 'watchToggle',
@@ -113,10 +131,6 @@ export default {
         this.$emit('close', 'trialModalOpen');
         this.currentPage = 2;
       }
-    },
-    downloadCsvSrc() {
-      console.log(this.$router);
-      //todo
     },
   },
 };
