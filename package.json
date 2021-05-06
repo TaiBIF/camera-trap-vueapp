@@ -29,7 +29,7 @@
     "element-ui": "^2.12.0",
     "filesize": "^4.1.2",
     "handsontable": "^7.0.2",
-    "highcharts": "^7.2.2",
+    "highcharts": "^9.0.0",
     "idx": "^2.5.5",
     "immer": "^2.1.4",
     "jquery": "^3.5.0",
