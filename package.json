@@ -36,7 +36,7 @@
     "js-cookie": "^2.2.0",
     "leaflet": "^1.4.0",
     "markdown-it": "^8.4.2",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "popper.js": "^1.14.7",
     "query-string": "^6.4.2",
     "ramda": "^0.26.1",
